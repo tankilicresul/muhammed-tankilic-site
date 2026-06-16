@@ -20,7 +20,7 @@ const identityCards = [
     title: "Kürtçe, akustik ve halk müziği",
     description:
       "Klasik gitar, bağlama ve dijital prodüksiyonla şekillenen özgün eserler, cover çalışmalar ve canlı performanslar.",
-    href: "#muzik",
+    href: "/muzik",
     className: "bg-[#104e3b]/94 text-white",
   },
   {
@@ -204,7 +204,7 @@ export default function Home() {
               <a href="#hekimlik" className="transition hover:text-[#39785d]">
                 Hekimlik
               </a>
-              <a href="#muzik" className="transition hover:text-[#39785d]">
+              <a href="/muzik" className="transition hover:text-[#39785d]">
                 Müzik
               </a>
               <a href="#yazilar" className="transition hover:text-[#39785d]">
@@ -363,11 +363,11 @@ export default function Home() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
-                  href="#iletisim"
-                  className="rounded-full bg-[#f4c85d] px-6 py-3.5 font-semibold text-[#10231d]"
-                >
-                  Müziği Dinle
-                </a>
+  href="/muzik"
+  className="rounded-full bg-[#f4c85d] px-6 py-3.5 font-semibold text-[#10231d]"
+>
+  Müzik Arşivini Aç
+</a>
 
                 <a
                   href="#arsiv"
@@ -564,7 +564,7 @@ export default function Home() {
                 <div className="mt-5 grid grid-cols-2 gap-3 text-white/65">
                   <a href="#portre">Portre</a>
                   <a href="#hekimlik">Hekimlik</a>
-                  <a href="#muzik">Müzik</a>
+                  <a href="/muzik">Müzik</a>
                   <a href="#yazilar">Yazılar</a>
                   <a href="#arsiv">Arşiv</a>
                   <a href="#anasayfa">Yukarı Dön</a>
