@@ -144,6 +144,29 @@ export default function MuzikPage() {
                       YouTube · Yakında
                     </button>
                   </div>
+
+                  {/* SPOTIFY OYNATICI */}
+                  <div className="mt-10 rounded-4xl border border-white/80 bg-[#f9fbf9]/90 p-5 shadow-lg">
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#39785d]">
+                        Siteden Dinle
+                      </p>
+
+                      <h3 className="mt-2 font-serif text-3xl text-[#17302a]">
+                        Zef Cara
+                      </h3>
+                    </div>
+
+                    <iframe
+                      title="Zef Cara Spotify oynatıcı"
+                      src="https://open.spotify.com/embed/track/7B5SGhv7YD7opodmyJQQqm?utm_source=generator"
+                      width="100%"
+                      height="152"
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                      className="block w-full rounded-3xl border-0"
+                    />
+                  </div>
                 </div>
 
                 {/* BİLGİLER */}
