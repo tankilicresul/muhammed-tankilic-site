@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /auth/
+Disallow: /giris
+Disallow: /kayit
+Disallow: /hesabim
+Disallow: /hesabim/duzenle
+Disallow: /sifremi-unuttum
+Disallow: /yeni-sifre
+
+Sitemap: https://www.muhammedtankilic.com/sitemap.xml
