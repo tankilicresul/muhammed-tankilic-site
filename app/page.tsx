@@ -2,414 +2,531 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 import AuthButtons from "@/components/AuthButtons";
 
-const musicHighlights = [
+const heroTallImage = "/muhammed-hero2.png";
+
+const latestRelease = {
+  title: "Zef Cara",
+  artist: "Muhammed Tankılıç",
+  coverImage: "/muzik/zef-cara-cover.jpg",
+  description:
+    "Kürtçe sözler, akustik gitar ve sade bir yorumla şekillenen özgün çalışma.",
+  spotifyUrl:
+    "https://open.spotify.com/intl-tr/track/7B5SGhv7YD7opodmyJQQqm?si=958d9492fbd4447b",
+  appleUrl: "https://music.apple.com/us/album/zef-cara-single/1779404301",
+  youtubeEmbedUrl: "",
+};
+
+const songs = [
   {
-    title: "Özgün eserler",
-    description:
-      "Kürtçe, akustik ve halk müziği çizgisinde yayımlanan kişisel çalışmalar.",
+    title: "Zef Cara",
+    type: "Single",
+    description: "Kürtçe sözler, akustik gitar ve yalın yorum.",
+    coverImage: "/muzik/zef-cara-cover.jpg",
+    href: "/muzik",
   },
   {
-    title: "Cover yorumlar",
-    description:
-      "Tanıdık melodileri sade, duygusal ve akustik bir yorumla yeniden ele alan kayıtlar.",
+    title: "Akustik Kayıtlar",
+    type: "Arşiv",
+    description: "Ev kayıtları, prova notları ve sade yorumlar.",
+    coverImage: "/muhammed-hero2.png",
+    href: "/muzik",
   },
   {
-    title: "Canlı performanslar",
-    description:
-      "Sahne, prova, kısa video ve özel performans kayıtlarından oluşan arşiv.",
+    title: "Cover Yorumlar",
+    type: "Yakında",
+    description: "Tanıdık ezgilerin kişisel yorumları.",
+    coverImage: "/muhammed-hero2.png",
+    href: "/muzik",
   },
 ];
 
-const archiveItems = [
+const quickSections = [
   {
-    number: "01",
-    title: "Şarkılar",
-    description: "Yayımlanmış single çalışmaları ve gelecek kayıtlar.",
-  },
-  {
-    number: "02",
     title: "Videolar",
-    description: "Klipler, kısa performanslar ve sosyal medya içerikleri.",
+    description: "Klipler, kısa performanslar ve sahne arkası görüntüler.",
+    href: "/videolar",
   },
   {
-    number: "03",
     title: "Fotoğraflar",
-    description: "Kapak görselleri, sahne arkası ve portre seçkileri.",
+    description: "Kapak tasarımları, portreler ve görsel arşiv.",
+    href: "/fotograflar",
   },
   {
-    number: "04",
-    title: "Duyurular",
-    description: "Yeni yayınlar, konserler ve özel içerik haberleri.",
+    title: "Hakkında",
+    description: "Sanatçının müzik dili, sözleri ve kişisel hikâyesi.",
+    href: "/hakkinda",
   },
 ];
 
 export default function Home() {
-  const backgroundRef = useRef<HTMLDivElement | null>(null);
+  const [heroReveal, setHeroReveal] = useState(0);
 
   useEffect(() => {
-    let animationFrame = 0;
-    let targetPosition = 0;
-    let currentPosition = 0;
-    let velocity = 0;
-    let initialized = false;
+    const handleScroll = () => {
+      const value = Math.min(window.scrollY * 0.65, 620);
+      setHeroReveal(value);
+    };
 
-    const stiffness = 0.04;
-    const damping = 0.84;
-
-    function updateTarget() {
-      const maximumPageScroll = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        1,
-      );
-
-      const pageProgress = Math.min(
-        Math.max(window.scrollY / maximumPageScroll, 0),
-        1,
-      );
-
-      const background = backgroundRef.current;
-
-      if (background) {
-        const maximumImageTravel = Math.max(
-          background.offsetHeight - window.innerHeight,
-          0,
-        );
-
-        targetPosition = pageProgress * maximumImageTravel;
-
-        if (!initialized) {
-          currentPosition = targetPosition;
-          initialized = true;
-        }
-      }
-    }
-
-    function animateBackground() {
-      const distance = targetPosition - currentPosition;
-
-      velocity += distance * stiffness;
-      velocity *= damping;
-      currentPosition += velocity;
-
-      const background = backgroundRef.current;
-
-      if (background) {
-        background.style.transform = `translate3d(
-          -50%,
-          ${-currentPosition}px,
-          0
-        )`;
-      }
-
-      animationFrame = requestAnimationFrame(animateBackground);
-    }
-
-    const resizeObserver = new ResizeObserver(updateTarget);
-
-    if (backgroundRef.current) {
-      resizeObserver.observe(backgroundRef.current);
-    }
-
-    updateTarget();
-    animationFrame = requestAnimationFrame(animateBackground);
-
-    window.addEventListener("scroll", updateTarget, { passive: true });
-    window.addEventListener("resize", updateTarget);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      cancelAnimationFrame(animationFrame);
-      resizeObserver.disconnect();
-      window.removeEventListener("scroll", updateTarget);
-      window.removeEventListener("resize", updateTarget);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden text-[#17302a]">
-      {/* Hareketli ana görsel */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#17352f]">
-        <div
-          ref={backgroundRef}
-          className="absolute left-1/2 top-0 will-change-transform"
-          style={{
-            width: "max(100vw, 70vh)",
-            transform: "translate3d(-50%, 0, 0)",
-          }}
-        >
-          <Image
-            src="/muhammed-hero2.png"
-            alt=""
-            width={1920}
-            height={4320}
-            priority
-            unoptimized
-            sizes="100vw"
-            aria-hidden="true"
-            className="h-auto w-full max-w-none select-none"
-          />
-        </div>
+    <main className="min-h-screen text-[var(--foreground)]">
+      <Navbar />
 
-        <div className="absolute inset-0 bg-[#102a24]/4" />
-        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/5" />
-      </div>
-
-      <div className="relative z-10">
-        {/* Header */}
-        <header className="sticky top-0 z-50 border-b border-[#17302a]/10 bg-[#f7f4ec]/90 backdrop-blur-xl">
-          <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-5 px-5 lg:px-10">
-            <a
-              href="#anasayfa"
-              className="shrink-0 font-serif text-lg font-semibold tracking-tight md:text-xl"
-            >
-              Muhammed Tankılıç
-            </a>
-
-            <nav className="hidden items-center gap-7 text-sm font-medium lg:flex">
-              <a href="#muzisyen" className="transition hover:text-[#39785d]">
-                Müzisyen
-              </a>
-
-              <Link href="/muzik" className="transition hover:text-[#39785d]">
-                Müzik
-              </Link>
-
-              <a href="#zef-cara" className="transition hover:text-[#39785d]">
-                Zef Cara
-              </a>
-
-              <a href="#arsiv" className="transition hover:text-[#39785d]">
-                Arşiv
-              </a>
-
-              <a href="#iletisim" className="transition hover:text-[#39785d]">
-                İletişim
-              </a>
-            </nav>
-
-            <AuthButtons />
-          </div>
-        </header>
-
-        {/* Hero: yazı görselin içinde olduğu için kod tarafında başlık yok */}
-        <section
-          id="anasayfa"
-          className="relative flex min-h-[calc(100svh-80px)] items-end justify-center overflow-hidden px-4 pb-8 text-white sm:px-6"
-        >
-          <a
-            href="#muzisyen"
-            aria-label="Aşağı kaydır"
-            className="z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/35 bg-white/10 text-xl text-white shadow-lg backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/18"
-          >
-            ↓
-          </a>
-        </section>
-
-        {/* Müzisyen kimliği */}
-        <section id="muzisyen" className="px-5 py-24 md:py-32 lg:px-10">
-          <div className="mx-auto max-w-6xl rounded-4xl border border-white/70 bg-[#f7f4ec]/90 p-8 shadow-2xl backdrop-blur-xl md:p-12 lg:p-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#39785d]">
-              Müzisyen Kimliği
-            </p>
-
-            <div className="mt-6 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-              <h1 className="max-w-3xl font-serif text-5xl leading-tight md:text-7xl">
-                Kürtçe, akustik ve halk müziğinden kişisel bir arşiv
-              </h1>
-
+      <section
+        id="anasayfa"
+        className="mx-auto w-full max-w-[1180px] px-4 pt-7 md:px-6 md:pt-10"
+      >
+        <div className="grid gap-5 lg:grid-cols-[390px_1fr] lg:items-stretch">
+          <div className="rounded-[32px] border border-[rgba(75,35,45,0.10)] bg-[rgba(255,255,255,0.88)] p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-xl md:p-8 lg:min-h-[700px]">
+            <div className="flex h-full flex-col justify-between">
               <div>
-                <p className="text-lg leading-9 text-[#566963]">
-                  Muhammed Tankılıç’ın müzik üretimi; akustik gitar, halk
-                  müziği dokusu ve kişisel hikâyeler etrafında şekillenen
-                  sade bir anlatıya dayanır.
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+                  Bağımsız Kürtçe Müzik
                 </p>
 
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <Link
-                    href="/muzik"
-                    className="rounded-full bg-[#f0ca63] px-7 py-3.5 font-semibold text-[#2d2410] shadow-sm transition hover:-translate-y-1"
-                  >
-                    Müzik Arşivini Aç
-                  </Link>
+                <h1 className="mt-5 text-5xl font-semibold leading-[0.95] tracking-[-0.06em] text-[var(--burgundy)] md:text-6xl">
+                  Muhammed
+                  <br />
+                  Tankılıç
+                </h1>
 
-                  <a
-                    href="#zef-cara"
-                    className="rounded-full border border-[#17302a]/12 bg-white/70 px-7 py-3.5 font-semibold text-[#34596d] shadow-sm transition hover:-translate-y-1"
-                  >
+                <p className="mt-7 max-w-sm text-[15px] font-light leading-8 text-[rgba(75,35,45,0.72)]">
+                  Kürtçe şarkılar, akustik yorumlar ve kişisel hikâyeler.
+                  Muhammed Tankılıç’ın müziklerini, sözlerini ve kayıtlarını
+                  sade bir dijital arşivde keşfet.
+                </p>
+
+                <div className="mt-8 grid gap-3">
+                  <InfoBox label="Tarz" value="Kürtçe Akustik" />
+                  <InfoBox label="Arşiv" value="Şarkılar" />
+                  <InfoBox label="Erişim" value="Üyelikli" />
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-col gap-2.5">
+                <a
+                  href="#son-cikan"
+                  className="inline-flex justify-center rounded-full bg-[var(--orange)] px-5 py-3 text-sm font-medium text-[var(--burgundy)] shadow-sm transition hover:-translate-y-0.5"
+                >
+                  Son Çıkanı Dinle
+                </a>
+
+                <Link
+                  href="/muzik"
+                  className="inline-flex justify-center rounded-full border border-[rgba(75,35,45,0.10)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+                >
+                  Müzik Arşivi
+                </Link>
+
+                <Link
+                  href="/kayit"
+                  className="inline-flex justify-center rounded-full bg-[var(--burgundy)] px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
+                >
+                  Üye Ol
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative min-h-[700px] overflow-hidden rounded-[32px] border border-[rgba(75,35,45,0.12)] bg-[rgba(255,255,255,0.18)] shadow-[0_24px_70px_rgba(75,35,45,0.12)]">
+            <div
+              className="absolute inset-x-0 top-0 h-[190%] will-change-transform"
+              style={{
+                transform: `translate3d(0, -${heroReveal}px, 0)`,
+              }}
+            >
+              <Image
+                src={heroTallImage}
+                alt="Muhammed Tankılıç gitarla"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 760px"
+                className="object-cover object-top"
+              />
+            </div>
+
+            <div className="absolute inset-0 bg-linear-to-t from-[rgba(255,255,255,0.1)] via-transparent to-[rgba(255,255,255,0.04)]" />
+
+            <div className="absolute right-5 top-5 rounded-full border border-white/35 bg-white/76 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--burgundy)] backdrop-blur-md">
+              Müzik · Söz · Hikâye
+            </div>
+
+            <div className="absolute bottom-5 right-5 rounded-full border border-white/35 bg-white/72 px-5 py-3 text-[11px] font-medium text-[var(--burgundy)] shadow-[0_12px_34px_rgba(75,35,45,0.12)] backdrop-blur-md">
+              Kürtçe müzik · Akustik yorumlar
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="uyelik"
+        className="mx-auto w-full max-w-[1180px] px-4 py-6 md:px-6"
+      >
+        <div className="flex flex-col gap-4 rounded-[32px] border border-[rgba(75,35,45,0.10)] bg-[rgba(189,235,232,0.72)] px-5 py-5 shadow-[0_18px_45px_rgba(75,35,45,0.06)] backdrop-blur-xl md:flex-row md:items-center md:justify-between md:px-6">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+              Üyelik
+            </p>
+
+            <h2 className="mt-2 text-2xl font-semibold leading-tight tracking-[-0.05em] text-[var(--burgundy)] md:text-4xl">
+              Özel içerikler ve indirmeler için giriş yap.
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm font-light leading-7 text-[rgba(75,35,45,0.68)]">
+              Üyeler şarkı sözlerine, özel içeriklere ve indirme bağlantılarına
+              erişebilir.
+            </p>
+          </div>
+
+          <div className="shrink-0">
+            <AuthButtons />
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="son-cikan"
+        className="mx-auto w-full max-w-[1180px] px-4 py-7 md:px-6"
+      >
+        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+              Son Çıkan
+            </p>
+
+            <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.05em] text-[var(--burgundy)] md:text-5xl">
+              Yeni kayıt
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm font-light leading-6 text-[rgba(75,35,45,0.68)]">
+              En son yayımlanan parça, dinleme bağlantıları ve video alanı.
+            </p>
+          </div>
+
+          <Link
+            href="/muzik"
+            className="inline-flex w-fit rounded-full border border-[rgba(75,35,45,0.10)] bg-white/78 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+          >
+            Tüm Müzikler
+          </Link>
+        </div>
+
+        <article className="overflow-hidden rounded-[32px] border border-[rgba(75,35,45,0.10)] bg-[rgba(255,255,255,0.84)] shadow-[0_18px_55px_rgba(75,35,45,0.08)] backdrop-blur-xl">
+          <div className="grid lg:grid-cols-[0.34fr_0.66fr]">
+            <div className="relative h-72 lg:h-full">
+              <Image
+                src={latestRelease.coverImage}
+                alt={`${latestRelease.title} kapak görseli`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 34vw"
+                className="object-cover"
+              />
+
+              <div className="absolute inset-0 bg-linear-to-t from-black/28 via-transparent to-transparent" />
+
+              <div className="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/82 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--burgundy)]">
+                Latest Release
+              </div>
+            </div>
+
+            <div className="p-5 md:p-6">
+              <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.58)]">
                     Öne Çıkan Eser
-                  </a>
+                  </p>
+
+                  <h3 className="mt-2 text-4xl font-semibold leading-none tracking-[-0.06em] text-[var(--burgundy)] md:text-6xl">
+                    {latestRelease.title}
+                  </h3>
+
+                  <p className="mt-3 text-xs font-medium text-[rgba(75,35,45,0.56)]">
+                    {latestRelease.artist}
+                  </p>
+
+                  <p className="mt-5 text-[15px] font-light leading-7 text-[rgba(75,35,45,0.72)]">
+                    {latestRelease.description}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    <a
+                      href={latestRelease.spotifyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex rounded-full bg-[var(--orange)] px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+                    >
+                      Spotify
+                    </a>
+
+                    <a
+                      href={latestRelease.appleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex rounded-full border border-[rgba(75,35,45,0.10)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+                    >
+                      Apple Music
+                    </a>
+
+                    <Link
+                      href="/giris?next=/muzik"
+                      className="inline-flex rounded-full border border-[rgba(75,35,45,0.10)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+                    >
+                      İndir
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="rounded-[28px] border border-[rgba(75,35,45,0.10)] bg-white/55 p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.48)]">
+                    Video Alanı
+                  </p>
+
+                  <div className="mt-3 flex aspect-video items-center justify-center rounded-[22px] bg-[rgba(75,35,45,0.05)] px-5 text-center">
+                    {latestRelease.youtubeEmbedUrl ? (
+                      <iframe
+                        src={latestRelease.youtubeEmbedUrl}
+                        title={`${latestRelease.title} videosu`}
+                        className="h-full w-full rounded-[22px]"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <p className="text-sm font-light leading-6 text-[rgba(75,35,45,0.62)]">
+                        YouTube videosu eklendiğinde burada oynatılacak.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 rounded-[22px] bg-white/70 p-3">
+                    <audio controls preload="none" className="w-full">
+                      Tarayıcınız ses oynatmayı desteklemiyor.
+                    </audio>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </article>
+      </section>
 
-        {/* Müzik alanları */}
-        <section className="px-5 py-12 md:py-20 lg:px-10">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-10 max-w-3xl text-white">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/75">
-                Üretim Alanları
-              </p>
+      <section
+        id="sarkilar"
+        className="mx-auto w-full max-w-[1180px] px-4 py-7 md:px-6"
+      >
+        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+              Şarkılar
+            </p>
 
-              <h2 className="mt-5 font-serif text-5xl leading-tight drop-shadow-lg md:text-7xl">
-                Şarkılar, yorumlar ve performanslar
-              </h2>
-            </div>
+            <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.05em] text-[var(--burgundy)] md:text-5xl">
+              Kayıtlar ve yorumlar
+            </h2>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {musicHighlights.map((item) => (
-                <article
-                  key={item.title}
-                  className="min-h-90 rounded-4xl border border-white/70 bg-[#f8fbf9]/92 p-8 shadow-2xl backdrop-blur-xl md:p-10"
-                >
-                  <h3 className="font-serif text-4xl leading-tight text-[#17302a]">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-7 leading-8 text-[#60716b]">
-                    {item.description}
-                  </p>
-                </article>
-              ))}
-            </div>
+            <p className="mt-2 max-w-2xl text-sm font-light leading-6 text-[rgba(75,35,45,0.68)]">
+              Özgün parçalar, akustik yorumlar ve yakında eklenecek özel
+              kayıtlar.
+            </p>
           </div>
-        </section>
 
-        {/* Zef Cara */}
-        <section id="zef-cara" className="px-5 py-24 md:py-32 lg:px-10">
-          <div className="mx-auto max-w-7xl">
-            <article className="grid overflow-hidden rounded-4xl border border-white/80 bg-[#edf3ef]/94 shadow-2xl backdrop-blur-xl lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="relative min-h-105 bg-[#dce7e1] lg:min-h-155">
+          <Link
+            href="/muzik"
+            className="inline-flex w-fit rounded-full border border-[rgba(75,35,45,0.10)] bg-white/78 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+          >
+            Tümünü Gör
+          </Link>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {songs.map((song) => (
+            <article
+              key={song.title}
+              className="overflow-hidden rounded-[30px] border border-[rgba(75,35,45,0.10)] bg-[rgba(255,255,255,0.84)] shadow-[0_16px_45px_rgba(75,35,45,0.07)] backdrop-blur-xl"
+            >
+              <div className="relative h-40 bg-[rgba(189,235,232,0.35)]">
                 <Image
-                  src="/muzik/zef-cara-cover.jpg"
-                  alt="Zef Cara şarkı kapağı"
+                  src={song.coverImage}
+                  alt={`${song.title} görseli`}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  className="object-cover"
+                  sizes="(max-width: 900px) 100vw, 33vw"
+                  className="object-cover object-[center_58%]"
                 />
               </div>
 
-              <div className="flex flex-col justify-center p-9 md:p-12 lg:p-16">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39785d]">
-                  Öne Çıkan Single
+              <div className="p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.50)]">
+                  {song.type}
                 </p>
 
-                <h2 className="mt-5 font-serif text-5xl text-[#17302a] md:text-7xl">
-                  Zef Cara
-                </h2>
+                <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-[var(--burgundy)]">
+                  {song.title}
+                </h3>
 
-                <p className="mt-4 text-lg text-[#6b7a75]">
-                  Muhammed Tankılıç
+                <p className="mt-3 text-sm font-light leading-6 text-[rgba(75,35,45,0.68)]">
+                  {song.description}
                 </p>
 
-                <p className="mt-8 max-w-xl text-lg leading-8 text-[#5d6d68]">
-                  Yayımlanmış özgün çalışmayı Spotify üzerinden dinleyebilir,
-                  eser sayfasından platform bağlantılarına ulaşabilirsin.
-                </p>
-
-                <div className="mt-10 flex flex-wrap gap-3">
-                  <a
-                    href="https://open.spotify.com/intl-tr/track/7B5SGhv7YD7opodmyJQQqm?si=958d9492fbd4447b"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full bg-[#dff0e5] px-6 py-3.5 font-semibold text-[#1f5a36] transition hover:-translate-y-1"
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <Link
+                    href={song.href}
+                    className="inline-flex rounded-full bg-[var(--orange)] px-4 py-2.5 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
                   >
-                    Spotify’da Dinle
-                  </a>
+                    Detay
+                  </Link>
 
                   <Link
-                    href="/muzik"
-                    className="rounded-full border border-[#17302a]/12 bg-white/70 px-6 py-3.5 font-semibold text-[#34596d] transition hover:-translate-y-1"
+                    href="/giris?next=/muzik"
+                    className="inline-flex rounded-full border border-[rgba(75,35,45,0.10)] bg-white/70 px-4 py-2.5 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
                   >
-                    Eser Detayları
+                    İndir
                   </Link>
                 </div>
               </div>
             </article>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* Arşiv */}
-        <section id="arsiv" className="px-5 py-16 md:py-24 lg:px-10">
-          <div className="mx-auto max-w-6xl rounded-4xl border border-white/70 bg-[#f7f4ec]/90 p-8 shadow-2xl backdrop-blur-xl md:p-12 lg:p-16">
-            <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#39785d]">
-                  Arşiv
-                </p>
+      <section className="mx-auto w-full max-w-[1180px] px-4 py-7 md:px-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          {quickSections.map((item) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="rounded-[30px] border border-[rgba(75,35,45,0.10)] bg-[rgba(255,255,255,0.84)] p-5 shadow-[0_16px_45px_rgba(75,35,45,0.07)] backdrop-blur-xl transition hover:-translate-y-1"
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+                {item.title}
+              </p>
 
-                <h2 className="mt-5 font-serif text-5xl leading-tight md:text-7xl">
-                  Şarkılar, videolar ve müzik içerikleri
-                </h2>
-              </div>
+              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-[var(--burgundy)]">
+                {item.title}
+              </h3>
 
-              <div className="divide-y divide-[#17302a]/10 border-y border-[#17302a]/10">
-                {archiveItems.map((item) => (
-                  <article
-                    key={item.title}
-                    className="grid gap-4 py-7 sm:grid-cols-[70px_1fr] sm:items-start"
-                  >
-                    <p className="font-serif text-2xl text-[#39785d]/45">
-                      {item.number}
-                    </p>
+              <p className="mt-3 text-sm font-light leading-6 text-[rgba(75,35,45,0.68)]">
+                {item.description}
+              </p>
 
-                    <div>
-                      <h3 className="font-serif text-3xl text-[#17302a]">
-                        {item.title}
-                      </h3>
+              <span className="mt-5 inline-flex text-sm font-medium text-[var(--burgundy)]">
+                Sayfaya Git →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-                      <p className="mt-3 max-w-xl leading-7 text-[#62716c]">
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
+      <section
+        id="hakkinda"
+        className="mx-auto w-full max-w-[1180px] px-4 py-7 md:px-6"
+      >
+        <div className="rounded-[32px] bg-[var(--burgundy)] p-5 shadow-[0_18px_50px_rgba(75,35,45,0.16)] md:p-6">
+          <div className="grid gap-5 md:grid-cols-[0.85fr_1.15fr] md:items-center">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/60">
+                Hakkında
+              </p>
+
+              <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.05em] text-white md:text-5xl">
+                Söz, ses ve hikâye.
+              </h2>
             </div>
-          </div>
-        </section>
 
-        {/* İletişim */}
-        <footer id="iletisim" className="px-5 py-20 lg:px-10">
-          <div className="mx-auto max-w-6xl rounded-4xl border border-white/70 bg-[#f7f4ec]/90 p-8 shadow-2xl backdrop-blur-xl md:p-12 lg:p-16">
-            <div className="grid gap-12 md:grid-cols-[1.1fr_0.9fr]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#39785d]">
+            <div>
+              <p className="text-sm font-light leading-7 text-white/78">
+                Muhammed Tankılıç, Kürtçe şarkı söyleyen bağımsız bir sanatçı
+                olarak müziğini sade melodiler, akustik düzenlemeler ve kişisel
+                hikâyeler üzerine kurar.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Link
+                  href="/hakkinda"
+                  className="inline-flex rounded-full bg-[var(--orange)] px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+                >
+                  Daha Fazla
+                </Link>
+
+                <Link
+                  href="/iletisim"
+                  className="inline-flex rounded-full border border-white/18 bg-white/12 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
+                >
                   İletişim
-                </p>
-
-                <h2 className="mt-5 font-serif text-5xl leading-tight text-[#17302a] md:text-7xl">
-                  Müzik, sahne ve iş birliği için
-                </h2>
+                </Link>
               </div>
-
-              <div className="self-end">
-                <p className="text-lg leading-9 text-[#62716c]">
-                  İletişim ve iş birliği e-posta adresi yakında eklenecek.
-                  Sosyal medya ve müzik platform bağlantıları bu alana
-                  eklenebilir.
-                </p>
-
-                <div className="mt-8 grid grid-cols-2 gap-3 text-[#52645e]">
-                  <a href="#muzisyen">Müzisyen</a>
-                  <Link href="/muzik">Müzik</Link>
-                  <a href="#zef-cara">Zef Cara</a>
-                  <a href="#arsiv">Arşiv</a>
-                  <a href="#anasayfa">Yukarı Dön</a>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-14 flex flex-col justify-between gap-3 border-t border-[#17302a]/10 pt-6 text-xs text-[#778680] sm:flex-row">
-              <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-              <p>Müzisyen · Akustik · Halk Müziği</p>
             </div>
           </div>
-        </footer>
-      </div>
+        </div>
+      </section>
+
+      <footer
+        id="iletisim"
+        className="mx-auto w-full max-w-[1180px] px-4 py-7 pb-10 md:px-6"
+      >
+        <div className="rounded-[32px] border border-[rgba(75,35,45,0.10)] bg-[rgba(255,255,255,0.84)] p-5 shadow-[0_16px_45px_rgba(75,35,45,0.07)] backdrop-blur-xl md:p-6">
+          <div className="grid gap-5 md:grid-cols-[1fr_0.8fr] md:items-end">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[rgba(75,35,45,0.84)]">
+                İletişim
+              </p>
+
+              <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.05em] text-[var(--burgundy)] md:text-5xl">
+                Müzik ve iş birlikleri
+              </h2>
+
+              <p className="mt-2 max-w-2xl text-sm font-light leading-6 text-[rgba(75,35,45,0.68)]">
+                Konser, kayıt, video, dijital yayın ve iş birliği talepleri
+                için iletişim kanalları.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 md:justify-end">
+              <a
+                href="mailto:iletisim@muhammedtankilic.com"
+                className="inline-flex rounded-full bg-[var(--orange)] px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+              >
+                E-posta
+              </a>
+
+              <Link
+                href="/iletisim"
+                className="inline-flex rounded-full border border-[rgba(75,35,45,0.10)] bg-white/70 px-5 py-3 text-sm font-medium text-[var(--burgundy)] transition hover:-translate-y-0.5"
+              >
+                İletişim Sayfası
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col justify-between gap-3 border-t border-[rgba(75,35,45,0.10)] pt-4 text-xs font-light text-[rgba(75,35,45,0.58)] md:flex-row">
+            <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
+            <p>Kürtçe müzik · Akustik yorumlar · Kişisel arşiv</p>
+          </div>
+        </div>
+      </footer>
     </main>
+  );
+}
+
+function InfoBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[24px] border border-[rgba(75,35,45,0.08)] bg-white/55 p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[rgba(75,35,45,0.50)]">
+        {label}
+      </p>
+
+      <p className="mt-2 text-sm font-medium text-[var(--burgundy)]">
+        {value}
+      </p>
+    </div>
   );
 }

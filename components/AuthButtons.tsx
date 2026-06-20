@@ -41,33 +41,39 @@ export default function AuthButtons() {
   }
 
   if (isLoading) {
-    return <div className="h-10 w-32" />;
+    return (
+      <div
+        aria-hidden="true"
+        className="h-9 w-28 animate-pulse rounded-full bg-white/35"
+      />
+    );
   }
 
   if (isLoggedIn) {
     return (
-      <div className="flex items-center gap-4 text-sm">
-        <Link href="/hesabim">Hesabım</Link>
+      <div className="flex items-center gap-1.5 whitespace-nowrap text-[11px] font-extrabold">
+        <Link href="/hesabim" className="pill-button secondary !px-3 !py-2">
+          Hesabım
+        </Link>
 
         <button
           type="button"
           onClick={handleSignOut}
-          className="rounded-full bg-[#173d56] px-5 py-2.5 text-white"
+          className="pill-button dark !px-3 !py-2"
         >
-          Çıkış Yap
+          Çıkış
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4 text-sm">
-      <Link href="/giris">Giriş Yap</Link>
+    <div className="flex items-center gap-1.5 whitespace-nowrap text-[11px] font-extrabold">
+      <Link href="/giris" className="pill-button secondary !px-3 !py-2">
+        Giriş Yap
+      </Link>
 
-      <Link
-        href="/kayit"
-        className="rounded-full bg-[#173d56] px-5 py-2.5 text-white"
-      >
+      <Link href="/kayit" className="pill-button !px-3 !py-2">
         Kayıt Ol
       </Link>
     </div>

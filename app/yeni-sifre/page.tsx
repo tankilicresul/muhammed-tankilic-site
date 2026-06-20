@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
 
 export default function YeniSifrePage() {
@@ -18,7 +20,6 @@ export default function YeniSifrePage() {
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code");
 
-      // Varsayılan Supabase e-postasından gelen PKCE kodu
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -31,7 +32,6 @@ export default function YeniSifrePage() {
           return;
         }
 
-        // Kod daha önce kullanıldıysa mevcut oturumu kontrol et
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -52,7 +52,6 @@ export default function YeniSifrePage() {
         return;
       }
 
-      // Gelecekte /auth/confirm tarafından oluşturulan oturum
       const {
         data: { user },
         error,
@@ -124,60 +123,124 @@ export default function YeniSifrePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7faf9] px-6 py-16 text-[#14201d]">
-      <div className="mx-auto max-w-md rounded-4xl border border-[#173d56]/10 bg-white p-8 shadow-sm">
-        <p className="text-sm uppercase tracking-[0.25em] text-[#39785d]">
-          Hesap Güvenliği
-        </p>
+    <main className="page-shell">
+      <Navbar />
 
-        <h1 className="mt-4 font-serif text-4xl">
-          Yeni Şifre Belirle
-        </h1>
+      <section
+        className="site-container flex items-center py-8"
+        style={{ minHeight: "calc(100vh - 160px)" }}
+      >
+        <div className="mx-auto grid w-full max-w-5xl gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <aside className="dark-card p-5 md:p-6">
+            <p className="text-[10px] font-extrabold uppercase tracking-widest text-white/60">
+              Hesap Güvenliği
+            </p>
 
-        {checking && (
-          <p className="mt-6 rounded-2xl bg-[#eef5f2] px-4 py-3 text-sm">
-            Yenileme bağlantısı kontrol ediliyor...
-          </p>
-        )}
+            <h1 className="mt-3 font-serif text-4xl font-bold leading-none tracking-tighter text-white md:text-5xl">
+              Yeni şifreni belirle.
+            </h1>
 
-        {!checking && sessionReady && (
-          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-            <input
-              name="password"
-              type="password"
-              placeholder="Yeni şifre"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none focus:border-[#173d56]"
-            />
+            <p className="mt-4 max-w-md text-sm leading-7 text-white/72">
+              Güvenliğin için en az 8 karakterli, tahmin edilmesi zor bir şifre
+              kullan.
+            </p>
 
-            <input
-              name="passwordAgain"
-              type="password"
-              placeholder="Yeni şifre tekrar"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none focus:border-[#173d56]"
-            />
+            <div className="mt-8 rounded-[25px] border border-white/15 bg-white/10 p-4">
+              <p className="text-sm leading-7 text-white/72">
+                Şifre değiştirildikten sonra oturum kapatılır ve giriş sayfasına
+                yönlendirilirsin.
+              </p>
+            </div>
+          </aside>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-full bg-[#173d56] px-6 py-4 font-medium text-white disabled:opacity-60"
+          <section className="soft-card p-5 md:p-6">
+            <Link
+              href="/giris"
+              className="text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.6)]"
             >
-              {loading ? "Şifre değiştiriliyor..." : "Şifreyi Değiştir"}
-            </button>
-          </form>
-        )}
+              Giriş sayfasına dön
+            </Link>
 
-        {message && (
-          <p className="mt-6 rounded-2xl bg-[#eef5f2] px-4 py-3 text-sm">
-            {message}
-          </p>
-        )}
-      </div>
+            <p className="section-eyebrow mt-4 mb-2">Yeni Şifre</p>
+
+            <h2 className="font-serif text-4xl font-bold tracking-tighter text-(--burgundy) md:text-5xl">
+              Şifre belirle
+            </h2>
+
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[rgba(75,35,45,0.7)]">
+              Bağlantı geçerliyse yeni şifreni buradan oluşturabilirsin.
+            </p>
+
+            {checking && (
+              <p className="mt-5 rounded-[25px] bg-(--mint-soft) px-4 py-3 text-sm text-(--burgundy)">
+                Yenileme bağlantısı kontrol ediliyor...
+              </p>
+            )}
+
+            {!checking && sessionReady && (
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                <div>
+                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
+                    Yeni şifre
+                  </label>
+
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="En az 8 karakter"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="form-field"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
+                    Yeni şifre tekrar
+                  </label>
+
+                  <input
+                    name="passwordAgain"
+                    type="password"
+                    placeholder="Şifreni tekrar yaz"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    className="form-field"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="pill-button dark w-full"
+                >
+                  {loading ? "Şifre değiştiriliyor..." : "Şifreyi Değiştir"}
+                </button>
+              </form>
+            )}
+
+            {message && (
+              <p className="mt-5 rounded-[25px] bg-(--mint-soft) px-4 py-3 text-sm text-(--burgundy)">
+                {message}
+              </p>
+            )}
+
+            {!checking && !sessionReady && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Link href="/sifremi-unuttum" className="pill-button">
+                  Yeni Bağlantı İste
+                </Link>
+
+                <Link href="/giris" className="pill-button secondary">
+                  Giriş Yap
+                </Link>
+              </div>
+            )}
+          </section>
+        </div>
+      </section>
     </main>
   );
 }

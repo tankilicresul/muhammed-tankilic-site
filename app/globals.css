@@ -1,22 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7faf9;
-  --foreground: #14201d;
+  --background: #f7fbf7;
+  --foreground: #4b232d;
 
-  --deep-blue: #173d56;
-  --soft-blue: #eaf3f8;
-  --natural-green: #39785d;
-  --deep-red: #9c3f3f;
-  --off-white: #f7faf9;
+  --mint: #bdebe8;
+  --mint-soft: #e4f6f3;
+  --cream: #fff4bc;
+  --cream-soft: #fff9dc;
+  --orange: #f5ae50;
+  --orange-soft: #ffd48c;
+  --burgundy: #4b232d;
+  --burgundy-soft: #6a3340;
+
+  --white-glass: rgba(255, 255, 255, 0.72);
+  --mint-glass: rgba(189, 235, 232, 0.72);
+  --cream-glass: rgba(255, 244, 188, 0.72);
+  --dark-glass: rgba(75, 35, 45, 0.78);
+
+  --border-soft: rgba(75, 35, 45, 0.12);
+  --shadow-soft: 0 18px 50px rgba(75, 35, 45, 0.08);
+  --shadow-hover: 0 24px 70px rgba(75, 35, 45, 0.14);
+
+  --radius-main: 25px;
+  --radius-large: 34px;
+  --radius-pill: 999px;
+
+  --container: 1120px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
+  --font-sans: var(--font-main);
+  --font-serif: var(--font-main);
 }
 
 * {
@@ -25,29 +43,402 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
 }
 
 body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
   margin: 0;
-  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, sans-serif;
+  font-family: var(--font-main), Arial, sans-serif;
+  font-weight: 300;
+  background: #f7fbf7;
+  overflow-x: hidden;
+}
+
+/*
+  En arkadaki hareketli fotoğraf katmanı.
+  Fixed değil. Sayfayla beraber yukarı akar.
+*/
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -3;
+  height: 360vh;
+  min-height: 2800px;
+  background-image: url("/muhammed-hero2.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.34;
+  filter: saturate(1.08) contrast(1.02);
+  pointer-events: none;
+}
+
+/*
+  Fotoğrafın üstündeki yumuşak okunabilirlik katmanı.
+  Bu da fixed değil; fotoğrafla beraber akar.
+*/
+body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -2;
+  height: 360vh;
+  min-height: 2800px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(247, 251, 247, 0.36) 0%,
+      rgba(247, 251, 247, 0.5) 34%,
+      rgba(255, 249, 220, 0.62) 100%
+    ),
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(189, 235, 232, 0.2),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 22%,
+      rgba(245, 174, 80, 0.08),
+      transparent 30%
+    );
+  pointer-events: none;
+}
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe {
+  max-width: 100%;
+}
+
+img {
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 button,
 a {
   transition:
-    transform 200ms ease,
-    background-color 200ms ease,
-    color 200ms ease,
-    border-color 200ms ease;
+    transform 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
 }
 
 button {
   cursor: pointer;
+  border: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 ::selection {
-  background: var(--natural-green);
+  background: var(--orange);
+  color: var(--burgundy);
+}
+
+/* Shared layout helpers */
+
+.site-container {
+  width: min(100% - 32px, var(--container));
+  margin-inline: auto;
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: 18px 0 42px;
+}
+
+.section-space {
+  padding: 34px 0;
+}
+
+.soft-card {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-main);
+  background: var(--white-glass);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.mint-card {
+  border: 1px solid rgba(75, 35, 45, 0.08);
+  border-radius: var(--radius-main);
+  background: var(--mint-glass);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.cream-card {
+  border: 1px solid rgba(75, 35, 45, 0.08);
+  border-radius: var(--radius-main);
+  background: var(--cream-glass);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.dark-card {
+  border-radius: var(--radius-main);
+  background: var(--dark-glass);
   color: white;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.pill-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  background: var(--orange);
+  color: var(--burgundy);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 26px rgba(245, 174, 80, 0.2);
+}
+
+.pill-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(245, 174, 80, 0.28);
+}
+
+.pill-button.secondary {
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--burgundy);
+  border: 1px solid rgba(75, 35, 45, 0.1);
+  box-shadow: none;
+}
+
+.pill-button.dark {
+  background: var(--burgundy);
+  color: white;
+  box-shadow: 0 12px 34px rgba(75, 35, 45, 0.18);
+}
+
+.section-eyebrow {
+  margin: 0 0 8px;
+  color: var(--burgundy-soft);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin: 0;
+  color: var(--burgundy);
+  font-family: var(--font-main), Arial, sans-serif;
+  font-size: clamp(26px, 3.6vw, 40px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.section-description {
+  max-width: 640px;
+  margin: 10px 0 0;
+  color: rgba(75, 35, 45, 0.68);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.75;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.form-field {
+  width: 100%;
+  border: 1px solid rgba(75, 35, 45, 0.12);
+  border-radius: var(--radius-main);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--burgundy);
+  padding: 13px 16px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.form-field:focus {
+  border-color: rgba(245, 174, 80, 0.9);
+  box-shadow: 0 0 0 4px rgba(245, 174, 80, 0.16);
+}
+
+.form-field::placeholder {
+  color: rgba(75, 35, 45, 0.44);
+}
+
+/* Typography reset */
+
+.font-serif {
+  font-family: var(--font-main), Arial, sans-serif !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-main), Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+p,
+a,
+button,
+input,
+textarea,
+select,
+label,
+span {
+  font-family: var(--font-main), Arial, sans-serif;
+}
+
+strong,
+b {
+  font-weight: 500;
+}
+
+/* Calmer text scale */
+
+.text-9xl {
+  font-size: clamp(54px, 7vw, 84px) !important;
+  line-height: 0.98 !important;
+  font-weight: 400 !important;
+}
+
+.text-8xl {
+  font-size: clamp(48px, 6vw, 72px) !important;
+  line-height: 1 !important;
+  font-weight: 400 !important;
+}
+
+.text-7xl {
+  font-size: clamp(42px, 5.4vw, 60px) !important;
+  line-height: 1.02 !important;
+  font-weight: 400 !important;
+}
+
+.text-6xl {
+  font-size: clamp(36px, 4.8vw, 50px) !important;
+  line-height: 1.04 !important;
+  font-weight: 400 !important;
+}
+
+.text-5xl {
+  font-size: clamp(31px, 4vw, 42px) !important;
+  line-height: 1.06 !important;
+  font-weight: 400 !important;
+}
+
+.text-4xl {
+  font-size: clamp(25px, 3vw, 32px) !important;
+  line-height: 1.1 !important;
+  font-weight: 400 !important;
+}
+
+.text-3xl {
+  font-size: clamp(21px, 2.4vw, 27px) !important;
+  line-height: 1.15 !important;
+  font-weight: 400 !important;
+}
+
+.text-2xl {
+  font-size: clamp(19px, 2vw, 24px) !important;
+  line-height: 1.18 !important;
+  font-weight: 400 !important;
+}
+
+@media (max-width: 900px) {
+  .grid-auto {
+    grid-template-columns: 1fr;
+  }
+
+  .section-space {
+    padding: 30px 0;
+  }
+
+  body::before,
+  body::after {
+    height: 320vh;
+    min-height: 2400px;
+  }
+
+  body::before {
+    opacity: 0.3;
+    background-size: cover;
+    background-position: center top;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --radius-main: 22px;
+    --radius-large: 28px;
+  }
+
+  .site-container {
+    width: min(100% - 22px, var(--container));
+  }
+
+  .page-shell {
+    padding-top: 12px;
+  }
+
+  .section-description {
+    font-size: 13px;
+  }
+
+  .pill-button {
+    min-height: 33px;
+    padding: 8px 13px;
+    font-size: 11px;
+  }
+
+  body::before,
+  body::after {
+    height: 300vh;
+    min-height: 2200px;
+  }
+
+  body::before {
+    opacity: 0.28;
+    background-position: center top;
+  }
 }

@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
 
 export default function GirisPage() {
@@ -22,7 +24,9 @@ export default function GirisPage() {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        setMessage("E-posta doğrulandı ancak oturum açılamadı. Giriş yapabilirsin.");
+        setMessage(
+          "E-posta doğrulandı ancak oturum açılamadı. Giriş yapabilirsin.",
+        );
       } else {
         setMessage("E-posta adresin doğrulandı. Hesabına giriş yapıldı.");
       }
@@ -55,66 +59,117 @@ export default function GirisPage() {
       return;
     }
 
-    window.location.href = "/";
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
+
+    window.location.href = safeNext;
   }
 
   return (
-    <main className="min-h-screen bg-[#f7faf9] px-6 py-16 text-[#14201d]">
-      <div className="mx-auto max-w-md rounded-4xl border border-[#173d56]/10 bg-white p-8 shadow-sm">
-        <p className="text-sm uppercase tracking-[0.25em] text-[#39785d]">
-          Hesabına Dön
-        </p>
+    <main className="page-shell">
+      <Navbar />
 
-        <h1 className="mt-4 font-serif text-4xl">Giriş Yap</h1>
+      <section className="site-container flex min-h-[calc(100vh-160px)] items-center py-8">
+        <div className="grid w-full gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <aside className="dark-card p-5 md:p-6">
+            <p className="text-[10px] font-extrabold uppercase tracking-widest text-white/60">
+              Üyelik Alanı
+            </p>
 
-        {checkingCode && (
-          <p className="mt-6 rounded-2xl bg-[#eef5f2] px-4 py-3 text-sm">
-            E-posta doğrulaması kontrol ediliyor...
-          </p>
-        )}
+            <h1 className="mt-3 font-serif text-4xl font-bold leading-none tracking-tighter text-white md:text-5xl">
+              Müziğe daha yakın bir alan.
+            </h1>
 
-        {message && (
-          <p className="mt-6 rounded-2xl bg-[#eef5f2] px-4 py-3 text-sm">
-            {message}
-          </p>
-        )}
+            <p className="mt-4 max-w-md text-sm leading-7 text-white/72">
+              Şarkı sözleri, özel içerikler ve indirme bağlantılarına erişmek
+              için hesabına giriş yap.
+            </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          <input
-            name="email"
-            type="email"
-            placeholder="E-posta"
-            required
-            className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none focus:border-[#173d56]"
-          />
+            <div className="mt-8 rounded-[25px] border border-white/15 bg-white/10 p-4">
+              <p className="text-sm leading-7 text-white/72">
+                Muhammed Tankılıç’ın müzikleri, sözleri ve hikâyeleri için sade
+                bir dinleyici arşivi.
+              </p>
+            </div>
+          </aside>
 
-          <input
-            name="password"
-            type="password"
-            placeholder="Şifre"
-            required
-            className="w-full rounded-2xl border border-black/10 px-4 py-3 outline-none focus:border-[#173d56]"
-          />
+          <section className="soft-card p-5 md:p-6">
+            <Link
+              href="/"
+              className="text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.6)]"
+            >
+              Ana sayfaya dön
+            </Link>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-full bg-[#173d56] px-6 py-4 font-medium text-white disabled:opacity-60"
-          >
-            {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
-          </button>
-        </form>
+            <p className="section-eyebrow mt-4 mb-2">Hesabına Dön</p>
 
-        <div className="mt-6 flex justify-between text-sm">
-          <a href="/sifremi-unuttum" className="text-[#34596d]">
-            Şifremi unuttum
-          </a>
+            <h2 className="font-serif text-4xl font-bold tracking-tighter text-(--burgundy) md:text-5xl">
+              Giriş yap
+            </h2>
 
-          <a href="/kayit" className="text-[#39785d]">
-            Kayıt ol
-          </a>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-[rgba(75,35,45,0.7)]">
+              Özel içeriklere, şarkı sözlerine ve indirme bağlantılarına erişmek
+              için hesabına giriş yap.
+            </p>
+
+            {checkingCode && (
+              <p className="mt-5 rounded-[25px] bg-(--mint-soft) px-4 py-3 text-sm text-(--burgundy)">
+                E-posta doğrulaması kontrol ediliyor...
+              </p>
+            )}
+
+            {message && (
+              <p className="mt-5 rounded-[25px] bg-(--mint-soft) px-4 py-3 text-sm text-(--burgundy)">
+                {message}
+              </p>
+            )}
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <div>
+                <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
+                  E-posta
+                </label>
+
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="ornek@mail.com"
+                  required
+                  className="form-field"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
+                  Şifre
+                </label>
+
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="Şifren"
+                  required
+                  className="form-field"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="pill-button dark w-full"
+              >
+                {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+              </button>
+            </form>
+
+            <div className="mt-5 flex flex-wrap justify-between gap-3 text-sm font-bold text-(--burgundy)">
+              <Link href="/sifremi-unuttum">Şifremi unuttum</Link>
+              <Link href="/kayit">Hesabın yok mu? Kayıt ol</Link>
+            </div>
+          </section>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
