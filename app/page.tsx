@@ -51,67 +51,53 @@ export default function Home() {
       <Navbar />
 
       <section className="site-container pt-3 md:pt-4">
-        <div className="relative flex min-h-[calc(100vh-132px)] overflow-hidden rounded-[34px] border border-white/30 bg-[#99d9d2]/30 shadow-[0_22px_70px_rgba(75,35,45,0.08)]">
-          <Image
-            src="/muhammed-hero2-site.jpg"
-            alt=""
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 1120px"
-            className="object-contain object-center md:object-cover md:object-center"
-            aria-hidden="true"
-          />
+        <div className="relative flex min-h-[calc(100vh-132px)] flex-col justify-end">
+          <div className="rounded-[28px] border border-white/28 bg-white/14 p-3 shadow-[0_20px_60px_rgba(75,35,45,0.08)] backdrop-blur-[18px] md:p-4">
+            <div className="grid gap-3 lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="flex min-h-[152px] flex-col justify-between rounded-[22px] border border-white/22 bg-white/10 px-5 py-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4B232D]/56">
+                    Yeni Şarkı Çıktı Hemen Dinle ---&gt;
+                  </p>
 
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.00)_52%,rgba(255,255,255,0.14)_100%)]" />
+                  <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h1 className="text-[clamp(24px,2.7vw,38px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
+                      {latestSong.title}
+                    </h1>
 
-          <div className="relative flex w-full flex-col justify-end p-4 md:p-6">
-            <div className="rounded-[28px] border border-white/28 bg-white/14 p-3 shadow-[0_20px_60px_rgba(75,35,45,0.08)] backdrop-blur-[18px] md:p-4">
-              <div className="grid gap-3 lg:grid-cols-[0.92fr_1.08fr]">
-                <div className="flex min-h-[152px] flex-col justify-between rounded-[22px] border border-white/22 bg-white/10 px-5 py-4">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4B232D]/56">
-                      Yeni Şarkı Çıktı Hemen Dinle ---&gt;
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <h1 className="text-[clamp(24px,2.7vw,38px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
-                        {latestSong.title}
-                      </h1>
-
-                      <span className="text-sm font-medium text-[#4B232D]/68">
-                        {latestSong.artist}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Link
-                      href={`/muzik/${latestSong.slug}`}
-                      className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
-                    >
-                      Şarkı Detayı
-                    </Link>
-
-                    <Link
-                      href="/muzik"
-                      className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
-                    >
-                      Tüm Şarkılar
-                    </Link>
+                    <span className="text-sm font-medium text-[#4B232D]/68">
+                      {latestSong.artist}
+                    </span>
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-[22px] border border-white/22 bg-white/10">
-                  <iframe
-                    src={spotifyEmbedUrl}
-                    width="100%"
-                    height="152"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    className="block h-[152px] w-full border-0"
-                    title={`${latestSong.title} Spotify oynatıcı`}
-                  />
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link
+                    href={`/muzik/${latestSong.slug}`}
+                    className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
+                  >
+                    Şarkı Detayı
+                  </Link>
+
+                  <Link
+                    href="/muzik"
+                    className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
+                  >
+                    Tüm Şarkılar
+                  </Link>
                 </div>
+              </div>
+
+              <div className="overflow-hidden rounded-[22px] border border-white/22 bg-white/10">
+                <iframe
+                  src={spotifyEmbedUrl}
+                  width="100%"
+                  height="152"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="block h-[152px] w-full border-0"
+                  title={`${latestSong.title} Spotify oynatıcı`}
+                />
               </div>
             </div>
           </div>
