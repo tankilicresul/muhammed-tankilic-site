@@ -1,5 +1,5 @@
 export type MusicPlatform = {
-  name: "Spotify" | "Apple Music" | "YouTube";
+  name: "Spotify" | "Apple Music";
   url: string;
 };
 
@@ -52,7 +52,7 @@ export const artistLinks: ArtistLink[] = [
   {
     name: "YouTube",
     label: "YouTube Kanalı",
-    url: "https://youtube.com/@muhammedtanklc?si=duKwlo8rKCWNAO80",
+    url: "https://www.youtube.com/@Muhammedtanklc",
   },
 ];
 
@@ -88,10 +88,6 @@ export const songs: Song[] = [
         name: "Apple Music",
         url: "https://music.apple.com/us/album/zef-cara-single/1779404301",
       },
-      {
-        name: "YouTube",
-        url: "https://youtu.be/-eXQX6gigvU?si=EUWVXD0_zwGsFJLt",
-      },
     ],
     downloads: [
       {
@@ -109,7 +105,6 @@ export const songs: Song[] = [
         isActive: false,
       },
     ],
-    youtubeEmbedUrl: "https://www.youtube.com/embed/-eXQX6gigvU",
     isLatest: true,
     isFeatured: true,
     isPublished: true,
