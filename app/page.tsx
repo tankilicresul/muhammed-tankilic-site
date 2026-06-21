@@ -42,13 +42,8 @@ const previewSongs = [
   },
 ].slice(0, 3);
 
-const spotifyLink = latestSong.platforms.find(
-  (platform) => platform.name === "Spotify",
-);
-
-const appleMusicLink = latestSong.platforms.find(
-  (platform) => platform.name === "Apple Music",
-);
+const spotifyEmbedUrl =
+  "https://open.spotify.com/embed/track/7B5SGhv7YD7opodmyJQQqm?utm_source=generator";
 
 export default function Home() {
   return (
@@ -56,135 +51,66 @@ export default function Home() {
       <Navbar />
 
       <section className="site-container pt-3 md:pt-4">
-        <div className="relative overflow-hidden rounded-[34px] border border-white/30 bg-white/32 px-5 py-5 shadow-[0_22px_70px_rgba(75,35,45,0.11)] backdrop-blur-[7px] md:px-8 md:py-7 lg:px-10 lg:py-8">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_8%,rgba(189,235,232,0.18),transparent_32%),radial-gradient(circle_at_88%_16%,rgba(245,174,80,0.12),transparent_28%)]" />
+        <div className="relative flex min-h-[calc(100vh-132px)] overflow-hidden rounded-[34px] border border-white/30 bg-white/8 shadow-[0_22px_70px_rgba(75,35,45,0.08)]">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.00)_48%,rgba(255,255,255,0.10)_100%)]" />
 
-          <div className="relative grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-            <div className="max-w-3xl">
-              <div className="mb-5 flex flex-wrap gap-2">
-                <span className="rounded-full bg-[#BDEBE8]/70 px-4 py-2 text-[11px] font-semibold text-[#4B232D]">
-                  Bağımsız Sanatçı
-                </span>
-                <span className="rounded-full bg-white/44 px-4 py-2 text-[11px] font-semibold text-[#4B232D]/72">
-                  Kürtçe Müzik
-                </span>
-                <span className="rounded-full bg-white/44 px-4 py-2 text-[11px] font-semibold text-[#4B232D]/72">
-                  Akustik Folk
-                </span>
-              </div>
-
-              <p className="section-eyebrow">Muhammed Tankılıç</p>
-
-              <h1 className="max-w-[760px] text-[clamp(40px,6vw,70px)] font-semibold leading-[0.94] tracking-[-0.08em] text-[#4B232D]">
-                Kürtçe müziğin sade, akustik ve kişisel sesi.
-              </h1>
-
-              <p className="mt-5 max-w-2xl text-[14px] leading-7 text-[#4B232D]/76 md:text-[15px]">
-                Muhammed Tankılıç’ın müzikleri, sözleri ve hikâyeleri. Yeni
-                şarkıları dinleyin, videoları izleyin ve sanatçının kişisel
-                müzik arşivini keşfedin.
-              </p>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/muzik" className="pill-button">
-                  Şarkıları Dinle
-                </Link>
-                <Link href="/videolar" className="pill-button secondary">
-                  Videolar
-                </Link>
-                <Link href="/iletisim" className="pill-button ghost">
-                  İletişim
-                </Link>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-white/16 bg-[#4B232D]/82 p-4 text-white shadow-[0_20px_58px_rgba(75,35,45,0.22)] backdrop-blur-[9px]">
-              <div className="grid gap-4 sm:grid-cols-[124px_1fr] lg:grid-cols-1 xl:grid-cols-[138px_1fr]">
-                <div className="relative aspect-square overflow-hidden rounded-[21px] bg-black/20">
-                  <Image
-                    src={latestSong.coverImage}
-                    alt={`${latestSong.title} kapak görseli`}
-                    fill
-                    priority
-                    sizes="(max-width: 900px) 45vw, 160px"
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="flex flex-col justify-between gap-4 p-1">
+          <div className="relative flex w-full flex-col justify-end p-4 md:p-6">
+            <div className="rounded-[28px] border border-white/28 bg-white/14 p-3 shadow-[0_20px_60px_rgba(75,35,45,0.08)] backdrop-blur-[18px] md:p-4">
+              <div className="grid gap-3 lg:grid-cols-[0.92fr_1.08fr]">
+                <div className="flex min-h-[152px] flex-col justify-between rounded-[22px] border border-white/22 bg-white/10 px-5 py-4">
                   <div>
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      Son Çıkan
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4B232D]/56">
+                      Yeni Şarkı Çıktı Hemen Dinle ---&gt;
                     </p>
 
-                    <h2 className="text-[clamp(30px,3.5vw,44px)] font-semibold leading-[0.96] tracking-[-0.075em] text-white">
-                      {latestSong.title}
-                    </h2>
-
-                    <p className="mt-2 text-sm font-medium text-white/90">
-                      {latestSong.artist}
-                    </p>
-
-                    <p className="mt-3 max-w-md text-[13px] leading-6 text-white/68">
-                      {latestSong.shortDescription}
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="mb-3 flex h-10 items-end gap-1 rounded-2xl border border-white/15 bg-white/8 px-4 pb-3">
-                      <span className="h-3 w-1 rounded-full bg-[#BDEBE8]" />
-                      <span className="h-6 w-1 rounded-full bg-[#BDEBE8]" />
-                      <span className="h-4 w-1 rounded-full bg-[#BDEBE8]" />
-                      <span className="h-7 w-1 rounded-full bg-[#BDEBE8]" />
-                      <span className="h-5 w-1 rounded-full bg-[#BDEBE8]" />
-                      <span className="ml-3 text-xs font-semibold text-white/72">
+                    <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <h1 className="text-[clamp(24px,2.7vw,38px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
                         {latestSong.title}
+                      </h1>
+
+                      <span className="text-sm font-medium text-[#4B232D]/68">
+                        {latestSong.artist}
                       </span>
                     </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {spotifyLink ? (
-                        <a
-                          href={spotifyLink.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="pill-button"
-                        >
-                          Spotify
-                        </a>
-                      ) : null}
-
-                      {appleMusicLink ? (
-                        <a
-                          href={appleMusicLink.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="pill-button light-button"
-                        >
-                          Apple Music
-                        </a>
-                      ) : null}
-
-                      <Link href="/giris" className="pill-button outline-light">
-                        Üye Olup İndir
-                      </Link>
-                    </div>
                   </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link
+                      href={`/muzik/${latestSong.slug}`}
+                      className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
+                    >
+                      Şarkı Detayı
+                    </Link>
+
+                    <Link
+                      href="/muzik"
+                      className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
+                    >
+                      Tüm Şarkılar
+                    </Link>
+
+                    <Link
+                      href="/hakkinda"
+                      className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
+                    >
+                      Hakkında
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="overflow-hidden rounded-[22px] border border-white/22 bg-white/10">
+                  <iframe
+                    src={spotifyEmbedUrl}
+                    width="100%"
+                    height="152"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="block h-[152px] w-full border-0"
+                    title={`${latestSong.title} Spotify oynatıcı`}
+                  />
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="relative mt-6 flex flex-wrap gap-2 text-[12px] font-semibold text-[#4B232D]/72">
-            <span className="rounded-full bg-white/38 px-4 py-2 backdrop-blur-md">
-              Son Çıkan: {latestSong.title}
-            </span>
-            <span className="rounded-full bg-white/38 px-4 py-2 backdrop-blur-md">
-              Tür: {latestSong.genre}
-            </span>
-            <span className="rounded-full bg-white/38 px-4 py-2 backdrop-blur-md">
-              Arşiv: Şarkılar · Videolar · Fotoğraflar
-            </span>
           </div>
         </div>
       </section>
@@ -195,7 +121,7 @@ export default function Home() {
             <Link
               key={item.title}
               href={item.href}
-              className="group rounded-[30px] border border-[#4B232D]/10 bg-white/46 p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[10px] transition hover:-translate-y-1 hover:bg-white/58 hover:shadow-[0_28px_80px_rgba(75,35,45,0.16)]"
+              className="group rounded-[30px] border border-[#4B232D]/10 bg-white/56 p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] transition hover:-translate-y-1 hover:bg-white/68 hover:shadow-[0_28px_80px_rgba(75,35,45,0.16)]"
             >
               <span className="mb-8 inline-flex rounded-full bg-[#FFF4BC]/82 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4B232D]">
                 {item.label}
@@ -218,56 +144,73 @@ export default function Home() {
       </section>
 
       <section className="site-container section-space">
-        <div className="section-header">
-          <div>
-            <p className="section-eyebrow">Şarkılar</p>
-            <h2 className="section-title">Kayıtlar ve yorumlar</h2>
-            <p className="section-description">
-              Özgün parçalar, akustik yorumlar ve yakında eklenecek özel
-              kayıtlar.
-            </p>
+        <div className="rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-8 lg:p-10">
+          <div className="section-header">
+            <div>
+              <p className="section-eyebrow">Şarkılar</p>
+              <h2 className="section-title">Kayıtlar ve yorumlar</h2>
+              <p className="section-description">
+                Özgün parçalar, akustik yorumlar ve yakında eklenecek özel
+                kayıtlar.
+              </p>
+            </div>
+
+            <Link href="/muzik" className="pill-button secondary">
+              Tümünü Gör
+            </Link>
           </div>
 
-          <Link href="/muzik" className="pill-button secondary">
-            Tümünü Gör
-          </Link>
-        </div>
+          <div className="music-grid">
+            {previewSongs.map((song) => (
+              <article key={song.slug} className="music-card soft-card">
+                <Link
+                  href={
+                    song.slug === latestSong.slug
+                      ? `/muzik/${song.slug}`
+                      : "/muzik"
+                  }
+                  className="music-cover"
+                >
+                  <Image
+                    src={song.coverImage}
+                    alt={`${song.title} görseli`}
+                    fill
+                    sizes="(max-width: 900px) 100vw, 33vw"
+                    className="object-cover"
+                  />
+                </Link>
 
-        <div className="music-grid">
-          {previewSongs.map((song) => (
-            <article key={song.slug} className="music-card soft-card">
-              <Link href="/muzik" className="music-cover">
-                <Image
-                  src={song.coverImage}
-                  alt={`${song.title} görseli`}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </Link>
+                <div className="music-card-body">
+                  <span>{song.type}</span>
+                  <h3>{song.title}</h3>
+                  <p>{song.shortDescription}</p>
 
-              <div className="music-card-body">
-                <span>{song.type}</span>
-                <h3>{song.title}</h3>
-                <p>{song.shortDescription}</p>
+                  <div className="card-actions">
+                    <Link
+                      href={
+                        song.slug === latestSong.slug
+                          ? `/muzik/${song.slug}`
+                          : "/muzik"
+                      }
+                      className="text-link"
+                    >
+                      Detay
+                    </Link>
 
-                <div className="card-actions">
-                  <Link href="/muzik" className="text-link">
-                    Detay
-                  </Link>
-                  <Link href="/giris" className="text-link muted">
-                    İndir
-                  </Link>
+                    <Link href="/giris" className="text-link muted">
+                      İndir
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="site-container section-space">
         <div className="grid gap-4 lg:grid-cols-[1.18fr_0.82fr]">
-          <div className="rounded-[32px] border border-[#4B232D]/10 bg-white/50 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[10px] md:p-9">
+          <div className="rounded-[32px] border border-[#4B232D]/10 bg-white/56 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-9">
             <p className="section-eyebrow">Hakkında</p>
 
             <h2 className="section-title">Söz, ses ve hikâye.</h2>
@@ -278,7 +221,7 @@ export default function Home() {
               hikâyeler üzerine kurar.
             </p>
 
-            <div className="hero-actions">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/hakkinda" className="pill-button dark">
                 Daha Fazla
               </Link>
@@ -289,7 +232,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-[#4B232D]/10 bg-[#FFF4BC]/66 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[10px] md:p-9">
+          <div className="rounded-[32px] border border-[#4B232D]/10 bg-[#FFF4BC]/70 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-9">
             <p className="section-eyebrow">İletişim</p>
 
             <h2 className="text-[clamp(28px,3vw,38px)] font-semibold leading-none tracking-[-0.065em] text-[#4B232D]">
