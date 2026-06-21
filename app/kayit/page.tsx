@@ -12,13 +12,75 @@ type Message = {
 };
 
 const inputClass =
-  "min-h-14 rounded-[22px] border border-[#4B232D]/12 bg-white/82 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_12px_34px_rgba(75,35,45,0.06)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]";
+  "min-h-14 w-full rounded-[22px] border border-[#4B232D]/12 bg-white/82 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_12px_34px_rgba(75,35,45,0.06)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]";
+
+const passwordInputClass = `${inputClass} pr-14`;
 
 const labelClass =
   "text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/64";
 
 const actionButtonClass =
   "inline-flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-bold shadow-[0_16px_36px_rgba(75,35,45,0.16)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0";
+
+const passwordToggleClass =
+  "absolute right-4 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-[#4B232D]/58 transition hover:bg-[#4B232D]/8 hover:text-[#4B232D] focus:outline-none focus:ring-2 focus:ring-[#F5AE50]/45";
+
+function EyeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 3l18 18" />
+      <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a17.6 17.6 0 0 1-2.1 3.1" />
+      <path d="M6.4 6.5C3.8 8.3 2.5 12 2.5 12s3.5 7 9.5 7a9.6 9.6 0 0 0 4.1-.9" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="M14.1 9.9A3 3 0 0 0 12 9" />
+    </svg>
+  );
+}
+
+function isValidEmail(value: string) {
+  const cleanValue = value.trim();
+
+  if (!cleanValue || cleanValue.length > 254) {
+    return false;
+  }
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cleanValue);
+}
+
+function normalizePhone(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function isValidTurkishMobilePhone(value: string) {
+  return /^0\d{10}$/.test(value);
+}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,6 +94,9 @@ export default function RegisterPage() {
   const [uyelikOnayi, setUyelikOnayi] = useState(false);
   const [bildirimIzni, setBildirimIzni] = useState(false);
 
+  const [showSifre, setShowSifre] = useState(false);
+  const [showSifreTekrar, setShowSifreTekrar] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
 
@@ -42,13 +107,29 @@ export default function RegisterPage() {
 
     const cleanAd = ad.trim();
     const cleanSoyad = soyad.trim();
-    const cleanTelefon = telefon.trim();
+    const cleanTelefon = normalizePhone(telefon);
     const cleanEmail = email.trim().toLowerCase();
 
     if (!cleanAd || !cleanSoyad || !cleanTelefon || !cleanEmail) {
       setMessage({
         type: "error",
         text: "Lütfen ad, soyad, telefon ve e-posta alanlarını doldur.",
+      });
+      return;
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      setMessage({
+        type: "error",
+        text: "Lütfen geçerli formatta bir e-posta adresi yaz.",
+      });
+      return;
+    }
+
+    if (!isValidTurkishMobilePhone(cleanTelefon)) {
+      setMessage({
+        type: "error",
+        text: "Telefon numarası 0 ile başlamalı ve toplam 11 haneli olmalı. Örnek: 05XXXXXXXXX",
       });
       return;
     }
@@ -172,7 +253,7 @@ export default function RegisterPage() {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-7 grid gap-4">
+          <form onSubmit={handleSubmit} noValidate className="mt-7 grid gap-4">
             <div className="rounded-[32px] border border-white/42 bg-white/58 p-5 shadow-[0_12px_34px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2">
@@ -212,6 +293,7 @@ export default function RegisterPage() {
                     type="tel"
                     name="telefon"
                     autoComplete="tel"
+                    inputMode="numeric"
                     placeholder="05xx xxx xx xx"
                     value={telefon}
                     onChange={(event) => setTelefon(event.target.value)}
@@ -238,31 +320,61 @@ export default function RegisterPage() {
                 <label className="grid gap-2">
                   <span className={labelClass}>Şifren</span>
 
-                  <input
-                    type="password"
-                    name="sifre"
-                    autoComplete="new-password"
-                    placeholder="En az 6 karakter"
-                    value={sifre}
-                    onChange={(event) => setSifre(event.target.value)}
-                    required
-                    className={inputClass}
-                  />
+                  <div className="relative w-full">
+                    <input
+                      type={showSifre ? "text" : "password"}
+                      name="sifre"
+                      autoComplete="new-password"
+                      placeholder="En az 6 karakter"
+                      value={sifre}
+                      onChange={(event) => setSifre(event.target.value)}
+                      required
+                      className={passwordInputClass}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowSifre((current) => !current)}
+                      className={passwordToggleClass}
+                      aria-label={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
+                      title={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
+                    >
+                      {showSifre ? <EyeOffIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
                 </label>
 
                 <label className="grid gap-2">
                   <span className={labelClass}>Şifre tekrar</span>
 
-                  <input
-                    type="password"
-                    name="sifreTekrar"
-                    autoComplete="new-password"
-                    placeholder="Şifreni tekrar yaz"
-                    value={sifreTekrar}
-                    onChange={(event) => setSifreTekrar(event.target.value)}
-                    required
-                    className={inputClass}
-                  />
+                  <div className="relative w-full">
+                    <input
+                      type={showSifreTekrar ? "text" : "password"}
+                      name="sifreTekrar"
+                      autoComplete="new-password"
+                      placeholder="Şifreni tekrar yaz"
+                      value={sifreTekrar}
+                      onChange={(event) => setSifreTekrar(event.target.value)}
+                      required
+                      className={passwordInputClass}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowSifreTekrar((current) => !current)
+                      }
+                      className={passwordToggleClass}
+                      aria-label={
+                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
+                      }
+                      title={
+                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
+                      }
+                    >
+                      {showSifreTekrar ? <EyeOffIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
                 </label>
               </div>
             </div>
@@ -338,7 +450,7 @@ export default function RegisterPage() {
                 disabled={isSubmitting}
                 className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
               >
-                {isSubmitting ? "Hesap oluşturuluyor..." : "Hesabımı Oluştur"}
+                {isSubmitting ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}
               </button>
 
               <Link
