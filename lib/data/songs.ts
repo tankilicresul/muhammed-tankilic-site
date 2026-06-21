@@ -68,9 +68,9 @@ export const songs: Song[] = [
     releaseDate: "2024",
     coverImage: "/muzik/zef-cara-cover.jpg",
     shortDescription:
-      "Kürtçe sözler, akustik gitar ve sade bir yorumla şekillenen özgün beste.",
+      "Kürtçe sözler, akustik gitar ve sade bir yorumla şekillenen özgün bestem.",
     description:
-      "Zef Cara, Muhammed Tankılıç’ın Spotify ve Apple Music’te yayınlanan özgün single çalışmasıdır.",
+      "Zef Cara, benim Spotify ve Apple Music’te yayınlanan özgün single çalışmamdır.",
     story:
       "Şarkı, yalın bir anlatım ve güçlü bir duygu atmosferi üzerine kurulu. Akustik yapı, sözlerin hikâyesini ön plana çıkaracak şekilde sade tutulmuştur.",
     lyrics: "",

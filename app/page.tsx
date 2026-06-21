@@ -8,19 +8,19 @@ const quickLinks = [
     title: "Şarkılarım",
     description: "Yayınlanan besteler, akustik kayıtlar ve özel müzik arşivi.",
     href: "/sarkilarim",
-    label: "Müzik Arşivi",
+    label: "Müzik Arşivimm",
   },
   {
     title: "Coverlarım",
     description: "Cover yorumlar, kısa performanslar ve video kayıtları.",
     href: "/coverlarim",
-    label: "Video Arşivi",
+    label: "Video Arşivimm",
   },
   {
-    title: "Fotoğraflar",
+    title: "Fotoğraflarım",
     description: "Kapak görselleri, portreler ve sahne arkası kareler.",
     href: "/fotograflar",
-    label: "Görsel Arşiv",
+    label: "Görsel Arşivimim",
   },
 ];
 
@@ -30,14 +30,14 @@ const previewSongs = [
     slug: "akustik-kayitlar",
     title: "Akustik Kayıtlar",
     type: "Arşiv",
-    shortDescription: "Ev kayıtları, prova notları ve sade yorumlar.",
+    shortDescription: "Ev kayıtlarım, prova notlarım ve sade yorumlarım.",
     coverImage: "/muhammed-hero2-site.jpg",
   },
   {
     slug: "cover-yorumlar",
     title: "Cover Yorumlar",
     type: "Yakında",
-    shortDescription: "Tanıdık ezgilerin kişisel, sakin ve akustik yorumları.",
+    shortDescription: "Tanıdık ezgileri kişisel, sakin ve akustik yorumlarımla paylaşıyorum.",
     coverImage: "/muhammed-hero2-site.jpg",
   },
 ].slice(0, 3);
@@ -57,7 +57,7 @@ export default function Home() {
               <div className="flex min-h-[152px] flex-col justify-between rounded-[22px] border border-white/22 bg-white/10 px-5 py-4">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4B232D]/56">
-                    Yeni Şarkı Çıktı Hemen Dinle ---&gt;
+                    Yeni Şarkım Çıktı Hemen Dinle ---&gt;
                   </p>
 
                   <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -137,7 +137,7 @@ export default function Home() {
           <div className="section-header">
             <div>
               <p className="section-eyebrow">Şarkılarım</p>
-              <h2 className="section-title">Kendi besteler ve resmi yayınlar</h2>
+              <h2 className="section-title">Bestelerim ve Resmi Yayınlarım</h2>
               <p className="section-description">
                 Spotify ve Apple Music’te yayınlanan özgün parçalar, şarkı
                 hikâyeleri ve dinleme bağlantıları.
@@ -244,7 +244,7 @@ export default function Home() {
 
       <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Kürtçe müzik · Akustik yorumlar · Kişisel arşiv</span>
+        <span>Kürtçe müzik · Akustik yorumlarım · Kişisel arşivim</span>
       </footer>
     </main>
   );
