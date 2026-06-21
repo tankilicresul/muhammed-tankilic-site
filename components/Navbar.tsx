@@ -7,8 +7,8 @@ import AuthButtons from "@/components/AuthButtons";
 
 const navItems = [
   { label: "Ana Sayfa", href: "/" },
-  { label: "Şarkılar", href: "/muzik" },
-  { label: "Videolar", href: "/videolar" },
+  { label: "Şarkılarım", href: "/sarkilarim" },
+  { label: "Coverlarım", href: "/coverlarim" },
   { label: "Fotoğraflar", href: "/fotograflar" },
   { label: "Hakkında", href: "/hakkinda" },
   { label: "İletişim", href: "/iletisim" },

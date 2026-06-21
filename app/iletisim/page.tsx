@@ -102,7 +102,7 @@ export default function IletisimPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <Link href="/muzik" className="pill-button secondary !min-h-9 !px-4 !py-2 !text-xs">
+              <Link href="/sarkilarim" className="pill-button secondary !min-h-9 !px-4 !py-2 !text-xs">
                 Şarkılara Git
               </Link>
 

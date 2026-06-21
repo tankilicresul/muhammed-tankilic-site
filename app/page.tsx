@@ -5,15 +5,15 @@ import { featuredSongs, latestSong } from "@/lib/data/songs";
 
 const quickLinks = [
   {
-    title: "Şarkılar",
-    description: "Yayınlanan parçalar, akustik kayıtlar ve özel müzik arşivi.",
-    href: "/muzik",
+    title: "Şarkılarım",
+    description: "Yayınlanan besteler, akustik kayıtlar ve özel müzik arşivi.",
+    href: "/sarkilarim",
     label: "Müzik Arşivi",
   },
   {
-    title: "Videolar",
-    description: "Klipler, kısa performanslar ve video kayıtları.",
-    href: "/videolar",
+    title: "Coverlarım",
+    description: "Cover yorumlar, kısa performanslar ve video kayıtları.",
+    href: "/coverlarim",
     label: "Video Arşivi",
   },
   {
@@ -73,17 +73,17 @@ export default function Home() {
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link
-                    href={`/muzik/${latestSong.slug}`}
+                    href={`/sarkilarim/${latestSong.slug}`}
                     className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
                   >
                     Şarkı Detayı
                   </Link>
 
                   <Link
-                    href="/muzik"
+                    href="/sarkilarim"
                     className="rounded-full border border-[#4B232D]/12 bg-white/68 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/86"
                   >
-                    Tüm Şarkılar
+                    Tüm Şarkılarım
                   </Link>
                 </div>
               </div>
@@ -136,15 +136,15 @@ export default function Home() {
         <div className="rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-8 lg:p-10">
           <div className="section-header">
             <div>
-              <p className="section-eyebrow">Şarkılar</p>
-              <h2 className="section-title">Kayıtlar ve yorumlar</h2>
+              <p className="section-eyebrow">Şarkılarım</p>
+              <h2 className="section-title">Kendi besteler ve resmi yayınlar</h2>
               <p className="section-description">
-                Özgün parçalar, akustik yorumlar ve yakında eklenecek özel
-                kayıtlar.
+                Spotify ve Apple Music’te yayınlanan özgün parçalar, şarkı
+                hikâyeleri ve dinleme bağlantıları.
               </p>
             </div>
 
-            <Link href="/muzik" className="pill-button secondary">
+            <Link href="/sarkilarim" className="pill-button secondary">
               Tümünü Gör
             </Link>
           </div>
@@ -155,8 +155,8 @@ export default function Home() {
                 <Link
                   href={
                     song.slug === latestSong.slug
-                      ? `/muzik/${song.slug}`
-                      : "/muzik"
+                      ? `/sarkilarim/${song.slug}`
+                      : "/sarkilarim"
                   }
                   className="music-cover"
                 >
@@ -178,8 +178,8 @@ export default function Home() {
                     <Link
                       href={
                         song.slug === latestSong.slug
-                          ? `/muzik/${song.slug}`
-                          : "/muzik"
+                          ? `/sarkilarim/${song.slug}`
+                          : "/sarkilarim"
                       }
                       className="text-link"
                     >
@@ -222,20 +222,20 @@ export default function Home() {
           </div>
 
           <div className="rounded-[32px] border border-[#4B232D]/10 bg-[#FFF4BC]/70 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-9">
-            <p className="section-eyebrow">İletişim</p>
+            <p className="section-eyebrow">Coverlarım</p>
 
             <h2 className="text-[clamp(28px,3vw,38px)] font-semibold leading-none tracking-[-0.065em] text-[#4B232D]">
-              Müzik ve iş birlikleri
+              YouTube ve Instagram yorumları
             </h2>
 
             <p className="mt-5 text-sm leading-7 text-[#4B232D]/70">
-              Konser, kayıt, video, dijital yayın ve iş birliği talepleri için
-              iletişim kanallarını kullanabilirsiniz.
+              Cover videoları, kısa performanslar ve sosyal medya içerikleri
+              Coverlarım bölümünde ayrı olarak listelenir.
             </p>
 
             <div className="mt-7">
-              <Link href="/iletisim" className="pill-button">
-                İletişim Sayfası
+              <Link href="/coverlarim" className="pill-button">
+                Coverlarım
               </Link>
             </div>
           </div>

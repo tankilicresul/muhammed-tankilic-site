@@ -183,7 +183,7 @@ export default function ProfilDuzenlePage() {
                 Hesabıma Dön
               </Link>
 
-              <Link href="/muzik" className="pill-button secondary">
+              <Link href="/sarkilarim" className="pill-button secondary">
                 Müzikler
               </Link>
             </div>

@@ -1,5 +1,5 @@
 export type MusicPlatform = {
-  name: "Spotify" | "Apple Music";
+  name: "Spotify" | "Apple Music" | "YouTube";
   url: string;
 };
 
@@ -36,6 +36,7 @@ export type Song = {
   };
   platforms: MusicPlatform[];
   downloads: SongDownload[];
+  spotifyEmbedUrl?: string;
   youtubeEmbedUrl?: string;
   isLatest: boolean;
   isFeatured: boolean;
@@ -67,9 +68,9 @@ export const songs: Song[] = [
     releaseDate: "2024",
     coverImage: "/muzik/zef-cara-cover.jpg",
     shortDescription:
-      "Kürtçe sözler, akustik gitar ve sade bir yorumla şekillenen özgün çalışma.",
+      "Kürtçe sözler, akustik gitar ve sade bir yorumla şekillenen özgün beste.",
     description:
-      "Zef Cara, Muhammed Tankılıç’ın Kürtçe müzik üretimindeki sade, duygusal ve akustik çizgisini yansıtan özgün bir single çalışmasıdır.",
+      "Zef Cara, Muhammed Tankılıç’ın Spotify ve Apple Music’te yayınlanan özgün single çalışmasıdır.",
     story:
       "Şarkı, yalın bir anlatım ve güçlü bir duygu atmosferi üzerine kurulu. Akustik yapı, sözlerin hikâyesini ön plana çıkaracak şekilde sade tutulmuştur.",
     lyrics: "",
@@ -89,6 +90,8 @@ export const songs: Song[] = [
         url: "https://music.apple.com/us/album/zef-cara-single/1779404301",
       },
     ],
+    spotifyEmbedUrl:
+      "https://open.spotify.com/embed/track/7B5SGhv7YD7opodmyJQQqm?utm_source=generator",
     downloads: [
       {
         label: "MP3 İndir",

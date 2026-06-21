@@ -229,7 +229,7 @@ export default function KayitPage() {
 
             <div className="mt-5 flex flex-wrap justify-between gap-3 text-sm font-bold text-(--burgundy)">
               <Link href="/giris">Zaten hesabın var mı? Giriş yap</Link>
-              <Link href="/muzik">Şarkılara dön</Link>
+              <Link href="/sarkilarim">Şarkılara dön</Link>
             </div>
           </section>
         </div>

@@ -70,7 +70,7 @@ export default function AboutPage() {
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/muzik" className="pill-button">
+                <Link href="/sarkilarim" className="pill-button">
                   Şarkıları Dinle
                 </Link>
 
@@ -187,11 +187,11 @@ export default function AboutPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 lg:justify-end">
-              <Link href="/muzik" className="pill-button">
+              <Link href="/sarkilarim" className="pill-button">
                 Müzik Sayfası
               </Link>
 
-              <Link href="/videolar" className="pill-button outline-light">
+              <Link href="/coverlarim" className="pill-button outline-light">
                 Videolar
               </Link>
             </div>

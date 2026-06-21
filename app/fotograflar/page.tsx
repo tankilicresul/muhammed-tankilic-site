@@ -47,7 +47,7 @@ export default function FotograflarPage() {
             </div>
 
             <div className="flex flex-wrap gap-2 md:justify-end">
-              <Link href="/muzik" className="pill-button !min-h-9 !px-4 !py-2 !text-xs">
+              <Link href="/sarkilarim" className="pill-button !min-h-9 !px-4 !py-2 !text-xs">
                 Şarkılara Git
               </Link>
 

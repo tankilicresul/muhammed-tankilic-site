@@ -8,11 +8,11 @@ const pages = [
     priority: "1.0",
   },
   {
-    path: "/muzik",
+    path: "/sarkilarim",
     priority: "0.9",
   },
   {
-    path: "/videolar",
+    path: "/coverlarim",
     priority: "0.8",
   },
   {

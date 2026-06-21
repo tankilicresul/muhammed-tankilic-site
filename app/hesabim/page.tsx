@@ -105,7 +105,7 @@ export default function HesabimPage() {
                 Bilgilerimi Düzenle
               </Link>
 
-              <Link href="/muzik" className="pill-button secondary">
+              <Link href="/sarkilarim" className="pill-button secondary">
                 Şarkılara Git
               </Link>
             </div>
@@ -169,7 +169,7 @@ export default function HesabimPage() {
               açılacak.
             </p>
 
-            <Link href="/muzik" className="mt-5 inline-flex text-sm font-extrabold text-(--burgundy)">
+            <Link href="/sarkilarim" className="mt-5 inline-flex text-sm font-extrabold text-(--burgundy)">
               Müzik arşivine git →
             </Link>
           </article>
