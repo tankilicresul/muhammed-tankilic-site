@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import LoginForm from "@/components/LoginForm";
 
 export const metadata: Metadata = {
   title: "Giriş Yap | Muhammed Tankılıç",
@@ -111,42 +112,7 @@ export default function LoginPage() {
               E-posta adresin ve şifrenle hesabına giriş yap.
             </p>
 
-            <form className="mt-7 grid gap-5">
-              <label className="grid gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/64">
-                  E-postan
-                </span>
-
-                <input
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  placeholder="ornek@mail.com"
-                  className="min-h-14 rounded-[22px] border border-[#4B232D]/12 bg-white/82 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_12px_34px_rgba(75,35,45,0.06)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/64">
-                  Şifren
-                </span>
-
-                <input
-                  type="password"
-                  name="password"
-                  autoComplete="current-password"
-                  placeholder="Şifreni yaz"
-                  className="min-h-14 rounded-[22px] border border-[#4B232D]/12 bg-white/82 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_12px_34px_rgba(75,35,45,0.06)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
-                />
-              </label>
-
-              <button
-                type="submit"
-                className="mt-1 min-h-14 rounded-full bg-[#4B232D] px-6 text-sm font-bold text-white shadow-[0_16px_36px_rgba(75,35,45,0.20)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36]"
-              >
-                Giriş Yap
-              </button>
-            </form>
+<LoginForm />
 
             <div className="mt-5 flex flex-col gap-3 text-sm font-bold text-[#4B232D] sm:flex-row sm:items-center sm:justify-between">
               <Link
