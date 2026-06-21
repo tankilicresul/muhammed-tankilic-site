@@ -1,235 +1,229 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
 import Navbar from "@/components/Navbar";
-import { createClient } from "@/lib/supabase/client";
 
-export default function KayitPage() {
-  const supabase = createClient();
+export const metadata: Metadata = {
+  title: "Kayıt Ol | Muhammed Tankılıç",
+  description:
+    "Muhammed Tankılıç üyelik alanına kayıt olarak özel içeriklere, şarkı sözlerine ve indirme bağlantılarına erişin.",
+};
 
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+const accessItems = ["Şarkı sözleri", "Özel arşiv", "İndirme bağlantıları"];
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage("");
-
-    const formData = new FormData(event.currentTarget);
-
-    const ad = String(formData.get("ad") || "").trim();
-    const soyad = String(formData.get("soyad") || "").trim();
-    const email = String(formData.get("email") || "").trim();
-    const telefon = String(formData.get("telefon") || "").trim();
-    const sifre = String(formData.get("sifre") || "");
-    const sifreTekrar = String(formData.get("sifreTekrar") || "");
-    const bildirimIzni = formData.get("bildirimIzni") === "on";
-
-    if (sifre !== sifreTekrar) {
-      setMessage("Şifreler eşleşmiyor.");
-      return;
-    }
-
-    if (sifre.length < 8) {
-      setMessage("Şifre en az 8 karakter olmalı.");
-      return;
-    }
-
-    setLoading(true);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password: sifre,
-      options: {
-        emailRedirectTo: `${window.location.origin}/giris?dogrulandi=1`,
-        data: {
-          ad,
-          soyad,
-          telefon,
-          bildirim_izni: bildirimIzni,
-        },
-      },
-    });
-
-    setLoading(false);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setMessage(
-      "Kayıt oluşturuldu. E-posta adresine gönderilen doğrulama bağlantısına tıkla.",
-    );
-
-    event.currentTarget.reset();
-  }
-
+export default function RegisterPage() {
   return (
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container flex min-h-[calc(100vh-160px)] items-center py-8">
-        <div className="grid w-full gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <aside className="dark-card p-5 md:p-6">
-            <p className="text-[10px] font-extrabold uppercase tracking-widest text-white/60">
-              Hesap Oluştur
-            </p>
+      <section className="site-container relative pt-7 md:pt-9">
+        <div className="pointer-events-none absolute left-1/2 top-5 -z-0 -translate-x-1/2 select-none text-[clamp(78px,12vw,170px)] font-black leading-none tracking-[-0.12em] text-white/70">
+          MUHAMMED
+        </div>
 
-            <h1 className="mt-3 font-serif text-4xl font-bold leading-none tracking-tighter text-white md:text-5xl">
-              Sözlere, kayıtlara ve özel arşive eriş.
-            </h1>
+        <div className="relative z-10 grid gap-5 lg:grid-cols-2 lg:items-stretch">
+          <section className="relative flex h-full overflow-hidden rounded-[34px] border border-white/18 bg-[#4B232D] p-7 text-white shadow-[0_24px_70px_rgba(75,35,45,0.18)] md:p-8">
+            <div className="absolute -right-24 top-8 h-56 w-56 rounded-full bg-[#F5AE50]/18 blur-3xl" />
+            <div className="absolute -bottom-28 left-8 h-56 w-56 rounded-full bg-[#BDEBE8]/12 blur-3xl" />
 
-            <p className="mt-4 max-w-md text-sm leading-7 text-white/72">
-              Üyelik; şarkı sözleri, özel içerikler ve indirme bağlantıları için
-              kullanılacak kişisel dinleyici alanıdır.
-            </p>
+            <div className="relative flex w-full flex-col justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/66">
+                  Hesap oluştur
+                </p>
 
-            <div className="mt-8 rounded-[25px] border border-white/15 bg-white/10 p-4">
-              <p className="text-sm leading-7 text-white/72">
-                Güvenli ve sade bir arşiv deneyimi. Doktorluk içeriği yok;
-                tamamen müzik odaklıdır.
-              </p>
+                <h1 className="mt-4 max-w-xl text-[clamp(38px,4.3vw,62px)] font-semibold leading-[0.94] tracking-[-0.085em]">
+                  Üye alanına eriş.
+                </h1>
+
+                <p className="mt-5 max-w-lg text-sm leading-8 text-white/72">
+                  Şarkılarım, sözlerim ve özel arşiv içeriklerim için ücretsiz
+                  bir dinleyici hesabı oluştur.
+                </p>
+
+                <div className="mt-7 rounded-[26px] border border-white/16 bg-white/10 p-5 backdrop-blur-[14px]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/54">
+                    Kayıt sonrası
+                  </p>
+
+                  <p className="mt-3 text-sm leading-7 text-white/74">
+                    Özel içeriklere, şarkı sözlerine ve uygun indirme
+                    bağlantılarına daha düzenli erişebilirsin.
+                  </p>
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  {accessItems.map((item) => (
+                    <div
+                      key={item}
+                      className="flex min-h-[82px] items-center rounded-[22px] border border-white/14 bg-white/8 px-4 py-4 backdrop-blur-[12px]"
+                    >
+                      <h2 className="text-sm font-semibold leading-6 text-white">
+                        {item}
+                      </h2>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/giris"
+                  className="pill-button accent !min-h-12 !w-full !justify-center !px-6"
+                >
+                  Giriş Yap
+                </Link>
+
+                <Link
+                  href="/sarkilarim"
+                  className="pill-button accent !min-h-12 !w-full !justify-center !px-6"
+                >
+                  Şarkılarım
+                </Link>
+              </div>
             </div>
-          </aside>
+          </section>
 
-          <section className="soft-card p-5 md:p-6">
-            <p className="section-eyebrow mb-2">Hesap Oluştur</p>
+          <section className="rounded-[34px] border border-white/35 bg-white/62 p-7 shadow-[0_22px_64px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:p-8">
+            <div className="mb-6 text-center">
+              <h2 className="text-[clamp(48px,5vw,76px)] font-semibold leading-none tracking-[-0.09em] text-[#4B232D]">
+                Kayıt ol
+              </h2>
+            </div>
 
-            <h2 className="font-serif text-4xl font-bold tracking-tighter text-(--burgundy) md:text-5xl">
-              Kayıt ol
-            </h2>
+            <form className="grid gap-4">
+              <div className="rounded-[30px] border border-white/42 bg-white/58 p-5 shadow-[0_12px_34px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      Adın
+                    </span>
 
-            <p className="mt-3 max-w-xl text-sm leading-6 text-[rgba(75,35,45,0.7)]">
-              Özel içerikler, şarkı sözleri ve indirme bağlantılarına erişmek
-              için ücretsiz bir hesap oluştur.
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                    Ad
+                    <input
+                      type="text"
+                      name="firstName"
+                      autoComplete="given-name"
+                      placeholder="Adını yaz"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
                   </label>
 
-                  <input
-                    name="ad"
-                    placeholder="Adın"
-                    required
-                    className="form-field"
-                  />
-                </div>
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      Soyadın
+                    </span>
 
-                <div>
-                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                    Soyad
+                    <input
+                      type="text"
+                      name="lastName"
+                      autoComplete="family-name"
+                      placeholder="Soyadını yaz"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
                   </label>
 
-                  <input
-                    name="soyad"
-                    placeholder="Soyadın"
-                    required
-                    className="form-field"
-                  />
-                </div>
-              </div>
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      Telefonun
+                    </span>
 
-              <div>
-                <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                  E-posta
-                </label>
-
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="ornek@mail.com"
-                  required
-                  className="form-field"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                  Telefon
-                </label>
-
-                <input
-                  name="telefon"
-                  type="tel"
-                  placeholder="+90 5xx xxx xx xx"
-                  required
-                  className="form-field"
-                />
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                    Şifre
+                    <input
+                      type="tel"
+                      name="phone"
+                      autoComplete="tel"
+                      placeholder="+90 5xx xxx xx xx"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
                   </label>
 
-                  <input
-                    name="sifre"
-                    type="password"
-                    placeholder="En az 8 karakter"
-                    required
-                    minLength={8}
-                    className="form-field"
-                  />
-                </div>
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      E-postan
+                    </span>
 
-                <div>
-                  <label className="mb-2 block text-[10px] font-extrabold uppercase tracking-widest text-[rgba(75,35,45,0.55)]">
-                    Şifre Tekrar
+                    <input
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      placeholder="ornek@mail.com"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
                   </label>
 
-                  <input
-                    name="sifreTekrar"
-                    type="password"
-                    placeholder="Şifreni tekrar yaz"
-                    required
-                    minLength={8}
-                    className="form-field"
-                  />
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      Şifren
+                    </span>
+
+                    <input
+                      type="password"
+                      name="password"
+                      autoComplete="new-password"
+                      placeholder="En az 8 karakter"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/64">
+                      Şifre tekrar
+                    </span>
+
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      autoComplete="new-password"
+                      placeholder="Şifreni tekrar yaz"
+                      className="min-h-12 rounded-[20px] border border-[#4B232D]/12 bg-white/88 px-5 text-base font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_10px_28px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,174,80,0.18)]"
+                    />
+                  </label>
                 </div>
               </div>
 
-              <div className="rounded-[25px] border border-[rgba(75,35,45,0.1)] bg-white/50 p-4">
-                <label className="flex items-start gap-3 text-sm leading-6 text-[rgba(75,35,45,0.72)]">
-                  <input type="checkbox" required className="mt-1" />
+              <div className="rounded-[24px] border border-white/42 bg-white/72 px-5 py-4 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
+                <label className="flex gap-3 text-sm leading-7 text-[#4B232D]/72">
+                  <input
+                    type="checkbox"
+                    name="terms"
+                    className="mt-1 h-4 w-4 rounded border-[#4B232D]/30 accent-[#4B232D]"
+                  />
                   <span>
                     Gizlilik politikasını ve kullanım koşullarını kabul
                     ediyorum.
                   </span>
                 </label>
 
-                <label className="mt-3 flex items-start gap-3 text-sm leading-6 text-[rgba(75,35,45,0.72)]">
-                  <input name="bildirimIzni" type="checkbox" className="mt-1" />
+                <label className="mt-2 flex gap-3 text-sm leading-7 text-[#4B232D]/72">
+                  <input
+                    type="checkbox"
+                    name="newsletter"
+                    className="mt-1 h-4 w-4 rounded border-[#4B232D]/30 accent-[#4B232D]"
+                  />
                   <span>
-                    Yeni şarkılar ve özel içerikler yayımlandığında e-posta almak
-                    istiyorum.
+                    Yeni şarkılar ve özel içerikler yayınlandığında e-posta
+                    almak istiyorum.
                   </span>
                 </label>
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
-                className="pill-button dark w-full"
+                className="min-h-14 rounded-full bg-[#4B232D] px-6 text-sm font-bold text-white shadow-[0_16px_36px_rgba(75,35,45,0.20)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36]"
               >
-                {loading ? "Kayıt oluşturuluyor..." : "Kayıt Ol"}
+                Hesap Oluştur
               </button>
-
-              {message && (
-                <p className="rounded-[25px] bg-(--mint-soft) px-4 py-3 text-sm text-(--burgundy)">
-                  {message}
-                </p>
-              )}
             </form>
 
-            <div className="mt-5 flex flex-wrap justify-between gap-3 text-sm font-bold text-(--burgundy)">
-              <Link href="/giris">Zaten hesabın var mı? Giriş yap</Link>
-              <Link href="/sarkilarim">Şarkılara dön</Link>
+            <div className="mt-5 flex flex-col gap-3 text-sm font-bold text-[#4B232D] sm:flex-row sm:items-center sm:justify-between">
+              <Link href="/giris" className="transition hover:text-[#F5AE50]">
+                Hesabın varsa giriş yap
+              </Link>
+
+              <Link
+                href="/sarkilarim"
+                className="transition hover:text-[#F5AE50]"
+              >
+                Şarkılara dön
+              </Link>
             </div>
           </section>
         </div>
