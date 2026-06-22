@@ -117,13 +117,12 @@ export default async function AdminCoversPage() {
                 Admin Ana Sayfa
               </Link>
 
-              <button
-                type="button"
-                disabled
-                className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-full bg-[#4B232D]/45 px-4 text-[11px] font-bold text-white md:text-xs"
-              >
-                Yeni Cover Ekle — Yakında
-              </button>
+              <Link
+  href="/admin/coverlar/yeni"
+  className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#4B232D] px-4 text-[11px] font-bold text-white shadow-[0_10px_22px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36] md:text-xs"
+>
+  Yeni Cover Ekle
+</Link>
             </div>
           </div>
 
