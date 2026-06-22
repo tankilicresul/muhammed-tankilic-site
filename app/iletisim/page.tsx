@@ -41,23 +41,23 @@ export default function ContactPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-7">
-        <section className="relative overflow-hidden rounded-[22px] border border-white/35 bg-white/66 px-3.5 py-4 shadow-[0_14px_38px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:rounded-[38px] md:px-8 md:py-8 lg:px-10 lg:py-9">
+      <section className="site-container pt-40 md:pt-12">
+        <section className="relative overflow-hidden rounded-[22px] border border-white/35 bg-white/66 px-3.5 py-4 shadow-[0_14px_38px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:rounded-[38px] md:px-10 md:py-10 lg:px-12 lg:py-11">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(189,235,232,0.22),transparent_34%),radial-gradient(circle_at_88%_12%,rgba(245,174,80,0.10),transparent_32%)]" />
 
-          <div className="relative mx-auto max-w-6xl">
+          <div className="relative mx-auto max-w-7xl">
             <header className="mx-auto text-center">
               <p className="section-eyebrow mb-0">İletişim</p>
             </header>
 
             <a
               href="mailto:muhammedtnklc@gmail.com"
-              className="mt-4 flex min-h-10 w-full items-center justify-center rounded-[16px] border border-[#4B232D]/10 bg-white/72 px-3 text-center text-[12px] font-medium tracking-[-0.025em] text-[#4B232D] shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:bg-white/80 hover:text-[#F5AE50] md:mt-5 md:min-h-14 md:rounded-[24px] md:px-6 md:text-lg"
+              className="mt-4 flex min-h-10 w-full items-center justify-center rounded-[16px] border border-[#4B232D]/10 bg-white/72 px-3 text-center text-[12px] font-medium tracking-[-0.025em] text-[#4B232D] shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:bg-white/80 hover:text-[#F5AE50] md:mt-7 md:min-h-14 md:rounded-[24px] md:px-6 md:text-lg"
             >
               muhammedtnklc@gmail.com
             </a>
 
-            <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-3">
+            <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-4">
               <Link
                 href="/"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] shadow-[0_10px_22px_rgba(75,35,45,0.10)] hover:-translate-y-0.5 hover:bg-[#f7bb67]`}
@@ -80,11 +80,11 @@ export default function ContactPage() {
               </Link>
             </div>
 
-            <ul className="mt-4 grid gap-2 text-[11.5px] leading-5 text-[#4B232D]/76 md:mt-7 md:grid-cols-3 md:gap-3 md:text-sm md:leading-7">
+            <ul className="mt-4 grid gap-2 text-[11.5px] leading-5 text-[#4B232D]/76 md:mt-8 md:grid-cols-3 md:gap-4 md:text-[13px] md:leading-7">
               {aboutPoints.map((item) => (
                 <li
                   key={item}
-                  className="grid min-h-[60px] grid-cols-[8px_1fr] items-start gap-2 rounded-[16px] border border-white/42 bg-white/60 px-3.5 py-3 shadow-[0_8px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px] md:min-h-[126px] md:grid-cols-[10px_1fr] md:gap-3 md:rounded-[24px] md:p-5"
+                  className="grid min-h-[60px] grid-cols-[8px_1fr] items-start gap-2 rounded-[16px] border border-white/42 bg-white/60 px-3.5 py-3 shadow-[0_8px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px] md:min-h-[118px] md:grid-cols-[10px_1fr] md:gap-3 md:rounded-[24px] md:px-5 md:py-5"
                 >
                   <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-[#F5AE50]" />
                   <span>{item}</span>
@@ -92,16 +92,16 @@ export default function ContactPage() {
               ))}
             </ul>
 
-            <div className="mt-3 grid grid-cols-2 gap-2 md:mt-5 md:gap-3">
+            <div className="mt-3 grid grid-cols-2 gap-2 md:mt-6 md:gap-4">
               {platformLinks.map((item) => (
                 <a
                   key={item.title}
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex min-h-[70px] flex-col items-center justify-between rounded-[16px] border border-white/42 bg-white/68 p-2.5 text-center shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:-translate-y-0.5 hover:bg-white/78 md:min-h-[112px] md:rounded-[24px] md:p-5"
+                  className="group flex min-h-[70px] flex-col items-center justify-between rounded-[16px] border border-white/42 bg-white/68 p-2.5 text-center shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:-translate-y-0.5 hover:bg-white/78 md:min-h-[118px] md:rounded-[24px] md:p-5"
                 >
-                  <h2 className="w-full text-center text-[14px] font-semibold leading-none tracking-[-0.045em] text-[#4B232D] md:text-[clamp(24px,2.25vw,32px)]">
+                  <h2 className="w-full text-center text-[14px] font-semibold leading-none tracking-[-0.045em] text-[#4B232D] md:text-[28px]">
                     {item.title}
                   </h2>
 

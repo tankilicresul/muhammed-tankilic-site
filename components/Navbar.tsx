@@ -28,7 +28,7 @@ export default function Navbar() {
                   alt="Muhammed Tankılıç"
                   fill
                   sizes="48px"
-                  className="brand-mark-image"
+                  className="brand-mark-image scale-[1.24]"
                   priority
                 />
               </span>
@@ -52,7 +52,7 @@ export default function Navbar() {
                   alt="Muhammed Tankılıç"
                   fill
                   sizes="36px"
-                  className="object-cover"
+                  className="object-cover scale-[1.24]"
                   priority
                 />
               </span>
