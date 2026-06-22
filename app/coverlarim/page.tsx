@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Coverlarım | Muhammed Tankılıç",
@@ -8,16 +9,30 @@ export const metadata: Metadata = {
     "YouTube ve Instagram üzerinden paylaştığım cover yorumlarım ve kısa performanslarım.",
 };
 
-const covers = [
-  {
-    slug: "pela-dur",
-    title: "Pela Dur",
-    artist: "Muhammed Tankılıç",
-    description: "YouTube kanalımda paylaştığım akustik gitar cover yorumum.",
-    youtubeUrl: "https://youtu.be/-eXQX6gigvU?si=XKi-bIJPd5X5BDo_",
-    youtubeEmbedUrl: "https://www.youtube.com/embed/-eXQX6gigvU",
-  },
-];
+type CoverRow = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  release_status: "draft" | "published" | "hidden";
+  youtube_url: string | null;
+  youtube_embed_url: string | null;
+  instagram_url: string | null;
+  sort_order: number;
+  published_at: string | null;
+  created_at: string;
+};
+
+type PublicCover = {
+  id: string;
+  slug: string;
+  title: string;
+  artist: string;
+  description: string;
+  youtubeUrl: string | null;
+  youtubeEmbedUrl: string | null;
+  instagramUrl: string | null;
+};
 
 const youtubeChannelUrl = "https://www.youtube.com/@Muhammedtanklc";
 
@@ -27,24 +42,99 @@ const mobileButtonClass =
 const desktopButtonClass =
   "rounded-full border border-[#4B232D]/12 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5";
 
-function MobileCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
+function getYoutubeVideoId(url: string | null) {
+  if (!url) {
+    return null;
+  }
+
+  const trimmedUrl = url.trim();
+
+  if (!trimmedUrl) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(trimmedUrl);
+
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      return parsedUrl.pathname.replace("/", "") || null;
+    }
+
+    const videoId = parsedUrl.searchParams.get("v");
+
+    if (videoId) {
+      return videoId;
+    }
+
+    if (parsedUrl.pathname.includes("/embed/")) {
+      return parsedUrl.pathname.split("/embed/")[1]?.split("/")[0] || null;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function getYoutubeEmbedUrl(
+  youtubeUrl: string | null,
+  youtubeEmbedUrl: string | null,
+) {
+  if (youtubeEmbedUrl) {
+    return youtubeEmbedUrl;
+  }
+
+  const videoId = getYoutubeVideoId(youtubeUrl);
+
+  if (!videoId) {
+    return null;
+  }
+
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
+function mapCoverToPublicCover(cover: CoverRow): PublicCover {
+  return {
+    id: cover.id,
+    slug: cover.slug,
+    title: cover.title,
+    artist: "Muhammed Tankılıç",
+    description:
+      cover.description ??
+      "YouTube kanalımda paylaştığım cover yorumlarımdan biri.",
+    youtubeUrl: cover.youtube_url,
+    youtubeEmbedUrl: getYoutubeEmbedUrl(
+      cover.youtube_url,
+      cover.youtube_embed_url,
+    ),
+    instagramUrl: cover.instagram_url,
+  };
+}
+
+function MobileCoverPanel({ cover }: { cover: PublicCover }) {
   return (
     <article className="grid gap-2.5 overflow-hidden rounded-[24px] border border-white/35 bg-white/60 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
-      <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#4B232D]/88 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
-        <iframe
-          src={cover.youtubeEmbedUrl}
-          title={`${cover.title} YouTube cover videosu`}
-          className="block aspect-video w-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          loading="lazy"
-        />
-      </div>
+      {cover.youtubeEmbedUrl ? (
+        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#4B232D]/88 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
+          <iframe
+            src={cover.youtubeEmbedUrl}
+            title={`${cover.title} YouTube cover videosu`}
+            className="block aspect-video w-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+      ) : null}
 
       <div className="rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
         <p className="section-eyebrow">Cover Notu</p>
 
-        <p className="mt-2 text-[12px] leading-6 text-[#4B232D]/72">
+        <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
+          {cover.title}
+        </h2>
+
+        <p className="mt-3 text-[12px] leading-6 text-[#4B232D]/72">
           {cover.description}
         </p>
       </div>
@@ -55,14 +145,22 @@ function MobileCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
         </p>
 
         <div className="mt-3 grid grid-cols-3 gap-2">
-          <a
-            href={cover.youtubeUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
-          >
-            YouTube
-          </a>
+          {cover.youtubeUrl ? (
+            <a
+              href={cover.youtubeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
+            >
+              YouTube
+            </a>
+          ) : (
+            <span
+              className={`${mobileButtonClass} cursor-not-allowed bg-white/45 opacity-60`}
+            >
+              YouTube
+            </span>
+          )}
 
           <a
             href={youtubeChannelUrl}
@@ -73,10 +171,7 @@ function MobileCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
             Kanalım
           </a>
 
-          <Link
-            href="/giris"
-            className={`${mobileButtonClass} bg-[#FFF4BC]/88`}
-          >
+          <Link href="/giris" className={`${mobileButtonClass} bg-[#FFF4BC]/88`}>
             İndir
           </Link>
         </div>
@@ -85,7 +180,7 @@ function MobileCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
   );
 }
 
-function DesktopCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
+function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
   return (
     <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
       <div className="grid gap-5 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
@@ -106,16 +201,22 @@ function DesktopCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
         </div>
 
         <div className="flex min-h-[254px] flex-col gap-3">
-          <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
-            <iframe
-              src={cover.youtubeEmbedUrl}
-              title={`${cover.title} YouTube cover videosu`}
-              className="block aspect-video w-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
+          {cover.youtubeEmbedUrl ? (
+            <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+              <iframe
+                src={cover.youtubeEmbedUrl}
+                title={`${cover.title} YouTube cover videosu`}
+                className="block aspect-video w-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div className="flex aspect-video items-center justify-center rounded-[26px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+              Bu cover için henüz video bağlantısı eklenmedi.
+            </div>
+          )}
 
           <div className="flex flex-1 flex-col justify-center rounded-[26px] border border-white/24 bg-white/50 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/56">
@@ -123,14 +224,27 @@ function DesktopCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <a
-                href={cover.youtubeUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
-              >
-                YouTube’da İzle
-              </a>
+              {cover.youtubeUrl ? (
+                <a
+                  href={cover.youtubeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
+                >
+                  YouTube’da İzle
+                </a>
+              ) : null}
+
+              {cover.instagramUrl ? (
+                <a
+                  href={cover.instagramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
+                >
+                  Instagram’da İzle
+                </a>
+              ) : null}
 
               <a
                 href={youtubeChannelUrl}
@@ -155,7 +269,7 @@ function DesktopCoverPanel({ cover }: { cover: (typeof covers)[number] }) {
   );
 }
 
-function CoverPanel({ cover }: { cover: (typeof covers)[number] }) {
+function CoverPanel({ cover }: { cover: PublicCover }) {
   return (
     <>
       <MobileCoverPanel cover={cover} />
@@ -164,7 +278,33 @@ function CoverPanel({ cover }: { cover: (typeof covers)[number] }) {
   );
 }
 
-export default function CoverlarimPage() {
+export default async function CoverlarimPage() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("covers")
+    .select(
+      `
+        id,
+        slug,
+        title,
+        description,
+        release_status,
+        youtube_url,
+        youtube_embed_url,
+        instagram_url,
+        sort_order,
+        published_at,
+        created_at
+      `,
+    )
+    .eq("release_status", "published")
+    .order("sort_order", { ascending: true })
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  const covers = ((data ?? []) as CoverRow[]).map(mapCoverToPublicCover);
+
   return (
     <main className="page-shell">
       <Navbar />
@@ -183,11 +323,33 @@ export default function CoverlarimPage() {
           </Link>
         </div>
 
-        <div className="grid gap-4 md:gap-5">
-          {covers.map((cover) => (
-            <CoverPanel key={cover.slug} cover={cover} />
-          ))}
-        </div>
+        {error ? (
+          <div className="rounded-[28px] border border-red-200/70 bg-red-50/80 p-5 text-[12px] leading-6 text-red-800 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
+            <p className="font-bold">Coverlar şu anda yüklenemedi.</p>
+            <p className="mt-1">{error.message}</p>
+          </div>
+        ) : null}
+
+        {!error && covers.length === 0 ? (
+          <div className="rounded-[28px] border border-white/35 bg-white/60 p-6 text-center shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
+            <p className="text-2xl font-semibold tracking-[-0.06em] text-[#4B232D]">
+              Henüz yayında cover yok.
+            </p>
+
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#4B232D]/70">
+              Yeni cover yorumlarımı YouTube ve Instagram’da paylaştıkça bu
+              sayfada listeleyeceğim.
+            </p>
+          </div>
+        ) : null}
+
+        {!error && covers.length > 0 ? (
+          <div className="grid gap-4 md:gap-5">
+            {covers.map((cover) => (
+              <CoverPanel key={cover.id} cover={cover} />
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <footer className="site-container site-footer">
