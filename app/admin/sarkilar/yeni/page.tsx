@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -18,12 +18,12 @@ type NewSongPageProps = {
   }>;
 };
 
-function normalizeTextValue(value: FormDataEntryValue | null) {
+function textOrNull(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
   return text.length > 0 ? text : null;
 }
 
-function normalizeRequiredTextValue(value: FormDataEntryValue | null) {
+function requiredText(value: FormDataEntryValue | null) {
   return String(value ?? "").trim();
 }
 
@@ -58,14 +58,9 @@ function normalizeSlug(slug: string, title: string) {
     .replace(/^-|-$/g, "");
 }
 
-function normalizeNumberValue(value: FormDataEntryValue | null) {
-  const numberValue = Number(String(value ?? "0"));
-
-  if (Number.isNaN(numberValue)) {
-    return 0;
-  }
-
-  return numberValue;
+function numberOrZero(value: FormDataEntryValue | null) {
+  const parsedValue = Number(String(value ?? "0"));
+  return Number.isNaN(parsedValue) ? 0 : parsedValue;
 }
 
 function normalizePublishedAt(
@@ -102,16 +97,10 @@ async function createSongAction(formData: FormData) {
     redirect("/hesabim");
   }
 
-  const title = normalizeRequiredTextValue(formData.get("title"));
-  const slug = normalizeSlug(
-    normalizeRequiredTextValue(formData.get("slug")),
-    title,
-  );
-  const artist =
-    normalizeRequiredTextValue(formData.get("artist")) || "Muhammed Tankılıç";
-  const releaseStatus = normalizeRequiredTextValue(
-    formData.get("release_status"),
-  );
+  const title = requiredText(formData.get("title"));
+  const slug = normalizeSlug(requiredText(formData.get("slug")), title);
+  const artist = requiredText(formData.get("artist")) || "Muhammed Tankılıç";
+  const releaseStatus = requiredText(formData.get("release_status"));
 
   if (!title) {
     redirectWithError("Başlık zorunludur.");
@@ -131,17 +120,17 @@ async function createSongAction(formData: FormData) {
     title,
     slug,
     artist,
-    description: normalizeTextValue(formData.get("description")),
+    description: textOrNull(formData.get("description")),
     release_status: releaseStatus,
-    spotify_url: normalizeTextValue(formData.get("spotify_url")),
-    spotify_embed_url: normalizeTextValue(formData.get("spotify_embed_url")),
-    apple_music_url: normalizeTextValue(formData.get("apple_music_url")),
-    youtube_url: normalizeTextValue(formData.get("youtube_url")),
-    youtube_embed_url: normalizeTextValue(formData.get("youtube_embed_url")),
-    cover_image_path: normalizeTextValue(formData.get("cover_image_path")),
-    lyrics: normalizeTextValue(formData.get("lyrics")),
-    download_file_path: normalizeTextValue(formData.get("download_file_path")),
-    sort_order: normalizeNumberValue(formData.get("sort_order")),
+    spotify_url: textOrNull(formData.get("spotify_url")),
+    spotify_embed_url: textOrNull(formData.get("spotify_embed_url")),
+    apple_music_url: textOrNull(formData.get("apple_music_url")),
+    youtube_url: textOrNull(formData.get("youtube_url")),
+    youtube_embed_url: textOrNull(formData.get("youtube_embed_url")),
+    cover_image_path: textOrNull(formData.get("cover_image_path")),
+    lyrics: textOrNull(formData.get("lyrics")),
+    download_file_path: textOrNull(formData.get("download_file_path")),
+    sort_order: numberOrZero(formData.get("sort_order")),
     published_at: normalizePublishedAt(
       releaseStatus,
       formData.get("published_at"),
@@ -253,7 +242,7 @@ export default async function AdminNewSongPage({
                 <input
                   name="artist"
                   defaultValue="Muhammed Tankılıç"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
                 />
               </label>
 
@@ -280,7 +269,7 @@ export default async function AdminNewSongPage({
                   name="sort_order"
                   type="number"
                   defaultValue="0"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
                 />
               </label>
             </div>
@@ -386,7 +375,7 @@ export default async function AdminNewSongPage({
                 <input
                   name="published_at"
                   type="date"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
                 />
               </label>
             </div>
