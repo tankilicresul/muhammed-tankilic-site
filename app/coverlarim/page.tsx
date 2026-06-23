@@ -37,7 +37,7 @@ type PublicCover = {
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 
 const mobileButtonClass =
-  "inline-flex min-h-9 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
 
 const desktopButtonClass =
   "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5";
@@ -113,45 +113,9 @@ function mapCoverToPublicCover(cover: CoverRow): PublicCover {
 
 function MobileCoverPanel({ cover }: { cover: PublicCover }) {
   return (
-    <article className="grid gap-2.5 overflow-hidden rounded-[24px] border border-white/35 bg-white/60 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
-      <div className="flex min-h-[300px] flex-col justify-between rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
-        <div>
-          <p className="section-eyebrow">Coverlarım</p>
-
-          <h2 className="mt-3 text-[34px] font-semibold leading-[0.94] tracking-[-0.075em] text-[#4B232D]">
-            {cover.title}
-          </h2>
-
-          <p className="mt-3 text-[12px] font-medium text-[#4B232D]/64">
-            {cover.artist}
-          </p>
-
-          <p className="mt-5 text-[12px] leading-6 text-[#4B232D]/72">
-            {cover.description}
-          </p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-2">
-          <a
-            href={youtubeChannelUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={`${mobileButtonClass} bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
-          >
-            YouTube Kanalım
-          </a>
-
-          <Link
-            href="/giris"
-            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
-          >
-            Siteden İndir
-          </Link>
-        </div>
-      </div>
-
+    <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
       {cover.youtubeEmbedUrl ? (
-        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#4B232D]/88 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
+        <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#4B232D]/88 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
           <iframe
             src={cover.youtubeEmbedUrl}
             title={`${cover.title} YouTube cover videosu`}
@@ -162,10 +126,34 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
           />
         </div>
       ) : (
-        <div className="flex aspect-video items-center justify-center rounded-[20px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
+        <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
           Bu cover için henüz video bağlantısı eklenmedi.
         </div>
       )}
+
+      <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
+        <p className="text-[12px] leading-6 text-[#4B232D]/74">
+          {cover.description}
+        </p>
+
+        <div className="mt-3 grid grid-cols-[1fr_88px] gap-2">
+          <a
+            href={youtubeChannelUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={`${mobileButtonClass} bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
+          >
+            ← YouTube Kanalım
+          </a>
+
+          <Link
+            href="/giris"
+            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
+          >
+            İndir
+          </Link>
+        </div>
+      </div>
     </article>
   );
 }
@@ -306,7 +294,7 @@ export default async function CoverlarimPage() {
         ) : null}
 
         {!error && covers.length > 0 ? (
-          <div className="grid gap-4 md:gap-5">
+          <div className="grid gap-3 md:gap-5">
             {covers.map((cover) => (
               <CoverPanel key={cover.id} cover={cover} />
             ))}
