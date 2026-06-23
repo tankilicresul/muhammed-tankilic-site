@@ -14,7 +14,7 @@ function getPlatform(song: Song, name: MusicPlatform["name"]) {
 }
 
 const mobileActionClass =
-  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-4 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
 
 const desktopActionClass =
   "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
@@ -73,42 +73,12 @@ function MobileSongPanel({ song }: { song: Song }) {
 
   const hasYoutube = Boolean(song.youtubeEmbedUrl);
   const hasSpotify = Boolean(song.spotifyEmbedUrl);
+  const hasDescription = Boolean(song.description?.trim());
 
   return (
-    <article className="grid gap-2.5 overflow-hidden rounded-[24px] border border-white/35 bg-white/60 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
-      <div className="flex min-h-[210px] flex-col justify-between rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
-        <div>
-          <p className="section-eyebrow">Şarkılarım</p>
-
-          <div className="mt-3 flex flex-wrap items-end gap-x-2 gap-y-1">
-            <h2 className="text-[34px] font-semibold leading-[0.94] tracking-[-0.075em] text-[#4B232D]">
-              {song.title}
-            </h2>
-
-            <p className="pb-1 text-[12px] font-medium text-[#4B232D]/64">
-              {song.artist}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          <Link
-            href={`/sarkilarim/${song.slug}`}
-            className={`${mobileActionClass} bg-white/76 hover:bg-white/90`}
-          >
-            Detaylar
-          </Link>
-
-          <PlatformAction href={spotify?.url} label="Spotify" isMobile />
-
-          <PlatformAction href={appleMusic?.url} label="Apple Music" isMobile />
-
-          <DownloadAction isMobile />
-        </div>
-      </div>
-
+    <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
       {hasSpotify ? (
-        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#535353] shadow-[0_14px_38px_rgba(75,35,45,0.10)]">
+        <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#535353] shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
           <iframe
             src={song.spotifyEmbedUrl}
             width="100%"
@@ -122,7 +92,7 @@ function MobileSongPanel({ song }: { song: Song }) {
       ) : null}
 
       {!hasSpotify && hasYoutube ? (
-        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#4B232D]/88 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
+        <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#4B232D]/88 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
           <iframe
             src={song.youtubeEmbedUrl}
             title={`${song.title} YouTube videosu`}
@@ -133,6 +103,35 @@ function MobileSongPanel({ song }: { song: Song }) {
           />
         </div>
       ) : null}
+
+      {!hasSpotify && !hasYoutube ? (
+        <div className="flex min-h-[120px] items-center justify-center rounded-[18px] border border-white/24 bg-white/58 p-4 text-center shadow-[0_12px_30px_rgba(75,35,45,0.08)]">
+          <p className="text-[12px] font-bold leading-6 text-[#4B232D]/70">
+            Dinleme bağlantıları yakında.
+          </p>
+        </div>
+      ) : null}
+
+      <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
+        {hasDescription ? (
+          <p className="text-[12px] leading-6 text-[#4B232D]/74">
+            {song.description}
+          </p>
+        ) : null}
+
+        <div className={`${hasDescription ? "mt-3" : ""} grid grid-cols-3 gap-1.5`}>
+          <Link
+            href={`/sarkilarim/${song.slug}`}
+            className={`${mobileActionClass} bg-white/76 hover:bg-white/90`}
+          >
+            Detaylar
+          </Link>
+
+          <PlatformAction href={spotify?.url} label="Spotify" isMobile />
+
+          <PlatformAction href={appleMusic?.url} label="Apple Music" isMobile />
+        </div>
+      </div>
     </article>
   );
 }
@@ -248,7 +247,7 @@ export default function SarkilarimPage() {
           </Link>
         </div>
 
-        <div className="grid gap-4 md:gap-5">
+        <div className="grid gap-3 md:gap-5">
           {publishedSongs.map((song) => (
             <SongPanel key={song.slug} song={song} />
           ))}
