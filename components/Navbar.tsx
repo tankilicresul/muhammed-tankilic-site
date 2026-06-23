@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AdminLogoHotspot from "@/components/AdminLogoHotspot";
 import AuthButtons from "@/components/AuthButtons";
 
 const navItems = [
@@ -21,8 +22,8 @@ export default function Navbar() {
       <div className="site-container">
         <nav className="navbar-shell" aria-label="Ana menü">
           <div className="hidden w-full items-center justify-between gap-3 sm:flex sm:w-auto">
-            <Link href="/" className="brand-link" aria-label="Ana sayfa">
-              <span className="brand-mark">
+            <div className="brand-link" aria-label="Muhammed Tankılıç">
+              <span className="brand-mark relative">
                 <Image
                   src="/icon-512.png"
                   alt="Muhammed Tankılıç"
@@ -31,21 +32,19 @@ export default function Navbar() {
                   className="brand-mark-image scale-[1.24]"
                   priority
                 />
+
+                <AdminLogoHotspot />
               </span>
 
-              <span className="brand-copy">
+              <Link href="/" className="brand-copy" aria-label="Ana sayfa">
                 <strong>Muhammed Tankılıç</strong>
                 <small>Müzik · Sözler · Hikâyeler</small>
-              </span>
-            </Link>
+              </Link>
+            </div>
           </div>
 
           <div className="flex w-full items-center justify-between gap-2 sm:hidden">
-            <Link
-              href="/"
-              className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden"
-              aria-label="Ana sayfa"
-            >
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
               <span className="relative h-9 w-9 flex-none overflow-hidden rounded-[13px] bg-[#BDEBE8]">
                 <Image
                   src="/icon-512.png"
@@ -55,17 +54,23 @@ export default function Navbar() {
                   className="object-cover scale-[1.24]"
                   priority
                 />
+
+                <AdminLogoHotspot />
               </span>
 
-              <span className="flex min-w-0 flex-col leading-none">
+              <Link
+                href="/"
+                className="flex min-w-0 flex-col leading-none"
+                aria-label="Ana sayfa"
+              >
                 <strong className="truncate text-[12px] font-bold tracking-[-0.035em] text-[#4B232D]">
                   Muhammed Tankılıç
                 </strong>
                 <small className="mt-1 truncate text-[9px] font-normal text-[#4B232D]/58">
                   Müzik · Sözler · Hikâyeler
                 </small>
-              </span>
-            </Link>
+              </Link>
+            </div>
 
             <div className="flex flex-none items-center gap-1.5">
               <AuthButtons />
