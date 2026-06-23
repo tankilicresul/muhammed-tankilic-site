@@ -34,13 +34,13 @@ type PublicCover = {
   instagramUrl: string | null;
 };
 
-const youtubeChannelUrl = "https://www.youtube.com/@Muhammedtanklc";
+const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 
 const mobileButtonClass =
   "inline-flex min-h-9 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
 
 const desktopButtonClass =
-  "rounded-full border border-[#4B232D]/12 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5";
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -114,6 +114,42 @@ function mapCoverToPublicCover(cover: CoverRow): PublicCover {
 function MobileCoverPanel({ cover }: { cover: PublicCover }) {
   return (
     <article className="grid gap-2.5 overflow-hidden rounded-[24px] border border-white/35 bg-white/60 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
+      <div className="flex min-h-[300px] flex-col justify-between rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
+        <div>
+          <p className="section-eyebrow">Coverlarım</p>
+
+          <h2 className="mt-3 text-[34px] font-semibold leading-[0.94] tracking-[-0.075em] text-[#4B232D]">
+            {cover.title}
+          </h2>
+
+          <p className="mt-3 text-[12px] font-medium text-[#4B232D]/64">
+            {cover.artist}
+          </p>
+
+          <p className="mt-5 text-[12px] leading-6 text-[#4B232D]/72">
+            {cover.description}
+          </p>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-2">
+          <a
+            href={youtubeChannelUrl}
+            target="_blank"
+            rel="noreferrer"
+            className={`${mobileButtonClass} bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
+          >
+            YouTube Kanalım
+          </a>
+
+          <Link
+            href="/giris"
+            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
+          >
+            Siteden İndir
+          </Link>
+        </div>
+      </div>
+
       {cover.youtubeEmbedUrl ? (
         <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#4B232D]/88 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
           <iframe
@@ -125,145 +161,71 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
             loading="lazy"
           />
         </div>
-      ) : null}
-
-      <div className="rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
-        <p className="section-eyebrow">Cover Notu</p>
-
-        <h2 className="mt-2 text-3xl font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
-          {cover.title}
-        </h2>
-
-        <p className="mt-3 text-[12px] leading-6 text-[#4B232D]/72">
-          {cover.description}
-        </p>
-      </div>
-
-      <div className="rounded-[20px] border border-white/24 bg-white/52 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
-        <p className="text-center text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/56">
-          İzleme Linkleri
-        </p>
-
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {cover.youtubeUrl ? (
-            <a
-              href={cover.youtubeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
-            >
-              YouTube
-            </a>
-          ) : (
-            <span
-              className={`${mobileButtonClass} cursor-not-allowed bg-white/45 opacity-60`}
-            >
-              YouTube
-            </span>
-          )}
-
-          <a
-            href={youtubeChannelUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
-          >
-            Kanalım
-          </a>
-
-          <Link href="/giris" className={`${mobileButtonClass} bg-[#FFF4BC]/88`}>
-            İndir
-          </Link>
+      ) : (
+        <div className="flex aspect-video items-center justify-center rounded-[20px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_14px_38px_rgba(75,35,45,0.12)]">
+          Bu cover için henüz video bağlantısı eklenmedi.
         </div>
-      </div>
+      )}
     </article>
   );
 }
 
 function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
   return (
-    <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-      <div className="grid gap-5 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-        <div className="flex min-h-[254px] flex-col justify-center rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-6">
-          <p className="section-eyebrow">Coverlarım</p>
+    <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
+      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+        <div className="flex h-full min-h-[312px] flex-col justify-between rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-7 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+          <div>
+            <p className="section-eyebrow">Coverlarım</p>
 
-          <h2 className="text-[clamp(38px,5vw,64px)] font-semibold leading-[0.94] tracking-[-0.08em] text-[#4B232D]">
-            {cover.title}
-          </h2>
+            <h2 className="mt-4 max-w-[12ch] break-words text-[clamp(38px,4vw,58px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+              {cover.title}
+            </h2>
 
-          <p className="mt-3 text-sm font-medium text-[#4B232D]/64">
-            {cover.artist}
-          </p>
-
-          <p className="mt-5 max-w-xl text-sm leading-7 text-[#4B232D]/70">
-            {cover.description}
-          </p>
-        </div>
-
-        <div className="flex min-h-[254px] flex-col gap-3">
-          {cover.youtubeEmbedUrl ? (
-            <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
-              <iframe
-                src={cover.youtubeEmbedUrl}
-                title={`${cover.title} YouTube cover videosu`}
-                className="block aspect-video w-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-              />
-            </div>
-          ) : (
-            <div className="flex aspect-video items-center justify-center rounded-[26px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
-              Bu cover için henüz video bağlantısı eklenmedi.
-            </div>
-          )}
-
-          <div className="flex flex-1 flex-col justify-center rounded-[26px] border border-white/24 bg-white/50 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/56">
-              İzleme Linkleri
+            <p className="mt-4 text-sm font-medium text-[#4B232D]/64">
+              {cover.artist}
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              {cover.youtubeUrl ? (
-                <a
-                  href={cover.youtubeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
-                >
-                  YouTube’da İzle
-                </a>
-              ) : null}
+            <p className="mt-6 max-w-[36ch] text-sm leading-7 text-[#4B232D]/70">
+              {cover.description}
+            </p>
+          </div>
 
-              {cover.instagramUrl ? (
-                <a
-                  href={cover.instagramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
-                >
-                  Instagram’da İzle
-                </a>
-              ) : null}
+          <div className="mt-7 grid max-w-[390px] grid-cols-2 gap-3">
+            <a
+              href={youtubeChannelUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={`${desktopButtonClass} bg-[#FFF4BC]/86 hover:bg-[#FFF4BC]`}
+            >
+              YouTube Kanalım
+            </a>
 
-              <a
-                href={youtubeChannelUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={`${desktopButtonClass} bg-[#FFF4BC]/86`}
-              >
-                YouTube Kanalım
-              </a>
-
-              <Link
-                href="/giris"
-                className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
-              >
-                Siteden İndir
-              </Link>
-            </div>
+            <Link
+              href="/giris"
+              className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
+            >
+              Siteden İndir
+            </Link>
           </div>
         </div>
+
+        {cover.youtubeEmbedUrl ? (
+          <div className="overflow-hidden rounded-[28px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+            <iframe
+              src={cover.youtubeEmbedUrl}
+              title={`${cover.title} YouTube cover videosu`}
+              className="block aspect-video w-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+        ) : (
+          <div className="flex aspect-video items-center justify-center rounded-[28px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+            Bu cover için henüz video bağlantısı eklenmedi.
+          </div>
+        )}
       </div>
     </article>
   );

@@ -13,37 +13,102 @@ function getPlatform(song: Song, name: MusicPlatform["name"]) {
   return song.platforms.find((platform) => platform.name === name);
 }
 
-function getPlatformLabel(platform: MusicPlatform) {
-  if (platform.name === "Spotify") return "Spotify";
-  if (platform.name === "Apple Music") return "Apple Music";
-  return "YouTube";
+const mobileActionClass =
+  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-4 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+
+const desktopActionClass =
+  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+
+function PlatformAction({
+  href,
+  label,
+  isHighlighted = false,
+  isMobile = false,
+}: {
+  href?: string;
+  label: string;
+  isHighlighted?: boolean;
+  isMobile?: boolean;
+}) {
+  const className = `${isMobile ? mobileActionClass : desktopActionClass} ${
+    isHighlighted
+      ? "bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]"
+      : "bg-white/76 hover:bg-white/90"
+  }`;
+
+  if (!href) {
+    return (
+      <span
+        className={`${className} cursor-not-allowed opacity-45 hover:translate-y-0`}
+        aria-disabled="true"
+      >
+        {label}
+      </span>
+    );
+  }
+
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className={className}>
+      {label}
+    </a>
+  );
 }
 
-function PlatformButton({ platform }: { platform: MusicPlatform }) {
+function DownloadAction({ isMobile = false }: { isMobile?: boolean }) {
   return (
-    <a
-      href={platform.url}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-flex min-h-9 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90 md:w-auto md:min-h-10 md:px-4 md:text-[12px]"
+    <Link
+      href="/giris"
+      className={`${
+        isMobile ? mobileActionClass : desktopActionClass
+      } bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
     >
-      {getPlatformLabel(platform)}
-    </a>
+      İndir
+    </Link>
   );
 }
 
 function MobileSongPanel({ song }: { song: Song }) {
   const spotify = getPlatform(song, "Spotify");
   const appleMusic = getPlatform(song, "Apple Music");
-  const youtube = getPlatform(song, "YouTube");
 
   const hasYoutube = Boolean(song.youtubeEmbedUrl);
   const hasSpotify = Boolean(song.spotifyEmbedUrl);
 
   return (
     <article className="grid gap-2.5 overflow-hidden rounded-[24px] border border-white/35 bg-white/60 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
+      <div className="flex min-h-[210px] flex-col justify-between rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
+        <div>
+          <p className="section-eyebrow">Şarkılarım</p>
+
+          <div className="mt-3 flex flex-wrap items-end gap-x-2 gap-y-1">
+            <h2 className="text-[34px] font-semibold leading-[0.94] tracking-[-0.075em] text-[#4B232D]">
+              {song.title}
+            </h2>
+
+            <p className="pb-1 text-[12px] font-medium text-[#4B232D]/64">
+              {song.artist}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <Link
+            href={`/sarkilarim/${song.slug}`}
+            className={`${mobileActionClass} bg-white/76 hover:bg-white/90`}
+          >
+            Detaylar
+          </Link>
+
+          <PlatformAction href={spotify?.url} label="Spotify" isMobile />
+
+          <PlatformAction href={appleMusic?.url} label="Apple Music" isMobile />
+
+          <DownloadAction isMobile />
+        </div>
+      </div>
+
       {hasSpotify ? (
-        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-white/20 shadow-[0_14px_38px_rgba(75,35,45,0.10)]">
+        <div className="overflow-hidden rounded-[20px] border border-white/24 bg-[#535353] shadow-[0_14px_38px_rgba(75,35,45,0.10)]">
           <iframe
             src={song.spotifyEmbedUrl}
             width="100%"
@@ -68,42 +133,6 @@ function MobileSongPanel({ song }: { song: Song }) {
           />
         </div>
       ) : null}
-
-      <div className="rounded-[20px] border border-[#4B232D]/10 bg-white/54 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px]">
-        <p className="section-eyebrow">Şarkı Notu</p>
-
-        <p className="mt-2 text-[12px] leading-6 text-[#4B232D]/72">
-          {song.description}
-        </p>
-      </div>
-
-      <div className="rounded-[20px] border border-white/24 bg-white/52 p-3.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
-        <p className="text-center text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/56">
-          Dinleme Linkleri
-        </p>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <Link
-            href={`/sarkilarim/${song.slug}`}
-            className="inline-flex min-h-9 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
-          >
-            Şarkı Detayı
-          </Link>
-
-          {spotify ? <PlatformButton platform={spotify} /> : null}
-
-          {appleMusic ? <PlatformButton platform={appleMusic} /> : null}
-
-          {youtube ? <PlatformButton platform={youtube} /> : null}
-
-          <Link
-            href="/giris"
-            className="inline-flex min-h-9 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-[#FFF4BC]/88 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5"
-          >
-            Siteden İndir
-          </Link>
-        </div>
-      </div>
     </article>
   );
 }
@@ -111,97 +140,81 @@ function MobileSongPanel({ song }: { song: Song }) {
 function DesktopSongPanel({ song }: { song: Song }) {
   const spotify = getPlatform(song, "Spotify");
   const appleMusic = getPlatform(song, "Apple Music");
-  const youtube = getPlatform(song, "YouTube");
 
   const hasYoutube = Boolean(song.youtubeEmbedUrl);
   const hasSpotify = Boolean(song.spotifyEmbedUrl);
 
   return (
-    <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-6 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-      <div className="grid gap-5 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-        <div className="flex min-h-[254px] flex-col justify-center rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-6">
-          <p className="section-eyebrow">Şarkılarım</p>
+    <article className="hidden overflow-hidden rounded-[32px] border border-white/35 bg-white/56 p-4 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
+      <div className="grid gap-4 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
+        <div className="flex h-full min-h-[152px] flex-col justify-between rounded-[26px] border border-[#4B232D]/10 bg-white/48 p-5 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+          <div>
+            <p className="section-eyebrow">Şarkılarım</p>
 
-          <h2 className="text-[clamp(38px,5vw,64px)] font-semibold leading-[0.94] tracking-[-0.08em] text-[#4B232D]">
-            {song.title}
-          </h2>
+            <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
+              <h2 className="text-[clamp(34px,3vw,44px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+                {song.title}
+              </h2>
 
-          <p className="mt-3 text-sm font-medium text-[#4B232D]/64">
-            {song.artist}
-          </p>
+              <p className="pb-1.5 text-sm font-medium text-[#4B232D]/64">
+                {song.artist}
+              </p>
+            </div>
+          </div>
 
-          <p className="mt-5 max-w-xl text-sm leading-7 text-[#4B232D]/70">
-            {song.description}
-          </p>
-
-          <div className="mt-6">
+          <div className="mt-5 flex flex-nowrap items-center gap-2">
             <Link
               href={`/sarkilarim/${song.slug}`}
-              className="inline-flex rounded-full border border-[#4B232D]/12 bg-white/72 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
+              className={`${desktopActionClass} bg-white/76 hover:bg-white/90`}
             >
-              Şarkı Detayı
+              Detaylar
             </Link>
+
+            <PlatformAction href={spotify?.url} label="Spotify" />
+
+            <PlatformAction href={appleMusic?.url} label="Apple Music" />
+
+            <DownloadAction />
           </div>
         </div>
 
-        <div className="flex min-h-[254px] flex-col gap-3">
-          {hasYoutube ? (
-            <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
-              <iframe
-                src={song.youtubeEmbedUrl}
-                title={`${song.title} YouTube videosu`}
-                className="block aspect-video w-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-              />
-            </div>
-          ) : null}
+        {hasSpotify ? (
+          <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#535353] shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
+            <iframe
+              src={song.spotifyEmbedUrl}
+              width="100%"
+              height="152"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="block h-[152px] w-full border-0"
+              title={`${song.title} Spotify oynatıcı`}
+            />
+          </div>
+        ) : null}
 
-          {hasSpotify ? (
-            <div className="overflow-hidden rounded-[26px] border border-white/24 bg-white/20 shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
-              <iframe
-                src={song.spotifyEmbedUrl}
-                width="100%"
-                height="152"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                className="block h-[152px] w-full border-0"
-                title={`${song.title} Spotify oynatıcı`}
-              />
-            </div>
-          ) : null}
+        {!hasSpotify && hasYoutube ? (
+          <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+            <iframe
+              src={song.youtubeEmbedUrl}
+              title={`${song.title} YouTube videosu`}
+              className="block h-[152px] w-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+        ) : null}
 
-          {!hasYoutube && !hasSpotify ? (
-            <div className="flex min-h-[152px] items-center justify-center rounded-[26px] border border-white/24 bg-white/34 p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
-              <div>
-                <p className="section-eyebrow">Dinleme</p>
-                <h3 className="text-[28px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D]">
-                  Platform bağlantıları yakında.
-                </h3>
-              </div>
-            </div>
-          ) : null}
-
-          <div className="flex flex-1 flex-col justify-center rounded-[26px] border border-white/24 bg-white/50 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/56">
-              Dinleme Linkleri
-            </p>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {spotify ? <PlatformButton platform={spotify} /> : null}
-              {appleMusic ? <PlatformButton platform={appleMusic} /> : null}
-              {youtube ? <PlatformButton platform={youtube} /> : null}
-
-              <Link
-                href="/giris"
-                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#4B232D]/12 bg-[#FFF4BC]/86 px-4 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
-              >
-                Siteden İndir
-              </Link>
+        {!hasSpotify && !hasYoutube ? (
+          <div className="flex min-h-[152px] items-center justify-center rounded-[26px] border border-white/24 bg-white/34 p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
+            <div>
+              <p className="section-eyebrow">Dinleme</p>
+              <h3 className="text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D]">
+                Platform bağlantıları yakında.
+              </h3>
             </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </article>
   );
