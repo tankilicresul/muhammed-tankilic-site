@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -59,7 +59,7 @@ export default async function AdminPage() {
       description:
         "Yeni şarkı ekle, mevcut şarkıları düzenle, Spotify, Apple Music ve YouTube bağlantılarını yönet.",
       href: "/admin/sarkilar",
-      label: "Yakında",
+      label: "Yönet",
       countLabel: "Kayıtlı şarkı",
       count: songsCount.count,
       error: songsCount.error,
@@ -69,7 +69,7 @@ export default async function AdminPage() {
       description:
         "YouTube cover videolarını, açıklamaları ve Instagram bağlantılarını panelden güncelle.",
       href: "/admin/coverlar",
-      label: "Yakında",
+      label: "Yönet",
       countLabel: "Kayıtlı cover",
       count: coversCount.count,
       error: coversCount.error,
