@@ -25,8 +25,16 @@ const homeLinks = [
   },
 ];
 
-const spotifyEmbedUrl =
-  "https://open.spotify.com/embed/track/7B5SGhv7YD7opodmyJQQqm?utm_source=generator";
+const announcement = {
+  type: "song" as "song" | "cover",
+  eyebrow: "Yeni Şarkım Çıktı",
+  title: `${latestSong.title} yayında.`,
+  description: "Spotify ve Apple Music’te dinleyebilirsin.",
+  href: `/sarkilarim/${latestSong.slug}`,
+};
+
+const announcementButtonLabel =
+  announcement.type === "cover" ? "Covera Git →" : "Şarkıya Git →";
 
 export default function Home() {
   return (
@@ -34,54 +42,29 @@ export default function Home() {
       <Navbar />
 
       <section className="site-container pt-1 md:pt-4">
-        <article className="relative flex min-h-[490px] flex-col justify-end sm:min-h-[600px] md:min-h-[calc(100vh-132px)]">
+        <article className="relative flex min-h-[335px] flex-col justify-end sm:min-h-[430px] md:min-h-[calc(100vh-132px)]">
           <div className="rounded-[22px] border border-white/28 bg-white/14 p-2 shadow-[0_16px_44px_rgba(75,35,45,0.08)] backdrop-blur-[16px] sm:p-3 md:rounded-[28px] md:p-4">
-            <div className="grid gap-2 md:gap-3 lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="flex min-h-[112px] flex-col justify-between rounded-[18px] border border-white/22 bg-white/10 px-4 py-3.5 sm:min-h-[148px] sm:rounded-[22px] sm:px-5 sm:py-4">
-                <div>
-                  <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-[#4B232D]/58 sm:text-[10px] sm:tracking-[0.22em]">
-                    Yeni Şarkım Çıktı
-                  </p>
+            <div className="rounded-[20px] border border-[#4B232D]/10 bg-white/90 px-4 py-4 text-center shadow-[0_12px_34px_rgba(75,35,45,0.10)] backdrop-blur-[16px] md:flex md:items-center md:justify-between md:gap-5 md:rounded-[24px] md:bg-white/78 md:px-6 md:py-5 md:text-left">
+              <div>
+                <p className="text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/58 md:text-[10px] md:tracking-[0.22em]">
+                  {announcement.eyebrow}
+                </p>
 
-                  <div className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 sm:mt-3 sm:gap-x-3">
-                    <h1 className="text-[clamp(24px,7.4vw,32px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D] md:text-[clamp(24px,2.7vw,38px)]">
-                      {latestSong.title}
-                    </h1>
+                <h1 className="mt-1.5 text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[clamp(26px,2.8vw,38px)]">
+                  {announcement.title}
+                </h1>
 
-                    <span className="text-[11px] font-medium text-[#4B232D]/68 sm:text-sm">
-                      {latestSong.artist}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
-                  <Link
-                    href={`/sarkilarim/${latestSong.slug}`}
-                    className="rounded-full border border-[#4B232D]/12 bg-white/76 px-4 py-2 text-[11px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90 sm:text-[12px]"
-                  >
-                    Şarkı Detayı
-                  </Link>
-
-                  <Link
-                    href="/sarkilarim"
-                    className="rounded-full border border-[#4B232D]/12 bg-white/76 px-4 py-2 text-[11px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90 sm:text-[12px]"
-                  >
-                    Tüm Şarkılarım
-                  </Link>
-                </div>
+                <p className="mx-auto mt-2 max-w-[280px] text-[12px] leading-5 text-[#4B232D]/68 md:mx-0 md:max-w-xl md:text-sm md:leading-6">
+                  {announcement.description}
+                </p>
               </div>
 
-              <div className="overflow-hidden rounded-[18px] border border-white/22 bg-white/10 sm:rounded-[22px]">
-                <iframe
-                  src={spotifyEmbedUrl}
-                  width="100%"
-                  height="152"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  className="block h-[152px] w-full border-0"
-                  title={`${latestSong.title} Spotify oynatıcı`}
-                />
-              </div>
+              <Link
+  href={announcement.href}
+  className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full !bg-[#4B232D] px-5 text-[11px] font-bold !text-white shadow-[0_12px_30px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:!bg-[#5a2b36] sm:w-auto md:mt-0 md:min-h-11 md:px-7 md:text-xs"
+>
+  {announcementButtonLabel}
+</Link>
             </div>
           </div>
         </article>
