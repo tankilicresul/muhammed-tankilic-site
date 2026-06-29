@@ -302,9 +302,9 @@ export default async function CoverlarimPage() {
         ) : null}
       </section>
 
-      <footer className="site-container site-footer">
+     <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Coverlarım · YouTube · Instagram</span>
+        <span>Resul Tankılıç Tarafından Tasarlanmıştır.</span>
       </footer>
     </main>
   );
