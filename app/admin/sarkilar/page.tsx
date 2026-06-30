@@ -1,429 +1,368 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+
 import Navbar from "@/components/Navbar";
 import { checkIsAdmin } from "@/lib/admin/is-admin";
 import { createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Yeni Şarkı Ekle | Admin Paneli",
-  description:
-    "Muhammed Tankılıç web sitesi admin paneli yeni şarkı ekleme sayfası.",
+  title: "Şarkı Yönetimi | Admin Paneli",
+  description: "Muhammed Tankılıç web sitesi admin paneli şarkı yönetimi sayfası.",
 };
 
-type NewSongPageProps = {
-  searchParams: Promise<{
-    error?: string;
-  }>;
-};
+type SongRow = Record<string, unknown>;
 
-function normalizeTextValue(value: FormDataEntryValue | null) {
-  const text = String(value ?? "").trim();
-  return text.length > 0 ? text : null;
-}
+function getString(row: SongRow, key: string) {
+  const value = row[key];
 
-function normalizeRequiredTextValue(value: FormDataEntryValue | null) {
-  return String(value ?? "").trim();
-}
-
-function createSlugFromTitle(title: string) {
-  return title
-    .toLocaleLowerCase("tr-TR")
-    .replaceAll("ı", "i")
-    .replaceAll("ğ", "g")
-    .replaceAll("ü", "u")
-    .replaceAll("ş", "s")
-    .replaceAll("ö", "o")
-    .replaceAll("ç", "c")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function normalizeSlug(slug: string, title: string) {
-  const source = slug.trim().length > 0 ? slug : createSlugFromTitle(title);
-
-  return source
-    .toLocaleLowerCase("tr-TR")
-    .replaceAll("ı", "i")
-    .replaceAll("ğ", "g")
-    .replaceAll("ü", "u")
-    .replaceAll("ş", "s")
-    .replaceAll("ö", "o")
-    .replaceAll("ç", "c")
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function normalizeNumberValue(value: FormDataEntryValue | null) {
-  const numberValue = Number(String(value ?? "0"));
-
-  if (Number.isNaN(numberValue)) {
-    return 0;
+  if (typeof value === "string") {
+    return value.trim();
   }
 
-  return numberValue;
+  return "";
 }
 
-function normalizePublishedAt(
-  releaseStatus: string,
-  value: FormDataEntryValue | null,
-) {
-  const rawValue = String(value ?? "").trim();
+function getNumber(row: SongRow, key: string) {
+  const value = row[key];
 
-  if (rawValue) {
-    return new Date(`${rawValue}T12:00:00.000Z`).toISOString();
+  if (typeof value === "number") {
+    return value;
   }
 
-  if (releaseStatus === "published") {
-    return new Date().toISOString();
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
   }
 
   return null;
 }
 
-function redirectWithError(message: string): never {
-  redirect(`/admin/sarkilar/yeni?error=${encodeURIComponent(message)}`);
+function formatDate(value: string) {
+  if (!value) {
+    return "—";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
 
-async function createSongAction(formData: FormData) {
-  "use server";
+function getStatusLabel(status: string) {
+  const normalized = status.toLowerCase();
 
-  const admin = await checkIsAdmin();
+  if (normalized === "published" || normalized === "yayinda" || normalized === "yayında") {
+    return "Yayında";
+  }
 
-  if (!admin.userId) {
+  if (normalized === "draft" || normalized === "taslak" || normalized === "") {
+    return "Taslak";
+  }
+
+  if (normalized === "hidden" || normalized === "gizli") {
+    return "Gizli";
+  }
+
+  if (normalized === "archived" || normalized === "arsiv" || normalized === "arşiv") {
+    return "Arşiv";
+  }
+
+  return status;
+}
+
+function isPublishedStatus(status: string) {
+  const normalized = status.toLowerCase();
+  return normalized === "published" || normalized === "yayinda" || normalized === "yayında";
+}
+
+function isDraftStatus(status: string) {
+  const normalized = status.toLowerCase();
+  return normalized === "draft" || normalized === "taslak" || normalized === "";
+}
+
+function truncateText(value: string, maxLength = 95) {
+  if (!value) {
+    return "Açıklama girilmemiş.";
+  }
+
+  if (value.length <= maxLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxLength).trim()}...`;
+}
+
+export default async function AdminSongsPage() {
+  const isAdmin = await checkIsAdmin();
+
+  if (!isAdmin) {
     redirect("/giris");
-  }
-
-  if (!admin.isAdmin) {
-    redirect("/hesabim");
-  }
-
-  const title = normalizeRequiredTextValue(formData.get("title"));
-  const slug = normalizeSlug(
-    normalizeRequiredTextValue(formData.get("slug")),
-    title,
-  );
-  const artist =
-    normalizeRequiredTextValue(formData.get("artist")) || "Muhammed Tankılıç";
-  const releaseStatus = normalizeRequiredTextValue(
-    formData.get("release_status"),
-  );
-
-  if (!title) {
-    redirectWithError("Başlık zorunludur.");
-  }
-
-  if (!slug) {
-    redirectWithError("Slug oluşturulamadı. Lütfen başlık veya slug gir.");
-  }
-
-  if (!["draft", "published", "hidden"].includes(releaseStatus)) {
-    redirectWithError("Geçersiz yayın durumu seçildi.");
   }
 
   const supabase = await createClient();
 
-  const { error } = await supabase.from("songs").insert({
-    title,
-    slug,
-    artist,
-    description: normalizeTextValue(formData.get("description")),
-    release_status: releaseStatus,
-    spotify_url: normalizeTextValue(formData.get("spotify_url")),
-    spotify_embed_url: normalizeTextValue(formData.get("spotify_embed_url")),
-    apple_music_url: normalizeTextValue(formData.get("apple_music_url")),
-    youtube_url: normalizeTextValue(formData.get("youtube_url")),
-    youtube_embed_url: normalizeTextValue(formData.get("youtube_embed_url")),
-    cover_image_path: normalizeTextValue(formData.get("cover_image_path")),
-    lyrics: normalizeTextValue(formData.get("lyrics")),
-    download_file_path: normalizeTextValue(formData.get("download_file_path")),
-    sort_order: normalizeNumberValue(formData.get("sort_order")),
-    published_at: normalizePublishedAt(
-      releaseStatus,
-      formData.get("published_at"),
-    ),
-  });
+  const { data, error } = await supabase
+    .from("songs")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("title", { ascending: true });
 
-  if (error) {
-    redirectWithError(error.message);
-  }
+  const songs = (data ?? []) as SongRow[];
 
-  revalidatePath("/admin");
-  revalidatePath("/admin/sarkilar");
+  const publishedCount = songs.filter((song) => {
+    const status = getString(song, "status");
+    return isPublishedStatus(status);
+  }).length;
 
-  redirect("/admin/sarkilar");
-}
+  const draftCount = songs.filter((song) => {
+    const status = getString(song, "status");
+    return isDraftStatus(status);
+  }).length;
 
-export default async function AdminNewSongPage({
-  searchParams,
-}: NewSongPageProps) {
-  const admin = await checkIsAdmin();
+  const spotifyCount = songs.filter((song) => {
+    return Boolean(getString(song, "spotify_url") || getString(song, "spotify_link"));
+  }).length;
 
-  if (!admin.userId) {
-    redirect("/giris");
-  }
-
-  if (!admin.isAdmin) {
-    redirect("/hesabim");
-  }
-
-  const params = await searchParams;
-  const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+  const youtubeCount = songs.filter((song) => {
+    return Boolean(getString(song, "youtube_url") || getString(song, "youtube_link"));
+  }).length;
 
   return (
-    <main className="page-shell">
+    <main className="min-h-screen pb-16 text-[#4B232D]">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-10">
-        <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="section-eyebrow">Admin Paneli</p>
+      <section className="mx-auto mt-10 w-[min(1120px,calc(100%-32px))] rounded-[38px] border border-white/70 bg-white/70 px-8 py-10 shadow-[0_24px_80px_rgba(75,35,45,0.14)] backdrop-blur-xl md:px-12">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.35em] text-[#8a6070]">
+              Admin Paneli
+            </p>
 
-              <h1 className="text-[clamp(28px,7vw,48px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
-                Yeni Şarkı Ekle
-              </h1>
+            <h1 className="text-4xl font-black tracking-[-0.04em] md:text-5xl">
+              Şarkı Yönetimi
+            </h1>
 
-              <p className="mt-4 max-w-2xl text-[12px] leading-7 text-[#4B232D]/70 md:text-sm md:leading-8">
-                Bu form Supabase’deki songs tablosuna yeni şarkı kaydı ekler.
-                Görsel ve indirme dosyası upload işlemini sonraki adımda ayrıca
-                bağlayacağız.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href="/admin/sarkilar"
-                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/70 px-4 text-[11px] font-bold text-[#4B232D]/70 transition hover:-translate-y-0.5 hover:bg-white md:text-xs"
-              >
-                Şarkı Listesi
-              </Link>
-
-              <Link
-                href="/admin"
-                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/70 px-4 text-[11px] font-bold text-[#4B232D]/70 transition hover:-translate-y-0.5 hover:bg-white md:text-xs"
-              >
-                Admin Ana Sayfa
-              </Link>
-            </div>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#6f4b58]">
+              Bu sayfada Supabase&apos;deki şarkı kayıtlarını listeliyoruz.
+              Yeni şarkı ekleme ekranına buradan geçilecek. Düzenleme sayfasını
+              sonraki adımda ayrıca bağlayacağız.
+            </p>
           </div>
 
-          {errorMessage ? (
-            <div className="mt-6 rounded-[22px] border border-red-200/70 bg-red-50/80 p-4 text-[12px] leading-6 text-red-800">
-              <p className="font-bold">Şarkı kaydedilemedi.</p>
-              <p className="mt-1">{errorMessage}</p>
-            </div>
-          ) : null}
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/admin"
+              className="rounded-full border border-[#4B232D]/10 bg-white/80 px-5 py-3 text-sm font-bold text-[#4B232D] shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+            >
+              Admin Ana Sayfa
+            </Link>
 
-          <form action={createSongAction} className="mt-6 grid gap-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Başlık *
-                </span>
-                <input
-                  name="title"
-                  required
-                  placeholder="Örn: Zef Cara"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+            <Link
+              href="/admin/sarkilar/yeni"
+              className="rounded-full bg-[#4B232D] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(75,35,45,0.24)] transition hover:-translate-y-0.5"
+            >
+              Yeni Şarkı Ekle
+            </Link>
+          </div>
+        </div>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Slug
-                </span>
-                <input
-                  name="slug"
-                  placeholder="Boş kalırsa başlıktan üretilir"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-            </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-4">
+          <div className="rounded-[26px] bg-white/85 p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a7480]">
+              Toplam Şarkı
+            </p>
+            <p className="mt-3 text-4xl font-black">{songs.length}</p>
+          </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Sanatçı
-                </span>
-                <input
-                  name="artist"
-                  defaultValue="Muhammed Tankılıç"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+          <div className="rounded-[26px] bg-white/85 p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a7480]">
+              Yayında
+            </p>
+            <p className="mt-3 text-4xl font-black">{publishedCount}</p>
+          </div>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Yayın Durumu
-                </span>
-                <select
-                  name="release_status"
-                  defaultValue="draft"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
-                >
-                  <option value="draft">Taslak</option>
-                  <option value="published">Yayında</option>
-                  <option value="hidden">Gizli</option>
-                </select>
-              </label>
+          <div className="rounded-[26px] bg-white/85 p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a7480]">
+              Taslak
+            </p>
+            <p className="mt-3 text-4xl font-black">{draftCount}</p>
+          </div>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Sıralama
-                </span>
-                <input
-                  name="sort_order"
-                  type="number"
-                  defaultValue="0"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-            </div>
+          <div className="rounded-[26px] bg-white/85 p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#9a7480]">
+              Bağlantılar
+            </p>
+            <p className="mt-3 text-lg font-black">
+              Spotify {spotifyCount} / YouTube {youtubeCount}
+            </p>
+          </div>
+        </div>
 
-            <label className="grid gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                Açıklama
-              </span>
-              <textarea
-                name="description"
-                rows={4}
-                placeholder="Şarkının kısa açıklaması..."
-                className="rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 py-3 text-sm font-medium leading-7 text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-              />
-            </label>
+        {error ? (
+          <div className="mt-8 rounded-[26px] border border-red-200 bg-red-50 px-6 py-5 text-sm font-semibold text-red-700">
+            Şarkılar okunurken hata oluştu: {error.message}
+          </div>
+        ) : null}
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Spotify Link
-                </span>
-                <input
-                  name="spotify_url"
-                  placeholder="https://open.spotify.com/..."
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+        <div className="mt-8 overflow-hidden rounded-[30px] bg-white/88 shadow-sm">
+          <div className="grid grid-cols-[1.6fr_0.7fr_0.7fr_0.8fr_0.8fr] gap-4 border-b border-[#4B232D]/10 px-6 py-5 text-xs font-black uppercase tracking-[0.22em] text-[#9a7480]">
+            <span>Şarkı</span>
+            <span>Durum</span>
+            <span>Sıra</span>
+            <span>Güncelleme</span>
+            <span>İşlem</span>
+          </div>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Spotify Embed Link
-                </span>
-                <input
-                  name="spotify_embed_url"
-                  placeholder="https://open.spotify.com/embed/..."
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Apple Music Link
-                </span>
-                <input
-                  name="apple_music_url"
-                  placeholder="https://music.apple.com/..."
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  YouTube Link
-                </span>
-                <input
-                  name="youtube_url"
-                  placeholder="https://youtu.be/..."
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-            </div>
-
-            <label className="grid gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                YouTube Embed Link
-              </span>
-              <input
-                name="youtube_embed_url"
-                placeholder="https://www.youtube.com/embed/..."
-                className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-              />
-            </label>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Kapak Görsel Path
-                </span>
-                <input
-                  name="cover_image_path"
-                  placeholder="songs/zef-cara/cover.webp"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  İndirme Dosyası Path
-                </span>
-                <input
-                  name="download_file_path"
-                  placeholder="songs/zef-cara/zef-cara.mp3"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Yayın Tarihi
-                </span>
-                <input
-                  name="published_at"
-                  type="date"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-            </div>
-
-            <label className="grid gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                Şarkı Sözleri
-              </span>
-              <textarea
-                name="lyrics"
-                rows={10}
-                placeholder="Şarkı sözleri..."
-                className="rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 py-3 text-sm font-medium leading-7 text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-              />
-            </label>
-
-            <div className="flex flex-col gap-3 rounded-[22px] border border-[#4B232D]/10 bg-white/45 p-4 md:flex-row md:items-center md:justify-between">
-              <p className="text-[12px] leading-6 text-[#4B232D]/65">
-                Kaydettiğinde şarkı Supabase’e yazılır. Public şarkılar sayfası
-                henüz bu veriyi kullanmıyor; onu daha sonra güvenli şekilde
-                taşıyacağız.
+          {songs.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <p className="text-xl font-black">Henüz şarkı kaydı yok.</p>
+              <p className="mt-2 text-sm text-[#6f4b58]">
+                İlk şarkıyı eklemek için Yeni Şarkı Ekle butonunu kullan.
               </p>
 
-              <button
-                type="submit"
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#4B232D] px-5 text-[12px] font-bold text-white shadow-[0_10px_22px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36]"
+              <Link
+                href="/admin/sarkilar/yeni"
+                className="mt-6 inline-flex rounded-full bg-[#4B232D] px-6 py-3 text-sm font-bold text-white"
               >
-                Şarkıyı Kaydet
-              </button>
+                Yeni Şarkı Ekle
+              </Link>
             </div>
-          </form>
+          ) : (
+            songs.map((song) => {
+              const id = getString(song, "id");
+              const title = getString(song, "title") || "Başlıksız Şarkı";
+              const slug = getString(song, "slug");
+              const artist = getString(song, "artist") || "Muhammed Tankılıç";
+              const description =
+                getString(song, "description") ||
+                getString(song, "short_description") ||
+                getString(song, "summary");
+              const status = getString(song, "status") || "draft";
+              const sortOrder = getNumber(song, "sort_order");
+              const updatedAt =
+                getString(song, "updated_at") ||
+                getString(song, "created_at") ||
+                getString(song, "release_date");
+
+              const spotifyUrl =
+                getString(song, "spotify_url") || getString(song, "spotify_link");
+              const appleMusicUrl =
+                getString(song, "apple_music_url") ||
+                getString(song, "apple_music_link");
+              const youtubeUrl =
+                getString(song, "youtube_url") || getString(song, "youtube_link");
+
+              const published = isPublishedStatus(status);
+
+              return (
+                <div
+                  key={id || slug || title}
+                  className="grid grid-cols-1 gap-4 border-b border-[#4B232D]/10 px-6 py-6 last:border-b-0 md:grid-cols-[1.6fr_0.7fr_0.7fr_0.8fr_0.8fr] md:items-center"
+                >
+                  <div>
+                    <h2 className="text-xl font-black tracking-[-0.03em]">
+                      {title}
+                    </h2>
+
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-[#9a7480]">
+                      {artist}
+                      {slug ? ` · ${slug}` : ""}
+                    </p>
+
+                    <p className="mt-3 max-w-xl text-sm leading-6 text-[#6f4b58]">
+                      {truncateText(description)}
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {spotifyUrl ? (
+                        <a
+                          href={spotifyUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full bg-[#BDEBE8]/70 px-3 py-1 text-xs font-bold text-[#4B232D]"
+                        >
+                          Spotify
+                        </a>
+                      ) : null}
+
+                      {appleMusicUrl ? (
+                        <a
+                          href={appleMusicUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full bg-[#FFF4BC]/90 px-3 py-1 text-xs font-bold text-[#4B232D]"
+                        >
+                          Apple Music
+                        </a>
+                      ) : null}
+
+                      {youtubeUrl ? (
+                        <a
+                          href={youtubeUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full bg-[#F5AE50]/25 px-3 py-1 text-xs font-bold text-[#4B232D]"
+                        >
+                          YouTube
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span
+                      className={
+                        published
+                          ? "inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-emerald-700"
+                          : "inline-flex rounded-full bg-[#FFF4BC] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#4B232D]"
+                      }
+                    >
+                      {getStatusLabel(status)}
+                    </span>
+                  </div>
+
+                  <div className="text-sm font-black">
+                    {sortOrder === null ? "—" : sortOrder}
+                  </div>
+
+                  <div className="text-sm font-bold text-[#6f4b58]">
+                    {formatDate(updatedAt)}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {slug ? (
+                      <Link
+                        href={`/sarkilarim/${slug}`}
+                        className="rounded-full border border-[#4B232D]/10 bg-white px-4 py-2 text-sm font-bold text-[#4B232D] transition hover:bg-[#FFF4BC]"
+                      >
+                        Gör
+                      </Link>
+                    ) : null}
+
+                    <span className="rounded-full border border-[#4B232D]/10 bg-white/60 px-4 py-2 text-sm font-bold text-[#9a7480]">
+                      Düzenle sonra
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
 
       <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Admin paneli.</p>
-        <span>Yeni şarkı ekleme</span>
+        <span>Şarkı yönetimi</span>
       </footer>
     </main>
   );
