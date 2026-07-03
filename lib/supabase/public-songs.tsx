@@ -91,6 +91,36 @@ function normalizeImagePath(path: string | null) {
   return `/${value}`;
 }
 
+function normalizeSpotifyEmbedUrl(spotifyUrl: string, spotifyEmbedUrl: string) {
+  if (spotifyEmbedUrl) {
+    return spotifyEmbedUrl;
+  }
+
+  if (!spotifyUrl) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(spotifyUrl);
+    const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
+
+    const typeIndex = pathParts.findIndex((part) =>
+      ["track", "album", "playlist", "artist", "episode", "show"].includes(part),
+    );
+
+    if (typeIndex === -1 || !pathParts[typeIndex + 1]) {
+      return "";
+    }
+
+    const type = pathParts[typeIndex];
+    const id = pathParts[typeIndex + 1];
+
+    return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`;
+  } catch {
+    return "";
+  }
+}
+
 function getYoutubeVideoId(url: string) {
   if (!url) {
     return "";
@@ -135,6 +165,10 @@ function normalizeYoutubeEmbedUrl(youtubeUrl: string, youtubeEmbedUrl: string) {
 
 function mapSong(row: SongRow): PublicSong {
   const spotifyUrl = row.spotify_url ?? "";
+  const spotifyEmbedUrl = normalizeSpotifyEmbedUrl(
+    spotifyUrl,
+    row.spotify_embed_url ?? "",
+  );
   const appleMusicUrl = row.apple_music_url ?? "";
   const youtubeUrl = row.youtube_url ?? "";
   const youtubeEmbedUrl = normalizeYoutubeEmbedUrl(
@@ -170,7 +204,7 @@ function mapSong(row: SongRow): PublicSong {
     lyrics: row.lyrics ?? "",
     downloadFilePath: row.download_file_path ?? "",
     spotifyUrl,
-    spotifyEmbedUrl: row.spotify_embed_url ?? "",
+    spotifyEmbedUrl,
     appleMusicUrl,
     youtubeUrl,
     youtubeEmbedUrl,
