@@ -1314,11 +1314,12 @@ b {
   }
 }
 
-/* Button color system
-   Turuncu zemin => kahverengi yazı
+/* =========================================================
+   GLOBAL BUTTON COLOR SYSTEM
+   Turuncu zemin  => kahverengi yazı
    Kahverengi zemin => beyaz yazı
    Beyaz zemin => kahverengi yazı
-*/
+   ========================================================= */
 
 .btn-pill {
   display: inline-flex;
@@ -1388,7 +1389,7 @@ b {
   background: rgba(255, 255, 255, 0.96) !important;
 }
 
-/* Mevcut .pill-button varyantlarının final renk garantisi */
+/* .pill-button final renk garantisi */
 .pill-button {
   background: var(--orange);
   color: var(--burgundy);
@@ -1404,7 +1405,7 @@ b {
   color: white;
 }
 
-/* Tailwind arbitrary color kullanılan CTA'ları proje tonuna sabitle */
+/* Turuncu CTA sınıfları: her zaman kahverengi yazı */
 .bg-\[\#F5AE50\],
 .bg-\[\#F5AE50\]\/90,
 .hover\:bg-\[\#F5AE50\]:hover,
@@ -1417,19 +1418,30 @@ b {
   border-color: transparent !important;
 }
 
-.bg-\[\#4B232D\],
-.bg-\[\#4B232D\]\/88,
-.bg-\[\#4B232D\]\/90,
-.\!bg-\[\#4B232D\] {
-  background-color: var(--burgundy) !important;
-  color: white !important;
-  border-color: transparent !important;
+/* Turuncu CTA + text-white/text-[#fff] gibi çakışmaları zorla düzelt */
+.bg-\[\#F5AE50\].text-white,
+.bg-\[\#F5AE50\]\/90.text-white,
+.bg-orange-300.text-white,
+.bg-orange-400.text-white,
+.bg-amber-300.text-white,
+.bg-amber-400.text-white,
+.text-white.bg-\[\#F5AE50\],
+.text-white.bg-\[\#F5AE50\]\/90,
+.text-white.bg-orange-300,
+.text-white.bg-orange-400,
+.text-white.bg-amber-300,
+.text-white.bg-amber-400,
+a.bg-\[\#F5AE50\],
+a.bg-\[\#F5AE50\]\/90,
+button.bg-\[\#F5AE50\],
+button.bg-\[\#F5AE50\]\/90 {
+  color: var(--burgundy) !important;
 }
 
-/* Turuncu zeminli butonların içindeki span/icon/yazıları kahverengi kalır */
+/* Turuncu zeminli butonların içindeki span/icon/yazıları da kahverengi */
 .btn-orange *,
 .button-orange *,
-.pill-button *,
+.pill-button:not(.dark):not(.light-button):not(.outline-light) *,
 .bg-\[\#F5AE50\] *,
 .bg-\[\#F5AE50\]\/90 *,
 .bg-orange-300 *,
@@ -1439,7 +1451,17 @@ b {
   color: var(--burgundy) !important;
 }
 
-/* Koyu zeminli butonların içindeki span/icon/yazıları beyaz kalır */
+/* Koyu bordo/kahverengi CTA sınıfları: her zaman beyaz yazı */
+.bg-\[\#4B232D\],
+.bg-\[\#4B232D\]\/88,
+.bg-\[\#4B232D\]\/90,
+.\!bg-\[\#4B232D\] {
+  background-color: var(--burgundy) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Koyu zeminli butonların içindeki span/icon/yazıları beyaz */
 .btn-brown *,
 .button-brown *,
 .pill-button.dark *,
@@ -1450,37 +1472,74 @@ b {
   color: white !important;
 }
 
-/* Navbar özel buton uyumu */
-.navbar-shell a[href="/kayit"],
-.navbar-shell a[href="/kayit"] * {
-  background-color: var(--orange) !important;
-  color: var(--burgundy) !important;
+/* İletişim ve hesap sayfalarındaki turuncu/beyaz/koyu aksiyonlar */
+a[href="/"],
+a[href="/sarkilarim"],
+a[href="/coverlarim"],
+a[href="/hesabim"],
+a[href="/hesabim/duzenle"],
+a[href*="/indir"],
+a[href*="download"],
+a[href*="mailto"],
+a[href*="gmail.com"] {
+  border-radius: var(--radius-pill);
 }
 
+/* Turuncu olması gereken yaygın CTA'lar */
+a[href="/kayit"],
+.navbar-shell a[href="/kayit"],
+a[href="/"],
+a[href="/sarkilarim"],
+a[href="/coverlarim"],
+a[href*="instagram.com"],
+a[href*="youtube.com"],
+a[href*="spotify.com"],
+a[href*="music.apple.com"] {
+  color: var(--burgundy);
+}
+
+/* Ancak navbar aktif/koyu linkler beyaz kalmalı */
+.nav-link.active,
+.nav-link.active *,
+.nav-link:hover,
+.nav-link:hover * {
+  color: white !important;
+}
+
+/* Navbar hesap/giriş beyaz butonları */
 .navbar-shell a[href="/giris"],
 .navbar-shell a[href="/hesabim"] {
   background-color: rgba(255, 255, 255, 0.84) !important;
   color: var(--burgundy) !important;
 }
 
+/* Navbar kayıt turuncu-kahverengi */
+.navbar-shell a[href="/kayit"],
+.navbar-shell a[href="/kayit"] * {
+  background-color: var(--orange) !important;
+  color: var(--burgundy) !important;
+}
+
+/* Navbar çıkış koyu-beyaz */
 .navbar-shell button,
 .navbar-shell a[href="/cikis"],
 .navbar-shell a[href*="cikis"] {
-  color: white !important;
-}
-
-/* Auth/form ana aksiyonlarında koyu zemin varsa beyaz yazı */
-button[type="submit"].bg-\[\#4B232D\],
-button[type="submit"].btn-brown {
   background-color: var(--burgundy) !important;
   color: white !important;
 }
 
-/* Turuncu formlar ve yönetim CTA'ları */
-a[href*="/yeni"],
-a[href="/kayit"],
-button[class*="bg-[#F5AE50]"],
-a[class*="bg-[#F5AE50]"] {
+/* Form submit: koyuysa beyaz, turuncuysa kahverengi */
+button[type="submit"].bg-\[\#4B232D\],
+button[type="submit"].btn-brown,
+button[type="submit"][class*="bg-[#4B232D]"] {
+  background-color: var(--burgundy) !important;
+  color: white !important;
+}
+
+button[type="submit"].bg-\[\#F5AE50\],
+button[type="submit"].bg-\[\#F5AE50\]\/90,
+button[type="submit"].btn-orange,
+button[type="submit"][class*="bg-[#F5AE50]"] {
   background-color: var(--orange) !important;
   color: var(--burgundy) !important;
 }
