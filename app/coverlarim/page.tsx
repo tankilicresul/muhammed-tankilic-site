@@ -315,4 +315,3 @@ export default async function CoverlarimPage() {
     </main>
   );
 }
-
