@@ -37,10 +37,16 @@ type PublicCover = {
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 
 const mobileButtonClass =
-  "inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none transition hover:-translate-y-0.5";
 
 const desktopButtonClass =
-  "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold transition hover:-translate-y-0.5";
+
+const orangeButtonClass =
+  "bg-[#F5AE50]/90 text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
+
+const whiteButtonClass =
+  "bg-white/76 text-[#4B232D] hover:bg-white/90";
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -141,14 +147,14 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
             href={youtubeChannelUrl}
             target="_blank"
             rel="noreferrer"
-            className={`${mobileButtonClass} bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
+            className={`${mobileButtonClass} ${orangeButtonClass}`}
           >
             ← YouTube Kanalım
           </a>
 
           <Link
             href="/giris"
-            className={`${mobileButtonClass} bg-white/76 hover:bg-white/90`}
+            className={`${mobileButtonClass} ${whiteButtonClass}`}
           >
             İndir
           </Link>
@@ -184,14 +190,14 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
               href={youtubeChannelUrl}
               target="_blank"
               rel="noreferrer"
-              className={`${desktopButtonClass} bg-[#FFF4BC]/86 hover:bg-[#FFF4BC]`}
+              className={`${desktopButtonClass} ${orangeButtonClass}`}
             >
               YouTube Kanalım
             </a>
 
             <Link
               href="/giris"
-              className={`${desktopButtonClass} bg-white/72 hover:bg-white/90`}
+              className={`${desktopButtonClass} ${whiteButtonClass}`}
             >
               Siteden İndir
             </Link>
@@ -302,7 +308,7 @@ export default async function CoverlarimPage() {
         ) : null}
       </section>
 
-     <footer className="site-container site-footer">
+      <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
         <span>resultankilic.ai tarafından tasarlanmıştır</span>
       </footer>

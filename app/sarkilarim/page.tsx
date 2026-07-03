@@ -14,10 +14,16 @@ function getPlatform(song: Song, name: MusicPlatform["name"]) {
 }
 
 const mobileActionClass =
-  "inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5";
 
 const desktopActionClass =
-  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/12 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/18 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5";
+
+const orangeActionClass =
+  "border-[#F5AE50]/60 bg-[#F5AE50]/90 !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
+
+const whiteActionClass =
+  "bg-white/84 hover:bg-white/95";
 
 function PlatformAction({
   href,
@@ -31,11 +37,8 @@ function PlatformAction({
   isMobile?: boolean;
 }) {
   const className = `${isMobile ? mobileActionClass : desktopActionClass} ${
-    isHighlighted
-      ? "bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]"
-      : "bg-white/76 hover:bg-white/90"
-  }`;
-
+  isHighlighted ? orangeActionClass : whiteActionClass
+}`;
   if (!href) {
     return (
       <span
@@ -58,9 +61,9 @@ function DownloadAction({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <Link
       href="/giris"
-      className={`${
-        isMobile ? mobileActionClass : desktopActionClass
-      } bg-[#FFF4BC]/88 hover:bg-[#FFF4BC]`}
+     className={`${
+  isMobile ? mobileActionClass : desktopActionClass
+} ${orangeActionClass}`}
     >
       İndir
     </Link>
@@ -122,7 +125,7 @@ function MobileSongPanel({ song }: { song: Song }) {
         <div className={`${hasDescription ? "mt-3" : ""} grid grid-cols-3 gap-1.5`}>
           <Link
             href={`/sarkilarim/${song.slug}`}
-            className={`${mobileActionClass} bg-white/76 hover:bg-white/90`}
+            className={`${mobileActionClass} ${whiteActionClass}`}
           >
             Detaylar
           </Link>

@@ -99,7 +99,7 @@ export default async function PhotoDetailPage({
           <div className="mb-3 flex items-center justify-between gap-3 md:mb-5">
             <Link
               href="/fotograflar"
-              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/78 px-4 text-[11px] font-bold text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.06)] transition hover:-translate-y-0.5 hover:bg-white md:min-h-10 md:text-xs"
+              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/10 bg-[#4B232D] px-4 text-[11px] font-bold !text-white shadow-[0_10px_24px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:bg-[#5b2b37] md:min-h-10 md:text-xs"
             >
               ← Fotoğraflarım
             </Link>
@@ -232,7 +232,7 @@ export default async function PhotoDetailPage({
 
       <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Fotoğraf detayı · Görsel arşivim</span>
+        <span>resultankilic.ai tarafından tasarlanmıştır</span>
       </footer>
     </main>
   );

@@ -105,7 +105,7 @@ export default async function PhotosPage() {
           ) : null}
 
           {!error && galleryItems.length > 0 ? (
-            <div className="group relative aspect-[9/16] overflow-hidden rounded-[14px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)] md:rounded-[22px]">
+            <div className="grid grid-cols-3 gap-1.5 md:gap-3">
               {galleryItems.map((item) => {
                 const previewImage = getPreviewImage(item);
                 const isVideo = item.media_type === "video";
@@ -114,7 +114,7 @@ export default async function PhotosPage() {
                   <Link
                     key={item.id}
                     href={`/fotograflar/${item.id}`}
-                    className="group relative aspect-[9/16] overflow-hidden rounded-[14px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)] md:rounded-[22px]"
+                    className="group relative aspect-[9/16] overflow-hidden rounded-[10px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)] md:rounded-[18px]"
                     aria-label={`${item.title} detayına git`}
                   >
                     {previewImage ? (
@@ -127,22 +127,22 @@ export default async function PhotosPage() {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-white/60 p-3 text-center">
-                        <p className="text-[10px] font-bold leading-5 text-[#4B232D]/70">
+                        <p className="text-[9px] font-bold leading-4 text-[#4B232D]/70 md:text-[10px] md:leading-5">
                           Görsel yakında
                         </p>
                       </div>
                     )}
 
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(75,35,45,0),rgba(75,35,45,0.34))] opacity-80" />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(75,35,45,0),rgba(75,35,45,0.34))] opacity-70" />
 
                     {isVideo ? (
-                      <span className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/86 text-[11px] font-black text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.18)] backdrop-blur-[10px]">
+                      <span className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/88 text-[10px] font-black text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.18)] backdrop-blur-[10px] md:right-2 md:top-2 md:h-7 md:w-7 md:text-[11px]">
                         ▶
                       </span>
                     ) : null}
 
                     {item.description ? (
-                      <span className="absolute bottom-2 left-2 right-2 line-clamp-2 rounded-[12px] bg-white/80 px-2 py-1.5 text-[9.5px] font-semibold leading-4 text-[#4B232D] opacity-0 shadow-[0_8px_20px_rgba(75,35,45,0.12)] backdrop-blur-[10px] transition group-hover:opacity-100 md:text-[11px] md:leading-5">
+                      <span className="absolute bottom-1.5 left-1.5 right-1.5 hidden line-clamp-2 rounded-[10px] bg-white/84 px-2 py-1.5 text-[9.5px] font-semibold leading-4 text-[#4B232D] opacity-0 shadow-[0_8px_20px_rgba(75,35,45,0.12)] backdrop-blur-[10px] transition group-hover:opacity-100 md:block md:text-[11px] md:leading-5">
                         {item.description}
                       </span>
                     ) : null}
