@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { publishedSongs, type MusicPlatform, type Song } from "@/lib/data/songs";
+import {
+  getPublishedSongs,
+  type PublicMusicPlatform,
+  type PublicSong,
+} from "@/lib/supabase/public-songs";
 
 export const metadata: Metadata = {
   title: "Şarkılarım | Muhammed Tankılıç",
@@ -9,7 +13,7 @@ export const metadata: Metadata = {
     "Muhammed Tankılıç’ın besteleri, Spotify ve Apple Music yayınları, şarkı detayları ve dinleme bağlantıları.",
 };
 
-function getPlatform(song: Song, name: MusicPlatform["name"]) {
+function getPlatform(song: PublicSong, name: PublicMusicPlatform["name"]) {
   return song.platforms.find((platform) => platform.name === name);
 }
 
@@ -20,25 +24,21 @@ const desktopActionClass =
   "inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/18 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5";
 
 const orangeActionClass =
-  "border-[#F5AE50]/60 bg-[#F5AE50]/90 !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
+  "border-[#F5AE50]/60 bg-[#F5AE50]/90 text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
 
-const whiteActionClass =
-  "bg-white/84 hover:bg-white/95";
+const whiteActionClass = "bg-white/84 hover:bg-white/95";
 
 function PlatformAction({
   href,
   label,
-  isHighlighted = false,
   isMobile = false,
 }: {
   href?: string;
   label: string;
-  isHighlighted?: boolean;
   isMobile?: boolean;
 }) {
-  const className = `${isMobile ? mobileActionClass : desktopActionClass} ${
-  isHighlighted ? orangeActionClass : whiteActionClass
-}`;
+  const className = `${isMobile ? mobileActionClass : desktopActionClass} ${whiteActionClass}`;
+
   if (!href) {
     return (
       <span
@@ -61,16 +61,14 @@ function DownloadAction({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <Link
       href="/giris"
-     className={`${
-  isMobile ? mobileActionClass : desktopActionClass
-} ${orangeActionClass}`}
+      className={`${isMobile ? mobileActionClass : desktopActionClass} ${orangeActionClass}`}
     >
       İndir
     </Link>
   );
 }
 
-function MobileSongPanel({ song }: { song: Song }) {
+function MobileSongPanel({ song }: { song: PublicSong }) {
   const spotify = getPlatform(song, "Spotify");
   const appleMusic = getPlatform(song, "Apple Music");
 
@@ -122,7 +120,7 @@ function MobileSongPanel({ song }: { song: Song }) {
           </p>
         ) : null}
 
-        <div className={`${hasDescription ? "mt-3" : ""} grid grid-cols-3 gap-1.5`}>
+        <div className={`${hasDescription ? "mt-3" : ""} grid grid-cols-4 gap-1.5`}>
           <Link
             href={`/sarkilarim/${song.slug}`}
             className={`${mobileActionClass} ${whiteActionClass}`}
@@ -132,14 +130,16 @@ function MobileSongPanel({ song }: { song: Song }) {
 
           <PlatformAction href={spotify?.url} label="Spotify" isMobile />
 
-          <PlatformAction href={appleMusic?.url} label="Apple Music" isMobile />
+          <PlatformAction href={appleMusic?.url} label="Apple" isMobile />
+
+          <DownloadAction isMobile />
         </div>
       </div>
     </article>
   );
 }
 
-function DesktopSongPanel({ song }: { song: Song }) {
+function DesktopSongPanel({ song }: { song: PublicSong }) {
   const spotify = getPlatform(song, "Spotify");
   const appleMusic = getPlatform(song, "Apple Music");
 
@@ -167,7 +167,7 @@ function DesktopSongPanel({ song }: { song: Song }) {
           <div className="mt-5 flex flex-nowrap items-center gap-2">
             <Link
               href={`/sarkilarim/${song.slug}`}
-              className={`${desktopActionClass} bg-white/76 hover:bg-white/90`}
+              className={`${desktopActionClass} ${whiteActionClass}`}
             >
               Detaylar
             </Link>
@@ -222,7 +222,7 @@ function DesktopSongPanel({ song }: { song: Song }) {
   );
 }
 
-function SongPanel({ song }: { song: Song }) {
+function SongPanel({ song }: { song: PublicSong }) {
   return (
     <>
       <MobileSongPanel song={song} />
@@ -231,7 +231,9 @@ function SongPanel({ song }: { song: Song }) {
   );
 }
 
-export default function SarkilarimPage() {
+export default async function SarkilarimPage() {
+  const songs = await getPublishedSongs();
+
   return (
     <main className="page-shell">
       <Navbar />
@@ -250,11 +252,20 @@ export default function SarkilarimPage() {
           </Link>
         </div>
 
-        <div className="grid gap-3 md:gap-5">
-          {publishedSongs.map((song) => (
-            <SongPanel key={song.slug} song={song} />
-          ))}
-        </div>
+        {songs.length > 0 ? (
+          <div className="grid gap-3 md:gap-5">
+            {songs.map((song) => (
+              <SongPanel key={song.id} song={song} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[24px] border border-white/35 bg-white/62 p-6 text-center shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:rounded-[34px] md:p-10">
+            <p className="section-eyebrow">Şarkılarım</p>
+            <h2 className="text-[clamp(28px,6vw,46px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
+              Henüz yayında şarkı yok.
+            </h2>
+          </div>
+        )}
       </section>
 
       <footer className="site-container site-footer">

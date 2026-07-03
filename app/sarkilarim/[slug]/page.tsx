@@ -4,27 +4,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
-  getSongBySlug,
-  publishedSongs,
-  type MusicPlatform,
-  type SongDownload,
-} from "@/lib/data/songs";
+  getPublishedSongBySlug,
+  getPublishedSongs,
+  type PublicMusicPlatform,
+} from "@/lib/supabase/public-songs";
 
 type SongDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return publishedSongs.map((song) => ({
-    slug: song.slug,
-  }));
-}
-
 export async function generateMetadata({
   params,
 }: SongDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const song = getSongBySlug(slug);
+  const song = await getPublishedSongBySlug(slug);
 
   if (!song) {
     return {
@@ -34,11 +27,11 @@ export async function generateMetadata({
 
   return {
     title: `${song.title} | Muhammed Tankılıç`,
-    description: song.shortDescription,
+    description: song.shortDescription || song.description,
   };
 }
 
-function PlatformButton({ platform }: { platform: MusicPlatform }) {
+function PlatformButton({ platform }: { platform: PublicMusicPlatform }) {
   const label =
     platform.name === "Spotify"
       ? "Spotify’da Dinle"
@@ -58,49 +51,16 @@ function PlatformButton({ platform }: { platform: MusicPlatform }) {
   );
 }
 
-function DownloadButton({ download }: { download: SongDownload }) {
-  if (!download.isActive || !download.fileUrl) {
-    return (
-      <span className="rounded-full border border-[#4B232D]/10 bg-white/42 px-4 py-2 text-[12px] font-bold text-[#4B232D]/42">
-        {download.label} Yakında
-      </span>
-    );
-  }
-
-  if (download.requiresAuth) {
-    return (
-      <Link
-        href="/giris"
-        className="rounded-full border border-[#4B232D]/12 bg-[#FFF4BC]/86 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
-      >
-        {download.label}
-      </Link>
-    );
-  }
-
-  return (
-    <a
-      href={download.fileUrl}
-      download
-      className="rounded-full border border-[#4B232D]/12 bg-[#FFF4BC]/86 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
-    >
-      {download.label}
-    </a>
-  );
-}
-
 export default async function SongDetailPage({ params }: SongDetailPageProps) {
   const { slug } = await params;
-  const song = getSongBySlug(slug);
+  const song = await getPublishedSongBySlug(slug);
 
   if (!song) {
     notFound();
   }
 
-  const relatedSongs = publishedSongs.filter(
-    (relatedSong) => relatedSong.slug !== song.slug,
-  );
-
+  const songs = await getPublishedSongs();
+  const relatedSongs = songs.filter((relatedSong) => relatedSong.slug !== song.slug);
   const hasSpotify = Boolean(song.spotifyEmbedUrl);
   const hasYoutube = Boolean(song.youtubeEmbedUrl);
 
@@ -108,7 +68,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-3 md:pt-4">
+      <section className="site-container pt-40 md:pt-4">
         <div className="mb-5 flex items-center justify-between gap-4">
           <Link href="/sarkilarim" className="pill-button secondary">
             ← Şarkılarım
@@ -137,7 +97,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
             <div>
               <div className="mb-5 flex flex-wrap gap-2">
                 <span className="rounded-full bg-[#FFF4BC] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#4B232D]">
-                  {song.type}
+                  Single
                 </span>
 
                 <span className="rounded-full bg-[#BDEBE8]/76 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#4B232D]">
@@ -145,11 +105,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
                 </span>
 
                 <span className="rounded-full bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#4B232D]/66">
-                  {song.language}
-                </span>
-
-                <span className="rounded-full bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#4B232D]/66">
-                  {song.genre}
+                  Kürtçe
                 </span>
               </div>
 
@@ -163,9 +119,11 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
                 {song.artist}
               </p>
 
-              <p className="mt-6 max-w-2xl text-sm leading-8 text-[#4B232D]/72">
-                {song.description}
-              </p>
+              {song.description ? (
+                <p className="mt-6 max-w-2xl text-sm leading-8 text-[#4B232D]/72">
+                  {song.description}
+                </p>
+              ) : null}
 
               <div className="mt-7 flex flex-wrap gap-2">
                 {song.platforms.map((platform) => (
@@ -174,7 +132,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
 
                 <Link
                   href="/giris"
-                  className="rounded-full border border-[#4B232D]/12 bg-[#FFF4BC]/86 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
+                  className="rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
                 >
                   Siteden İndir
                 </Link>
@@ -190,11 +148,6 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
             <p className="section-eyebrow">Dinle</p>
 
             <h2 className="section-title">Platform oynatıcıları</h2>
-
-            <p className="mt-4 text-sm leading-7 text-[#4B232D]/70">
-              Şarkı hangi platformlarda yayınlandıysa burada o platformlara ait
-              oynatıcı ve bağlantılar gösterilir.
-            </p>
 
             <div className="mt-6 grid gap-4">
               {hasYoutube ? (
@@ -224,7 +177,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
                 </div>
               ) : null}
 
-                            {!hasYoutube && !hasSpotify ? (
+              {!hasYoutube && !hasSpotify ? (
                 <div className="flex min-h-[220px] items-center justify-center rounded-[26px] border border-white/24 bg-white/34 p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
                   <div>
                     <p className="section-eyebrow">Dinleme</p>
@@ -246,7 +199,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
               </h2>
 
               <p className="mt-5 text-sm leading-8 text-[#4B232D]/72">
-                {song.story || song.shortDescription}
+                {song.description || "Bu şarkının notu daha sonra eklenecek."}
               </p>
             </article>
 
@@ -258,61 +211,24 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
               </h2>
 
               <p className="mt-4 text-sm leading-7 text-[#4B232D]/70">
-                İndirme dosyaları üyelik gerektirebilir. Aktif olmayan
-                dosyalar hazır olduğunda açılır.
+                İndirme dosyaları üyelik gerektirebilir.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                {song.downloads.map((download) => (
-                  <DownloadButton
-                    key={`${download.label}-${download.format}`}
-                    download={download}
-                  />
-                ))}
+                <Link
+                  href="/giris"
+                  className="rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-4 py-2 text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5"
+                >
+                  MP3 İndir
+                </Link>
               </div>
             </article>
           </aside>
         </div>
       </section>
 
-      <section className="site-container section-space">
-        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-          <article className="rounded-[34px] border border-white/35 bg-white/56 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-9">
-            <p className="section-eyebrow">Credits</p>
-
-            <h2 className="section-title">Emeği geçenler</h2>
-
-            <div className="mt-6 grid gap-3">
-              {song.credits?.vocal ? (
-                <div className="rounded-2xl border border-[#4B232D]/10 bg-white/48 px-5 py-4 text-sm text-[#4B232D]/72">
-                  <strong className="text-[#4B232D]">Vokal:</strong>{" "}
-                  {song.credits.vocal}
-                </div>
-              ) : null}
-
-              {song.credits?.lyrics ? (
-                <div className="rounded-2xl border border-[#4B232D]/10 bg-white/48 px-5 py-4 text-sm text-[#4B232D]/72">
-                  <strong className="text-[#4B232D]">Söz:</strong>{" "}
-                  {song.credits.lyrics}
-                </div>
-              ) : null}
-
-              {song.credits?.music ? (
-                <div className="rounded-2xl border border-[#4B232D]/10 bg-white/48 px-5 py-4 text-sm text-[#4B232D]/72">
-                  <strong className="text-[#4B232D]">Müzik:</strong>{" "}
-                  {song.credits.music}
-                </div>
-              ) : null}
-
-              {song.credits?.guitar ? (
-                <div className="rounded-2xl border border-[#4B232D]/10 bg-white/48 px-5 py-4 text-sm text-[#4B232D]/72">
-                  <strong className="text-[#4B232D]">Gitar:</strong>{" "}
-                  {song.credits.guitar}
-                </div>
-              ) : null}
-            </div>
-          </article>
-
+      {song.lyrics ? (
+        <section className="site-container section-space">
           <article className="rounded-[34px] border border-[#4B232D]/10 bg-[#4B232D]/88 p-7 text-white shadow-[0_18px_50px_rgba(75,35,45,0.14)] backdrop-blur-[14px] md:p-9">
             <p className="section-eyebrow light">Sözler</p>
 
@@ -320,18 +236,12 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
               Şarkımın sözleri
             </h2>
 
-            {song.lyrics ? (
-              <p className="mt-5 whitespace-pre-line text-sm leading-8 text-white/72">
-                {song.lyrics}
-              </p>
-            ) : (
-              <p className="mt-5 text-sm leading-8 text-white/72">
-                Şarkımın sözleri daha sonra bu alana eklenecek.
-              </p>
-            )}
+            <p className="mt-5 whitespace-pre-line text-sm leading-8 text-white/72">
+              {song.lyrics}
+            </p>
           </article>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {relatedSongs.length > 0 ? (
         <section className="site-container section-space">
@@ -347,37 +257,25 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
               </Link>
             </div>
 
-            <div className="music-grid">
+            <div className="mt-6 grid gap-3 md:grid-cols-3">
               {relatedSongs.map((relatedSong) => (
-                <article key={relatedSong.slug} className="music-card soft-card">
-                  <Link
-                    href={`/sarkilarim/${relatedSong.slug}`}
-                    className="music-cover"
-                  >
-                    <Image
-                      src={relatedSong.coverImage}
-                      alt={`${relatedSong.title} kapak görseli`}
-                      fill
-                      sizes="(max-width: 900px) 100vw, 33vw"
-                      className="object-cover"
-                    />
-                  </Link>
+                <Link
+                  key={relatedSong.slug}
+                  href={`/sarkilarim/${relatedSong.slug}`}
+                  className="rounded-[22px] border border-white/42 bg-white/64 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] transition hover:-translate-y-0.5 hover:bg-white/78"
+                >
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/45">
+                    Şarkılarım
+                  </p>
 
-                  <div className="music-card-body">
-                    <span>{relatedSong.type}</span>
-                    <h3>{relatedSong.title}</h3>
-                    <p>{relatedSong.shortDescription}</p>
+                  <h3 className="mt-2 text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D]">
+                    {relatedSong.title}
+                  </h3>
 
-                    <div className="card-actions">
-                      <Link
-                        href={`/sarkilarim/${relatedSong.slug}`}
-                        className="text-link"
-                      >
-                        Detay
-                      </Link>
-                    </div>
-                  </div>
-                </article>
+                  <p className="mt-2 text-[12px] leading-6 text-[#4B232D]/66">
+                    {relatedSong.artist}
+                  </p>
+                </Link>
               ))}
             </div>
           </div>
@@ -386,7 +284,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
 
       <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Resul Tankılıç Tarafından Tasarlanmıştır.</span>
+        <span>resultankilic.ai tarafından tasarlanmıştır</span>
       </footer>
     </main>
   );
