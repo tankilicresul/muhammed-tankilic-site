@@ -18,6 +18,16 @@ type TableCountResult = {
   error: string | null;
 };
 
+type AdminCard = {
+  title: string;
+  description: string;
+  href: string;
+  status: "active" | "soon";
+  countLabel: string;
+  count: number;
+  error: string | null;
+};
+
 async function getTableCount(tableName: AdminTableName): Promise<TableCountResult> {
   const supabase = await createClient();
 
@@ -53,46 +63,61 @@ export default async function AdminPage() {
       getTableCount("site_texts"),
     ]);
 
-  const adminCards = [
+  const adminCards: AdminCard[] = [
     {
       title: "Şarkı Yönetimi",
-      description:
-        "Yeni şarkı ekle, mevcut şarkıları düzenle, Spotify, Apple Music ve YouTube bağlantılarını yönet.",
+      description: "Şarkı ekle, düzenle ve platform bağlantılarını yönet.",
       href: "/admin/sarkilar",
-      label: "Yönet",
-      countLabel: "Kayıtlı şarkı",
+      status: "active",
+      countLabel: "kayıtlı şarkı",
       count: songsCount.count,
       error: songsCount.error,
     },
     {
       title: "Cover Yönetimi",
-      description:
-        "YouTube cover videolarını, açıklamaları ve Instagram bağlantılarını panelden güncelle.",
+      description: "Cover videolarını, açıklamaları ve bağlantıları güncelle.",
       href: "/admin/coverlar",
-      label: "Yönet",
-      countLabel: "Kayıtlı cover",
+      status: "active",
+      countLabel: "kayıtlı cover",
       count: coversCount.count,
       error: coversCount.error,
     },
     {
       title: "Fotoğraf Yönetimi",
-      description:
-        "Fotoğraf yükle, galeri görsellerini düzenle, kategorilendir ve yayına al.",
+      description: "Galeri görsellerini yükle, düzenle ve yayına al.",
       href: "/admin/fotograflar",
-      label: "Yakında",
-      countLabel: "Kayıtlı fotoğraf",
+      status: "active",
+      countLabel: "kayıtlı fotoğraf",
       count: photosCount.count,
       error: photosCount.error,
     },
     {
       title: "Site Metinleri",
-      description:
-        "Ana sayfa, misyon yazısı, iletişim metinleri ve sayfa açıklamalarını kod yazmadan düzenle.",
+      description: "Ana sayfa ve iletişim metinleri ileride buradan yönetilecek.",
       href: "/admin/metinler",
-      label: "Yakında",
-      countLabel: "Kayıtlı metin",
+      status: "soon",
+      countLabel: "kayıtlı metin",
       count: siteTextsCount.count,
       error: siteTextsCount.error,
+    },
+  ];
+
+  const statCards = [
+    {
+      label: "Şarkılar",
+      count: songsCount.count,
+    },
+    {
+      label: "Coverlar",
+      count: coversCount.count,
+    },
+    {
+      label: "Fotoğraflar",
+      count: photosCount.count,
+    },
+    {
+      label: "Site Metinleri",
+      count: siteTextsCount.count,
     },
   ];
 
@@ -103,65 +128,40 @@ export default async function AdminPage() {
       <Navbar />
 
       <section className="site-container pt-40 md:pt-10">
-        <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
-          <div className="text-center">
-            <p className="section-eyebrow">Admin Paneli</p>
+        <div className="rounded-[24px] border border-white/35 bg-white/66 p-3 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[34px] md:p-6">
+          <div className="flex flex-col gap-3 text-center md:flex-row md:items-end md:justify-between md:text-left">
+            <div>
+              <p className="section-eyebrow mb-1">Admin Paneli</p>
 
-            <h1 className="mx-auto max-w-3xl text-[clamp(28px,7vw,48px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
-              Site içeriklerini buradan yöneteceğiz.
-            </h1>
+              <h1 className="max-w-2xl text-[clamp(30px,5vw,48px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
+                İçerik yönetimi
+              </h1>
+            </div>
 
-            <p className="mx-auto mt-4 max-w-2xl text-[12px] leading-7 text-[#4B232D]/70 md:text-sm md:leading-8">
-              Bu alan sadece yetkili admin hesabına açıktır. Şarkılar,
-              coverlar, fotoğraflar ve site metinleri ilerleyen adımlarda bu
-              panelden yönetilecek.
-            </p>
-
-            <div className="mx-auto mt-4 inline-flex rounded-full border border-[#4B232D]/10 bg-white/70 px-4 py-2 text-[11px] font-bold text-[#4B232D]/70 md:text-xs">
+            <div className="mx-auto inline-flex rounded-full border border-[#4B232D]/10 bg-white/74 px-4 py-2 text-[10.5px] font-bold text-[#4B232D]/68 shadow-[0_8px_20px_rgba(75,35,45,0.045)] md:mx-0 md:text-xs">
               Admin: {admin.email}
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 md:mt-8 md:grid-cols-4">
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Şarkılar
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {songsCount.count}
-              </p>
-            </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 md:mt-6 md:grid-cols-4 md:gap-3">
+            {statCards.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-[18px] border border-white/42 bg-white/64 px-3 py-3 text-center shadow-[0_8px_22px_rgba(75,35,45,0.055)] backdrop-blur-[12px] md:rounded-[22px] md:py-4"
+              >
+                <p className="text-[8.5px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/48 md:text-[10px]">
+                  {item.label}
+                </p>
 
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Coverlar
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {coversCount.count}
-              </p>
-            </div>
-
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Fotoğraflar
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {photosCount.count}
-              </p>
-            </div>
-
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Site Metinleri
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {siteTextsCount.count}
-              </p>
-            </div>
+                <p className="mt-1 text-[26px] font-semibold leading-none tracking-[-0.06em] text-[#4B232D] md:text-[32px]">
+                  {item.count}
+                </p>
+              </div>
+            ))}
           </div>
 
           {hasDatabaseError ? (
-            <div className="mt-5 rounded-[22px] border border-red-200/70 bg-red-50/80 p-4 text-left text-[12px] leading-6 text-red-800">
+            <div className="mt-4 rounded-[18px] border border-red-200/70 bg-red-50/80 p-3 text-left text-[11px] leading-5 text-red-800 md:rounded-[22px] md:p-4 md:text-xs md:leading-6">
               <p className="font-bold">Veritabanı okuma uyarısı</p>
 
               <ul className="mt-2 space-y-1">
@@ -175,45 +175,56 @@ export default async function AdminPage() {
               </ul>
             </div>
           ) : (
-            <div className="mt-5 rounded-[22px] border border-emerald-200/70 bg-emerald-50/70 p-4 text-center text-[12px] font-bold text-emerald-800">
-              Supabase bağlantısı başarılı. Admin panel veritabanı tablolarını
-              okuyabiliyor.
+            <div className="mt-4 rounded-[18px] border border-emerald-200/70 bg-emerald-50/72 px-4 py-3 text-center text-[11px] font-bold text-emerald-800 md:rounded-[22px] md:text-xs">
+              Supabase bağlantısı başarılı.
             </div>
           )}
 
-          <div className="mt-6 grid gap-3 md:mt-8 md:grid-cols-2">
+          <div className="mt-4 grid gap-3 md:mt-6 md:grid-cols-2">
             {adminCards.map((card) => (
-              <div
+              <article
                 key={card.title}
-                className="rounded-[20px] border border-white/42 bg-white/62 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[28px] md:p-6"
+                className="rounded-[20px] border border-white/42 bg-white/64 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px] md:p-5"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[32px]">
+                  <div className="min-w-0">
+                    <h2 className="text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[30px]">
                       {card.title}
                     </h2>
 
-                    <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/45">
+                    <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/45 md:text-[11px]">
                       {card.count} {card.countLabel}
                     </p>
                   </div>
 
-                  <span className="shrink-0 rounded-full bg-[#FFF4BC]/90 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/70">
-                    {card.label}
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 text-[8.5px] font-bold uppercase tracking-[0.14em] ${
+                      card.status === "active"
+                        ? "bg-[#F5AE50]/90 text-[#4B232D]"
+                        : "bg-[#FFF4BC]/90 text-[#4B232D]/70"
+                    }`}
+                  >
+                    {card.status === "active" ? "Yönet" : "Yakında"}
                   </span>
                 </div>
 
-                <p className="mt-3 text-[12px] leading-6 text-[#4B232D]/70 md:text-sm md:leading-7">
+                <p className="mt-3 text-[12px] leading-6 text-[#4B232D]/70 md:text-[13px] md:leading-7">
                   {card.description}
                 </p>
 
-                <Link
-                  href={card.href}
-                  className="mt-5 inline-flex min-h-9 items-center justify-center rounded-full bg-[#4B232D] px-4 text-[11px] font-bold text-white shadow-[0_10px_22px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36] md:min-h-10 md:text-xs"
-                >
-                  Bölüme Git
-                </Link>
-              </div>
+                {card.status === "active" ? (
+                  <Link
+                    href={card.href}
+                    className="mt-4 inline-flex min-h-9 min-w-[132px] items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-5 text-[11px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-10 md:text-xs"
+                  >
+                    Bölüme Git
+                  </Link>
+                ) : (
+                  <span className="mt-4 inline-flex min-h-9 min-w-[132px] items-center justify-center rounded-full border border-[#F5AE50]/50 bg-[#F5AE50]/70 px-5 text-[11px] font-bold text-[#4B232D]/70 shadow-[0_10px_22px_rgba(245,174,80,0.12)] md:min-h-10 md:text-xs">
+                    Yakında
+                  </span>
+                )}
+              </article>
             ))}
           </div>
         </div>
