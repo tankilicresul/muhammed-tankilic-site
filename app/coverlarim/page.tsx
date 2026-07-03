@@ -304,7 +304,7 @@ export default async function CoverlarimPage() {
 
      <footer className="site-container site-footer">
         <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Resul Tankılıç Tarafından Tasarlanmıştır.</span>
+        <span>resultankilic.ai tarafından tasarlanmıştır</span>
       </footer>
     </main>
   );
