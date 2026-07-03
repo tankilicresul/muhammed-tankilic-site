@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+
 import Navbar from "@/components/Navbar";
 import { checkIsAdmin } from "@/lib/admin/is-admin";
 import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fotoğraf Yönetimi | Admin Paneli",
@@ -14,15 +18,8 @@ export const metadata: Metadata = {
 type PhotoRow = {
   id: string;
   title: string;
-  description: string | null;
-  image_url: string;
-  storage_path: string | null;
-  alt_text: string | null;
   release_status: "draft" | "published" | "hidden";
-  sort_order: number;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
+  sort_order: number | null;
 };
 
 const statusLabels: Record<PhotoRow["release_status"], string> = {
@@ -31,22 +28,39 @@ const statusLabels: Record<PhotoRow["release_status"], string> = {
   hidden: "Gizli",
 };
 
-const statusClasses: Record<PhotoRow["release_status"], string> = {
-  draft: "bg-[#FFF4BC]/90 text-[#4B232D]",
-  published: "bg-emerald-50 text-emerald-800",
-  hidden: "bg-zinc-100 text-zinc-700",
-};
+function isPublishedStatus(status: PhotoRow["release_status"]) {
+  return status === "published";
+}
 
-function formatDate(value: string | null) {
-  if (!value) {
-    return "—";
+async function deletePhotoAction(formData: FormData) {
+  "use server";
+
+  const admin = await checkIsAdmin();
+
+  if (!admin.userId) {
+    redirect("/giris");
   }
 
-  return new Intl.DateTimeFormat("tr-TR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(value));
+  if (!admin.isAdmin) {
+    redirect("/hesabim");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+
+  if (!id) {
+    redirect("/admin/fotograflar");
+  }
+
+  const supabase = await createClient();
+
+  await supabase.from("photos").delete().eq("id", id);
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/fotograflar");
+  revalidatePath("/fotograflar");
+
+  redirect("/admin/fotograflar");
 }
 
 export default async function AdminPhotosPage() {
@@ -68,210 +82,166 @@ export default async function AdminPhotosPage() {
       `
         id,
         title,
-        description,
-        image_url,
-        storage_path,
-        alt_text,
         release_status,
-        sort_order,
-        published_at,
-        created_at,
-        updated_at
+        sort_order
       `,
     )
     .order("sort_order", { ascending: true })
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
+    .order("title", { ascending: true });
 
   const photos = (data ?? []) as PhotoRow[];
+
+  const publishedCount = photos.filter((photo) =>
+    isPublishedStatus(photo.release_status),
+  ).length;
+
+  const draftHiddenCount = photos.filter(
+    (photo) => !isPublishedStatus(photo.release_status),
+  ).length;
+
+  const statCards = [
+    { label: "Toplam", value: photos.length },
+    { label: "Yayında", value: publishedCount },
+    { label: "Taslak", value: draftHiddenCount },
+  ];
 
   return (
     <main className="page-shell">
       <Navbar />
 
       <section className="site-container pt-40 md:pt-10">
-        <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="rounded-[24px] border border-white/35 bg-white/66 p-3 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[34px] md:p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="section-eyebrow">Admin Paneli</p>
+              <p className="section-eyebrow mb-1">Admin Paneli</p>
 
-              <h1 className="text-[clamp(28px,7vw,48px)] font-semibold leading-none tracking-[-0.07em] text-[#4B232D]">
+              <h1 className="text-[clamp(30px,5vw,48px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
                 Fotoğraf Yönetimi
               </h1>
-
-              <p className="mt-4 max-w-2xl text-[12px] leading-7 text-[#4B232D]/70 md:text-sm md:leading-8">
-                Bu sayfada Supabase’deki fotoğraf kayıtlarını listeliyoruz.
-                Yayında olan fotoğraflar public Fotoğraflarım sayfasında
-                gösterilecek.
-              </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/admin"
-                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/70 px-4 text-[11px] font-bold text-[#4B232D]/70 transition hover:-translate-y-0.5 hover:bg-white md:text-xs"
+                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/78 px-4 text-[11px] font-bold text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white md:text-xs"
               >
                 Admin Ana Sayfa
               </Link>
 
-              <Link 
-  href="/admin/fotograflar/yeni"
-  className="inline-flex min-h-10 items-center justify-center rounded-full !bg-[#4B232D] px-4 text-[11px] font-bold !text-white shadow-[0_10px_22px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:!bg-[#5a2b36] md:text-xs"
->
-  Yeni Fotoğraf Ekle
-</Link>
+              <Link
+                href="/admin/fotograflar/yeni"
+                className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-4 text-[11px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:text-xs"
+              >
+                Yeni Fotoğraf Ekle
+              </Link>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Toplam Fotoğraf
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {photos.length}
-              </p>
-            </div>
+          <div className="mt-4 grid grid-cols-3 gap-2 md:mt-6 md:gap-3">
+            {statCards.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-[18px] border border-white/42 bg-white/64 px-3 py-3 text-center shadow-[0_8px_22px_rgba(75,35,45,0.055)] backdrop-blur-[12px] md:rounded-[22px] md:py-4"
+              >
+                <p className="text-[8.5px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/48 md:text-[10px]">
+                  {item.label}
+                </p>
 
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Yayında
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {
-                  photos.filter(
-                    (photo) => photo.release_status === "published",
-                  ).length
-                }
-              </p>
-            </div>
-
-            <div className="rounded-[20px] border border-white/42 bg-white/62 p-4 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:rounded-[26px]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/50">
-                Taslak / Gizli
-              </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                {
-                  photos.filter(
-                    (photo) => photo.release_status !== "published",
-                  ).length
-                }
-              </p>
-            </div>
+                <p className="mt-1 text-[26px] font-semibold leading-none tracking-[-0.06em] text-[#4B232D] md:text-[32px]">
+                  {item.value}
+                </p>
+              </div>
+            ))}
           </div>
 
           {error ? (
-            <div className="mt-6 rounded-[22px] border border-red-200/70 bg-red-50/80 p-4 text-[12px] leading-6 text-red-800">
-              <p className="font-bold">Fotoğraflar okunamadı.</p>
-              <p className="mt-1">{error.message}</p>
+            <div className="mt-4 rounded-[18px] border border-red-200/70 bg-red-50/80 p-3 text-[11px] font-semibold leading-5 text-red-800 md:rounded-[22px] md:p-4 md:text-xs">
+              Fotoğraflar okunurken hata oluştu: {error.message}
             </div>
           ) : null}
 
-          {!error && photos.length === 0 ? (
-            <div className="mt-6 rounded-[24px] border border-white/42 bg-white/62 p-6 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px]">
-              <p className="text-lg font-semibold tracking-[-0.04em] text-[#4B232D]">
-                Henüz Supabase’de kayıtlı fotoğraf yok.
-              </p>
-
-              <p className="mx-auto mt-3 max-w-xl text-[12px] leading-7 text-[#4B232D]/65 md:text-sm">
-                “Yeni Fotoğraf Ekle” formuyla fotoğraf yükleyip yayın durumunu
-                seçebilirsin.
-              </p>
+          <div className="mt-4 overflow-hidden rounded-[22px] border border-white/42 bg-white/68 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px] md:mt-6 md:rounded-[28px]">
+            <div className="grid grid-cols-[1.35fr_62px_34px_116px] items-center gap-2 border-b border-[#4B232D]/10 px-3 py-3 text-[8.5px] font-bold uppercase tracking-[0.12em] text-[#4B232D]/48 md:grid-cols-[1.65fr_0.55fr_0.35fr_0.95fr] md:px-5 md:py-4 md:text-[10px] md:tracking-[0.18em]">
+              <span>Fotoğraf</span>
+              <span>Durum</span>
+              <span>Sıra</span>
+              <span>İşlem</span>
             </div>
-          ) : null}
 
-          {!error && photos.length > 0 ? (
-            <div className="mt-6 overflow-hidden rounded-[24px] border border-white/42 bg-white/62 shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[12px]">
-              <div className="hidden grid-cols-[0.8fr_1.15fr_0.65fr_0.65fr_0.75fr_0.55fr] gap-3 border-b border-[#4B232D]/10 px-5 py-4 text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/45 md:grid">
-                <span>Görsel</span>
-                <span>Fotoğraf</span>
-                <span>Durum</span>
-                <span>Sıralama</span>    
-                <span>Güncelleme</span>
-                <span>Link</span>
+            {photos.length === 0 ? (
+              <div className="px-4 py-10 text-center">
+                <p className="text-[22px] font-semibold tracking-[-0.065em] text-[#4B232D]">
+                  Henüz fotoğraf kaydı yok.
+                </p>
+
+                <Link
+                  href="/admin/fotograflar/yeni"
+                  className="mt-5 inline-flex min-h-10 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-5 text-[11px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:text-xs"
+                >
+                  Yeni Fotoğraf Ekle
+                </Link>
               </div>
+            ) : (
+              photos.map((photo) => {
+                const published = isPublishedStatus(photo.release_status);
 
-              <div className="divide-y divide-[#4B232D]/10">
-                {photos.map((photo) => (
-                  <article
+                return (
+                  <div
                     key={photo.id}
-                    className="grid gap-4 px-5 py-5 md:grid-cols-[0.8fr_1.15fr_0.65fr_0.65fr_0.75fr_0.55fr] md:items-center md:gap-3"
+                    className="grid grid-cols-[1.35fr_62px_34px_116px] items-center gap-2 border-b border-[#4B232D]/10 px-3 py-3 text-[#4B232D] last:border-b-0 md:grid-cols-[1.65fr_0.55fr_0.35fr_0.95fr] md:px-5 md:py-4"
                   >
-                    <div>
-                      <div className="relative aspect-[4/3] w-full max-w-[150px] overflow-hidden rounded-[18px] border border-white/42 bg-white/70 shadow-[0_10px_24px_rgba(75,35,45,0.08)]">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={photo.image_url}
-                          alt={photo.alt_text || photo.title}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <h2 className="text-xl font-semibold tracking-[-0.055em] text-[#4B232D]">
+                    <div className="min-w-0">
+                      <p className="truncate text-[12px] font-bold tracking-[-0.035em] md:text-base">
                         {photo.title}
-                      </h2>
-
-                      {photo.description ? (
-                        <p className="mt-2 line-clamp-2 text-[12px] leading-6 text-[#4B232D]/65">
-                          {photo.description}
-                        </p>
-                      ) : null}
-
-                      {photo.storage_path ? (
-                        <p className="mt-1 text-[10px] font-bold text-[#4B232D]/38">
-                          {photo.storage_path}
-                        </p>
-                      ) : null}
+                      </p>
                     </div>
 
                     <div>
                       <span
-                        className={`inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.13em] ${
-                          statusClasses[photo.release_status]
+                        className={`inline-flex min-h-7 items-center justify-center rounded-full px-2 text-[8px] font-bold uppercase tracking-[0.08em] md:px-3 md:text-[10px] ${
+                          published
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-[#FFF4BC] text-[#4B232D]"
                         }`}
                       >
                         {statusLabels[photo.release_status]}
                       </span>
                     </div>
 
-                    <div className="text-[12px] font-bold text-[#4B232D]/65">
-                      {photo.sort_order}
+                    <div className="text-[11px] font-bold md:text-sm">
+                      {photo.sort_order ?? 0}
                     </div>
 
-                    <div className="text-[12px] font-bold text-[#4B232D]/65">
-                      {formatDate(photo.updated_at)}
+                    <div className="flex items-center justify-end gap-1.5 md:justify-start md:gap-2">
+                      <Link
+                        href={`/admin/fotograflar/${photo.id}/duzenle`}
+                        className="inline-flex min-h-8 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-2.5 text-[9px] font-bold text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.16)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-9 md:px-4 md:text-[11px]"
+                      >
+                        Düzenle
+                      </Link>
+
+                      <form action={deletePhotoAction}>
+                        <input type="hidden" name="id" value={photo.id} />
+
+                        <button
+                          type="submit"
+                          className="inline-flex min-h-8 items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/84 px-2.5 text-[9px] font-bold text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 md:min-h-9 md:px-4 md:text-[11px]"
+                        >
+                          Sil
+                        </button>
+                      </form>
                     </div>
-
-                   <div className="flex flex-wrap gap-2">
-  <Link
-    href={`/admin/fotograflar/${photo.id}/duzenle`}
-    className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/75 px-4 text-[11px] font-bold text-[#4B232D]/75 transition hover:-translate-y-0.5 hover:bg-white"
-  >
-    Düzenle
-  </Link>
-
-  <a
-    href={photo.image_url}
-    target="_blank"
-    rel="noreferrer"
-    className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/55 px-4 text-[11px] font-bold text-[#4B232D]/60 transition hover:-translate-y-0.5 hover:bg-white"
-  >
-    Aç
-  </a>
-</div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          ) : null}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </section>
 
       <footer className="site-container site-footer">
-        <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Resul Tankılıç Tarafından Tasarlanmıştır.</span>
+        <p>© 2026 Muhammed Tankılıç. Admin paneli.</p>
+        <span>Fotoğraf yönetimi</span>
       </footer>
     </main>
   );
