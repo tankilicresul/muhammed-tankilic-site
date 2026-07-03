@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -7,11 +7,11 @@ import AdminLogoHotspot from "@/components/AdminLogoHotspot";
 import AuthButtons from "@/components/AuthButtons";
 
 const navItems = [
-  { label: "Menü", href: "/" },
-  { label: "Coverlarım", href: "/coverlarim" },
-  { label: "Şarkılarım", href: "/sarkilarim" },
-  { label: "Fotoğraflarım", href: "/fotograflar" },
-  { label: "İletişim", href: "/iletisim" },
+  { label: "MenÃ¼", href: "/" },
+  { label: "CoverlarÄ±m", href: "/coverlarim" },
+  { label: "ÅarkÄ±larÄ±m", href: "/sarkilarim" },
+  { label: "FotoÄŸraflarÄ±m", href: "/fotograflar" },
+  { label: "Ä°letiÅŸim", href: "/iletisim" },
 ];
 
 export default function Navbar() {
@@ -20,13 +20,13 @@ export default function Navbar() {
   return (
     <header className="navbar-wrap">
       <div className="site-container">
-        <nav className="navbar-shell" aria-label="Ana menü">
+        <nav className="navbar-shell" aria-label="Ana menÃ¼">
           <div className="hidden w-full items-center justify-between gap-3 sm:flex sm:w-auto">
-            <div className="brand-link" aria-label="Muhammed Tankılıç">
+            <div className="brand-link" aria-label="Muhammed TankÄ±lÄ±Ã§">
               <span className="brand-mark relative">
                 <Image
                   src="/icon-512.png"
-                  alt="Muhammed Tankılıç"
+                  alt="Muhammed TankÄ±lÄ±Ã§"
                   fill
                   sizes="48px"
                   className="brand-mark-image scale-[1.24]"
@@ -37,8 +37,8 @@ export default function Navbar() {
               </span>
 
               <Link href="/" className="brand-copy" aria-label="Ana sayfa">
-                <strong>Muhammed Tankılıç</strong>
-                <small>Müzik · Sözler · Hikâyeler</small>
+                <strong>Muhammed TankÄ±lÄ±Ã§</strong>
+                <small>MÃ¼zik Â· SÃ¶zler Â· HikÃ¢yeler</small>
               </Link>
             </div>
           </div>
@@ -48,7 +48,7 @@ export default function Navbar() {
               <span className="relative h-9 w-9 flex-none overflow-hidden rounded-[13px] bg-[#BDEBE8]">
                 <Image
                   src="/icon-512.png"
-                  alt="Muhammed Tankılıç"
+                  alt="Muhammed TankÄ±lÄ±Ã§"
                   fill
                   sizes="36px"
                   className="object-cover scale-[1.24]"
@@ -64,10 +64,10 @@ export default function Navbar() {
                 aria-label="Ana sayfa"
               >
                 <strong className="truncate text-[12px] font-bold tracking-[-0.035em] text-[#4B232D]">
-                  Muhammed Tankılıç
+                  Muhammed TankÄ±lÄ±Ã§
                 </strong>
                 <small className="mt-1 truncate text-[9px] font-normal text-[#4B232D]/58">
-                  Müzik · Sözler · Hikâyeler
+                  MÃ¼zik Â· SÃ¶zler Â· HikÃ¢yeler
                 </small>
               </Link>
             </div>
