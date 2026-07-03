@@ -184,6 +184,7 @@ button {
   border-radius: var(--radius-pill);
   background: var(--orange);
   color: var(--burgundy);
+  border: 1px solid transparent;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -196,7 +197,7 @@ button {
 }
 
 .pill-button.secondary {
-  background: rgba(255, 255, 255, 0.64);
+  background: rgba(255, 255, 255, 0.84);
   color: var(--burgundy);
   border: 1px solid rgba(75, 35, 45, 0.1);
   box-shadow: none;
@@ -212,6 +213,7 @@ button {
 .pill-button.dark {
   background: var(--burgundy);
   color: white;
+  border-color: transparent;
   box-shadow: 0 12px 34px rgba(75, 35, 45, 0.18);
 }
 
@@ -1311,3 +1313,192 @@ b {
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+/* Button color system
+   Turuncu zemin => kahverengi yazı
+   Kahverengi zemin => beyaz yazı
+   Beyaz zemin => kahverengi yazı
+*/
+
+.btn-pill {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-pill);
+  padding: 10px 17px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease,
+    filter 180ms ease;
+}
+
+.btn-pill:hover {
+  transform: translateY(-2px);
+}
+
+.btn-orange,
+.button-orange {
+  background: var(--orange) !important;
+  color: var(--burgundy) !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 30px rgba(245, 174, 80, 0.24);
+}
+
+.btn-orange:hover,
+.button-orange:hover {
+  filter: brightness(0.98);
+  box-shadow: 0 18px 42px rgba(245, 174, 80, 0.32);
+}
+
+.btn-brown,
+.button-brown {
+  background: var(--burgundy) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 34px rgba(75, 35, 45, 0.18);
+}
+
+.btn-brown:hover,
+.button-brown:hover {
+  filter: brightness(1.06);
+}
+
+.btn-white,
+.button-white {
+  background: rgba(255, 255, 255, 0.84) !important;
+  color: var(--burgundy) !important;
+  border: 1px solid rgba(75, 35, 45, 0.12) !important;
+  box-shadow: none;
+}
+
+.btn-white:hover,
+.button-white:hover {
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+/* Mevcut .pill-button varyantlarının final renk garantisi */
+.pill-button {
+  background: var(--orange);
+  color: var(--burgundy);
+}
+
+.pill-button.secondary,
+.pill-button.ghost {
+  color: var(--burgundy);
+}
+
+.pill-button.dark {
+  background: var(--burgundy);
+  color: white;
+}
+
+/* Tailwind arbitrary color kullanılan CTA'ları proje tonuna sabitle */
+.bg-\[\#F5AE50\],
+.bg-\[\#F5AE50\]\/90,
+.hover\:bg-\[\#F5AE50\]:hover,
+.bg-orange-300,
+.bg-orange-400,
+.bg-amber-300,
+.bg-amber-400 {
+  background-color: var(--orange) !important;
+  color: var(--burgundy) !important;
+  border-color: transparent !important;
+}
+
+.bg-\[\#4B232D\],
+.bg-\[\#4B232D\]\/88,
+.bg-\[\#4B232D\]\/90,
+.\!bg-\[\#4B232D\] {
+  background-color: var(--burgundy) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Turuncu zeminli butonların içindeki span/icon/yazıları kahverengi kalır */
+.btn-orange *,
+.button-orange *,
+.pill-button *,
+.bg-\[\#F5AE50\] *,
+.bg-\[\#F5AE50\]\/90 *,
+.bg-orange-300 *,
+.bg-orange-400 *,
+.bg-amber-300 *,
+.bg-amber-400 * {
+  color: var(--burgundy) !important;
+}
+
+/* Koyu zeminli butonların içindeki span/icon/yazıları beyaz kalır */
+.btn-brown *,
+.button-brown *,
+.pill-button.dark *,
+.bg-\[\#4B232D\] *,
+.bg-\[\#4B232D\]\/88 *,
+.bg-\[\#4B232D\]\/90 *,
+.\!bg-\[\#4B232D\] * {
+  color: white !important;
+}
+
+/* Navbar özel buton uyumu */
+.navbar-shell a[href="/kayit"],
+.navbar-shell a[href="/kayit"] * {
+  background-color: var(--orange) !important;
+  color: var(--burgundy) !important;
+}
+
+.navbar-shell a[href="/giris"],
+.navbar-shell a[href="/hesabim"] {
+  background-color: rgba(255, 255, 255, 0.84) !important;
+  color: var(--burgundy) !important;
+}
+
+.navbar-shell button,
+.navbar-shell a[href="/cikis"],
+.navbar-shell a[href*="cikis"] {
+  color: white !important;
+}
+
+/* Auth/form ana aksiyonlarında koyu zemin varsa beyaz yazı */
+button[type="submit"].bg-\[\#4B232D\],
+button[type="submit"].btn-brown {
+  background-color: var(--burgundy) !important;
+  color: white !important;
+}
+
+/* Turuncu formlar ve yönetim CTA'ları */
+a[href*="/yeni"],
+a[href="/kayit"],
+button[class*="bg-[#F5AE50]"],
+a[class*="bg-[#F5AE50]"] {
+  background-color: var(--orange) !important;
+  color: var(--burgundy) !important;
+}
+
+/* Beyaz buton güvenliği */
+.bg-white,
+.bg-white\/70,
+.bg-white\/78,
+.bg-white\/84,
+.bg-white\/95 {
+  color: var(--burgundy);
+}
+
+@media (max-width: 640px) {
+  .btn-pill {
+    min-height: 34px;
+    padding: 8px 13px;
+    font-size: 11px;
+  }
+}
+
