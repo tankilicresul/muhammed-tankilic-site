@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
-import { createClient } from "@/lib/supabase/server";
+import { getHomepageMedia } from "@/lib/supabase/public";
 import {
   latestSong,
   publishedSongs,
@@ -449,56 +449,7 @@ function SongCard({ song }: { song: Song }) {
 }
 
 export default async function Home() {
-  const supabase = await createClient();
-
-  const { data: coverData } = await supabase
-    .from("covers")
-    .select(
-      `
-        id,
-        slug,
-        title,
-        description,
-        release_status,
-        youtube_url,
-        youtube_embed_url,
-        instagram_url,
-        sort_order,
-        published_at,
-        created_at
-      `,
-    )
-    .eq("release_status", "published")
-    .order("sort_order", { ascending: true })
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
-
-  const { data: photoData } = await supabase
-    .from("photos")
-    .select(
-      `
-        id,
-        title,
-        description,
-        image_url,
-        alt_text,
-        media_type,
-        video_url,
-        video_embed_url,
-        thumbnail_url,
-        release_status,
-        sort_order,
-        published_at,
-        created_at
-      `,
-    )
-    .eq("release_status", "published")
-    .order("sort_order", { ascending: true })
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
-
-  const covers = (coverData ?? []) as CoverRow[];
-  const galleryItems = (photoData ?? []) as GalleryItem[];
+  const { covers, galleryItems } = await getHomepageMedia();
 
   return (
     <main className="page-shell">
