@@ -149,7 +149,7 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
             rel="noreferrer"
             className={`${mobileButtonClass} ${orangeButtonClass}`}
           >
-            ← YouTube Kanalım
+            ← Kanalım
           </a>
 
           <Link
@@ -192,7 +192,7 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
               rel="noreferrer"
               className={`${desktopButtonClass} ${orangeButtonClass}`}
             >
-              YouTube Kanalım
+              Kanalım
             </a>
 
             <Link
@@ -315,3 +315,4 @@ export default async function CoverlarimPage() {
     </main>
   );
 }
+

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
 import { getHomepageMedia } from "@/lib/supabase/public";
@@ -41,14 +41,14 @@ type GalleryItem = {
 
 const announcement = {
   type: "song" as "song" | "cover",
-  eyebrow: "Yeni Şarkım Çıktı",
-  title: `${latestSong.title} yayında.`,
-  description: "Spotify ve Apple Music’te dinleyebilirsin.",
+  eyebrow: "Yeni ÅarkÄ±m Ã‡Ä±ktÄ±",
+  title: `${latestSong.title} yayÄ±nda.`,
+  description: "Spotify ve Apple Musicâ€™te dinleyebilirsin.",
   href: `/sarkilarim/${latestSong.slug}`,
 };
 
 const announcementButtonLabel =
-  announcement.type === "cover" ? "Covera Git →" : "Şarkıya Git →";
+  announcement.type === "cover" ? "Covera Git â†’" : "ÅarkÄ±ya Git â†’";
 
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 const email = "muhammedtnklc@gmail.com";
@@ -57,9 +57,9 @@ const gmailComposeUrl =
   "https://mail.google.com/mail/?view=cm&fs=1&to=muhammedtnklc@gmail.com&su=%C4%B0leti%C5%9Fim%20Talebi";
 
 const aboutPoints = [
-  "Kürtçe şarkılarımı, bestelerimi ve yorumlarımı paylaşıyorum.",
-  "Resmi yayınlarım Spotify ve Apple Music’te yer alıyor.",
-  "Yayın, video, görsel ve iş birliği için bana yazabilirsin.",
+  "KÃ¼rtÃ§e ÅŸarkÄ±larÄ±mÄ±, bestelerimi ve yorumlarÄ±mÄ± paylaÅŸÄ±yorum.",
+  "Resmi yayÄ±nlarÄ±m Spotify ve Apple Musicâ€™te yer alÄ±yor.",
+  "YayÄ±n, video, gÃ¶rsel ve iÅŸ birliÄŸi iÃ§in bana yazabilirsin.",
 ];
 
 const platformLinks = [
@@ -188,14 +188,14 @@ function CoverCard({ cover }: { cover: CoverRow }) {
           </div>
         ) : (
           <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
-            Bu cover için henüz video bağlantısı eklenmedi.
+            Bu cover iÃ§in henÃ¼z video baÄŸlantÄ±sÄ± eklenmedi.
           </div>
         )}
 
         <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
           <p className="text-[12px] leading-6 text-[#4B232D]/74">
             {cover.description ??
-              "YouTube kanalımda paylaştığım cover yorumlarımdan biri."}
+              "YouTube kanalÄ±mda paylaÅŸtÄ±ÄŸÄ±m cover yorumlarÄ±mdan biri."}
           </p>
 
           <div className="mt-3 grid grid-cols-[1fr_88px] gap-2">
@@ -205,14 +205,14 @@ function CoverCard({ cover }: { cover: CoverRow }) {
               rel="noreferrer"
               className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
             >
-              ← YouTube Kanalım
+              â† YouTube KanalÄ±m
             </a>
 
             <Link
               href="/giris"
               className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
             >
-              İndir
+              Ä°ndir
             </Link>
           </div>
         </div>
@@ -222,19 +222,19 @@ function CoverCard({ cover }: { cover: CoverRow }) {
         <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
           <div className="flex h-full min-h-[312px] flex-col justify-between rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-7 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
             <div>
-              <p className="section-eyebrow">Coverlarım</p>
+              <p className="section-eyebrow">CoverlarÄ±m</p>
 
               <h3 className="mt-4 max-w-[12ch] break-words text-[clamp(38px,4vw,58px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
                 {cover.title}
               </h3>
 
               <p className="mt-4 text-sm font-medium text-[#4B232D]/64">
-                Muhammed Tankılıç
+                Muhammed TankÄ±lÄ±Ã§
               </p>
 
               <p className="mt-6 max-w-[36ch] text-sm leading-7 text-[#4B232D]/70">
                 {cover.description ??
-                  "YouTube kanalımda paylaştığım cover yorumlarımdan biri."}
+                  "YouTube kanalÄ±mda paylaÅŸtÄ±ÄŸÄ±m cover yorumlarÄ±mdan biri."}
               </p>
             </div>
 
@@ -245,14 +245,14 @@ function CoverCard({ cover }: { cover: CoverRow }) {
                 rel="noreferrer"
                 className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-4 text-center text-[12px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
               >
-                YouTube Kanalım
+                YouTube KanalÄ±m
               </a>
 
               <Link
                 href="/giris"
                 className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/72 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
               >
-                Siteden İndir
+                Siteden Ä°ndir
               </Link>
             </div>
           </div>
@@ -270,7 +270,7 @@ function CoverCard({ cover }: { cover: CoverRow }) {
             </div>
           ) : (
             <div className="flex aspect-video items-center justify-center rounded-[28px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
-              Bu cover için henüz video bağlantısı eklenmedi.
+              Bu cover iÃ§in henÃ¼z video baÄŸlantÄ±sÄ± eklenmedi.
             </div>
           )}
         </div>
@@ -295,13 +295,13 @@ function SongCard({ song }: { song: Song }) {
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
               className="block h-[152px] w-full border-0"
-              title={`${song.title} Spotify oynatıcı`}
+              title={`${song.title} Spotify oynatÄ±cÄ±`}
             />
           </div>
         ) : (
           <div className="flex min-h-[152px] items-center justify-center rounded-[18px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
             <p className="text-[12px] font-bold leading-6 text-white/80">
-              Spotify bağlantısı yakında.
+              Spotify baÄŸlantÄ±sÄ± yakÄ±nda.
             </p>
           </div>
         )}
@@ -351,7 +351,7 @@ function SongCard({ song }: { song: Song }) {
               href="/giris"
               className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-2 text-center text-[10.5px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
             >
-              İndir
+              Ä°ndir
             </Link>
           </div>
         </div>
@@ -361,7 +361,7 @@ function SongCard({ song }: { song: Song }) {
         <div className="grid gap-4 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
           <div className="flex h-full min-h-[152px] flex-col justify-between rounded-[26px] border border-[#4B232D]/10 bg-white/48 p-5 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
             <div>
-              <p className="section-eyebrow">Şarkılarım</p>
+              <p className="section-eyebrow">ÅarkÄ±larÄ±m</p>
 
               <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
                 <h3 className="text-[clamp(34px,3vw,44px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
@@ -418,7 +418,7 @@ function SongCard({ song }: { song: Song }) {
                 href="/giris"
                 className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
               >
-                İndir
+                Ä°ndir
               </Link>
             </div>
           </div>
@@ -432,13 +432,13 @@ function SongCard({ song }: { song: Song }) {
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
                 className="block h-[152px] w-full border-0"
-                title={`${song.title} Spotify oynatıcı`}
+                title={`${song.title} Spotify oynatÄ±cÄ±`}
               />
             </div>
           ) : (
             <div className="flex min-h-[152px] items-center justify-center rounded-[26px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
               <p className="text-[13px] font-bold leading-6 text-white/80">
-                Spotify bağlantısı yakında.
+                Spotify baÄŸlantÄ±sÄ± yakÄ±nda.
               </p>
             </div>
           )}
@@ -486,9 +486,9 @@ export default async function Home() {
 
       <section id="coverlarim" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Coverlarım"
+          title="CoverlarÄ±m"
           href="/coverlarim"
-          action="Tüm Coverlar"
+          action="TÃ¼m Coverlar"
         />
 
         <div className="grid gap-3 md:gap-5">
@@ -497,7 +497,7 @@ export default async function Home() {
           ) : (
             <div className="rounded-[28px] border border-white/35 bg-white/60 p-6 text-center shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
               <p className="text-2xl font-semibold tracking-[-0.06em] text-[#4B232D]">
-                Henüz yayında cover yok.
+                HenÃ¼z yayÄ±nda cover yok.
               </p>
             </div>
           )}
@@ -506,9 +506,9 @@ export default async function Home() {
 
       <section id="sarkilarim" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Şarkılarım"
+          title="ÅarkÄ±larÄ±m"
           href="/sarkilarim"
-          action="Tüm Şarkılar"
+          action="TÃ¼m ÅarkÄ±lar"
         />
 
         <div className="grid gap-3 md:gap-5">
@@ -520,9 +520,9 @@ export default async function Home() {
 
       <section id="fotograflar" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Fotoğraflarım"
+          title="FotoÄŸraflarÄ±m"
           href="/fotograflar"
-          action="Tüm Fotoğraflar"
+          action="TÃ¼m FotoÄŸraflar"
         />
 
         <div className="overflow-hidden rounded-[24px] border border-white/35 bg-white/58 p-2.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:rounded-[34px] md:p-4">
@@ -537,7 +537,7 @@ export default async function Home() {
                     key={item.id}
                     href={`/fotograflar/${item.id}`}
                     className="group relative aspect-[9/16] overflow-hidden rounded-[10px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)] md:rounded-[18px]"
-                    aria-label={`${item.title} detayına git`}
+                    aria-label={`${item.title} detayÄ±na git`}
                   >
                     {previewImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -550,7 +550,7 @@ export default async function Home() {
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-white/60 p-3 text-center">
                         <p className="text-[9px] font-bold leading-4 text-[#4B232D]/70 md:text-[10px] md:leading-5">
-                          Görsel yakında
+                          GÃ¶rsel yakÄ±nda
                         </p>
                       </div>
                     )}
@@ -559,7 +559,7 @@ export default async function Home() {
 
                     {isVideo ? (
                       <span className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/88 text-[10px] font-black text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.18)] backdrop-blur-[10px] md:right-2 md:top-2 md:h-7 md:w-7 md:text-[11px]">
-                        ▶
+                        â–¶
                       </span>
                     ) : null}
                   </Link>
@@ -569,7 +569,7 @@ export default async function Home() {
           ) : (
             <div className="rounded-[22px] border border-white/42 bg-white/82 px-5 py-7 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:rounded-[28px] md:px-8 md:py-10">
               <h2 className="mx-auto max-w-xl text-[clamp(26px,7vw,42px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
-                Henüz yayında fotoğraf yok.
+                HenÃ¼z yayÄ±nda fotoÄŸraf yok.
               </h2>
             </div>
           )}
@@ -582,7 +582,7 @@ export default async function Home() {
 
           <div className="relative mx-auto max-w-7xl">
             <header className="mx-auto text-center">
-              <p className="section-eyebrow mb-0">İletişim</p>
+              <p className="section-eyebrow mb-0">Ä°letiÅŸim</p>
             </header>
 
             <a
@@ -599,7 +599,7 @@ export default async function Home() {
                 href="/"
                 className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
-                ← Menü
+                â† MenÃ¼
               </Link>
 
               <a
@@ -615,7 +615,7 @@ export default async function Home() {
                 href="/sarkilarim"
                 className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
-                Şarkılar →
+                ÅarkÄ±lar â†’
               </Link>
             </div>
 
@@ -651,9 +651,10 @@ export default async function Home() {
       </section>
 
       <footer className="site-container site-footer">
-        <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>resultankilic.ai tarafından tasarlanmıştır</span>
+        <p>Â© 2026 Muhammed TankÄ±lÄ±Ã§. TÃ¼m haklarÄ± saklÄ±dÄ±r.</p>
+        <span>resultankilic.ai tarafÄ±ndan tasarlanmÄ±ÅŸtÄ±r</span>
       </footer>
     </main>
   );
 }
+
