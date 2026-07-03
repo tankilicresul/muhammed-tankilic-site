@@ -43,10 +43,9 @@ const desktopButtonClass =
   "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold transition hover:-translate-y-0.5";
 
 const orangeButtonClass =
-  "bg-[#F5AE50]/90 text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
+  "bg-[#F5AE50]/90 text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
 
-const whiteButtonClass =
-  "bg-white/76 text-[#4B232D] hover:bg-white/90";
+const whiteButtonClass = "bg-white/76 text-[#4B232D] hover:bg-white/90";
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -227,10 +226,10 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
 
 function CoverPanel({ cover }: { cover: PublicCover }) {
   return (
-    <>
+    <div id={cover.slug} className="scroll-mt-32">
       <MobileCoverPanel cover={cover} />
       <DesktopCoverPanel cover={cover} />
-    </>
+    </div>
   );
 }
 

@@ -1,54 +1,13 @@
 import Link from "next/link";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
-import { getHomepageMedia } from "@/lib/supabase/public";
 import {
-  latestSong,
-  publishedSongs,
-  type MusicPlatform,
-  type Song,
-} from "@/lib/data/songs";
-
-type CoverRow = {
-  id: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  release_status: "draft" | "published" | "hidden";
-  youtube_url: string | null;
-  youtube_embed_url: string | null;
-  instagram_url: string | null;
-  sort_order: number;
-  published_at: string | null;
-  created_at: string;
-};
-
-type GalleryItem = {
-  id: string;
-  title: string;
-  description: string | null;
-  image_url: string | null;
-  alt_text: string | null;
-  media_type: "photo" | "video";
-  video_url: string | null;
-  video_embed_url: string | null;
-  thumbnail_url: string | null;
-  release_status: "draft" | "published" | "hidden";
-  sort_order: number;
-  published_at: string | null;
-  created_at: string;
-};
-
-const announcement = {
-  type: "song" as "song" | "cover",
-  eyebrow: "Yeni Şarkım Çıktı",
-  title: `${latestSong.title} yayında.`,
-  description: "Spotify ve Apple Music’te dinleyebilirsin.",
-  href: `/sarkilarim/${latestSong.slug}`,
-};
-
-const announcementButtonLabel =
-  announcement.type === "cover" ? "Covera Git →" : "Şarkıya Git →";
+  getHomepageMedia,
+  type CoverRow,
+  type GalleryItem,
+  type HomepageAnnouncement,
+  type HomepageSong,
+} from "@/lib/supabase/public";
 
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 const email = "muhammedtnklc@gmail.com";
@@ -84,10 +43,6 @@ const platformLinks = [
     Icon: FaApple,
   },
 ];
-
-function getPlatform(song: Song, name: MusicPlatform["name"]) {
-  return song.platforms.find((platform) => platform.name === name);
-}
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -144,6 +99,10 @@ function getPreviewImage(item: GalleryItem) {
   return item.thumbnail_url || item.image_url;
 }
 
+function isExternalUrl(href: string) {
+  return href.startsWith("http://") || href.startsWith("https://");
+}
+
 function SectionHeader({
   title,
   href,
@@ -163,6 +122,30 @@ function SectionHeader({
         {action}
       </Link>
     </div>
+  );
+}
+
+function AnnouncementButton({ announcement }: { announcement: HomepageAnnouncement }) {
+  const className =
+    "mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full !bg-[#4B232D] px-5 text-[11px] font-bold !text-white shadow-[0_12px_30px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:!bg-[#5a2b36] sm:w-auto md:mt-0 md:min-h-11 md:px-7 md:text-xs";
+
+  if (isExternalUrl(announcement.href)) {
+    return (
+      <a
+        href={announcement.href}
+        target="_blank"
+        rel="noreferrer"
+        className={className}
+      >
+        Detaya Git →
+      </a>
+    );
+  }
+
+  return (
+    <Link href={announcement.href} className={className}>
+      Detaya Git →
+    </Link>
   );
 }
 
@@ -250,7 +233,7 @@ function CoverCard({ cover }: { cover: CoverRow }) {
 
               <Link
                 href="/giris"
-                className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/72 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
+                className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
               >
                 Siteden İndir
               </Link>
@@ -279,17 +262,14 @@ function CoverCard({ cover }: { cover: CoverRow }) {
   );
 }
 
-function SongCard({ song }: { song: Song }) {
-  const spotify = getPlatform(song, "Spotify");
-  const appleMusic = getPlatform(song, "Apple Music");
-
+function SongCard({ song }: { song: HomepageSong }) {
   return (
     <>
       <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
-        {song.spotifyEmbedUrl ? (
+        {song.spotify_embed_url ? (
           <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#535353] shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
             <iframe
-              src={song.spotifyEmbedUrl}
+              src={song.spotify_embed_url}
               width="100%"
               height="152"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -300,7 +280,7 @@ function SongCard({ song }: { song: Song }) {
           </div>
         ) : (
           <div className="flex min-h-[152px] items-center justify-center rounded-[18px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
-            <p className="text-[12px] font-bold leading-6 text-white/80">
+            <p className="text-[13px] font-bold leading-6 text-white/80">
               Spotify bağlantısı yakında.
             </p>
           </div>
@@ -313,43 +293,39 @@ function SongCard({ song }: { song: Song }) {
             </p>
           ) : null}
 
-          <div className={`${song.description ? "mt-3" : ""} grid grid-cols-4 gap-2`}>
+          <div className={`${song.description ? "mt-3" : ""} grid grid-cols-4 gap-1.5`}>
             <Link
               href={`/sarkilarim/${song.slug}`}
-              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 px-2 text-center text-[10.5px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95"
+              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95"
             >
               Detaylar
             </Link>
 
             <a
-              href={spotify?.url || "#"}
+              href={song.spotify_url || "#"}
               target="_blank"
               rel="noreferrer"
-              aria-label="Spotify"
-              title="Spotify"
-              className={`inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
-                spotify?.url ? "" : "pointer-events-none opacity-45"
+              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+                song.spotify_url ? "" : "pointer-events-none opacity-45"
               }`}
             >
-              <FaSpotify className="text-[18px]" />
+              Spotify
             </a>
 
             <a
-              href={appleMusic?.url || "#"}
+              href={song.apple_music_url || "#"}
               target="_blank"
               rel="noreferrer"
-              aria-label="Apple Music"
-              title="Apple Music"
-              className={`inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
-                appleMusic?.url ? "" : "pointer-events-none opacity-45"
+              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+                song.apple_music_url ? "" : "pointer-events-none opacity-45"
               }`}
             >
-              <FaApple className="text-[18px]" />
+              Apple
             </a>
 
             <Link
               href="/giris"
-              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-2 text-center text-[10.5px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
+              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
             >
               İndir
             </Link>
@@ -389,26 +365,26 @@ function SongCard({ song }: { song: Song }) {
               </Link>
 
               <a
-                href={spotify?.url || "#"}
+                href={song.spotify_url || "#"}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Spotify"
                 title="Spotify"
                 className={`inline-flex min-h-9 w-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
-                  spotify?.url ? "" : "pointer-events-none opacity-45"
+                  song.spotify_url ? "" : "pointer-events-none opacity-45"
                 }`}
               >
                 <FaSpotify className="text-[17px]" />
               </a>
 
               <a
-                href={appleMusic?.url || "#"}
+                href={song.apple_music_url || "#"}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Apple Music"
                 title="Apple Music"
                 className={`inline-flex min-h-9 w-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
-                  appleMusic?.url ? "" : "pointer-events-none opacity-45"
+                  song.apple_music_url ? "" : "pointer-events-none opacity-45"
                 }`}
               >
                 <FaApple className="text-[17px]" />
@@ -423,10 +399,10 @@ function SongCard({ song }: { song: Song }) {
             </div>
           </div>
 
-          {song.spotifyEmbedUrl ? (
+          {song.spotify_embed_url ? (
             <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#535353] shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
               <iframe
-                src={song.spotifyEmbedUrl}
+                src={song.spotify_embed_url}
                 width="100%"
                 height="152"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -448,8 +424,45 @@ function SongCard({ song }: { song: Song }) {
   );
 }
 
+function GalleryPreview({ item }: { item: GalleryItem }) {
+  const previewImage = getPreviewImage(item);
+  const isVideo = item.media_type === "video";
+
+  return (
+    <Link
+      href={`/fotograflar/${item.id}`}
+      className="group relative block aspect-[9/16] overflow-hidden rounded-[18px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)]"
+      aria-label={`${item.title} detayına git`}
+    >
+      {previewImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={previewImage}
+          alt={item.alt_text || item.title}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+          loading="lazy"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-white/60 p-3 text-center">
+          <p className="text-[10px] font-bold leading-5 text-[#4B232D]/70">
+            Görsel yakında
+          </p>
+        </div>
+      )}
+
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(75,35,45,0),rgba(75,35,45,0.34))] opacity-70" />
+
+      {isVideo ? (
+        <span className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/88 text-[11px] font-black text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.18)] backdrop-blur-[10px]">
+          ▶
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
 export default async function Home() {
-  const { covers, galleryItems } = await getHomepageMedia();
+  const { songs, covers, galleryItems, announcement } = await getHomepageMedia();
 
   return (
     <main className="page-shell">
@@ -473,12 +486,7 @@ export default async function Home() {
                 </p>
               </div>
 
-              <Link
-                href={announcement.href}
-                className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full !bg-[#4B232D] px-5 text-[11px] font-bold !text-white shadow-[0_12px_30px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:!bg-[#5a2b36] sm:w-auto md:mt-0 md:min-h-11 md:px-7 md:text-xs"
-              >
-                {announcementButtonLabel}
-              </Link>
+              <AnnouncementButton announcement={announcement} />
             </div>
           </div>
         </article>
@@ -512,9 +520,15 @@ export default async function Home() {
         />
 
         <div className="grid gap-3 md:gap-5">
-          {publishedSongs.map((song) => (
-            <SongCard key={song.slug} song={song} />
-          ))}
+          {songs.length > 0 ? (
+            songs.map((song) => <SongCard key={song.id} song={song} />)
+          ) : (
+            <div className="rounded-[28px] border border-white/35 bg-white/60 p-6 text-center shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px]">
+              <p className="text-2xl font-semibold tracking-[-0.06em] text-[#4B232D]">
+                Henüz yayında şarkı yok.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -528,43 +542,9 @@ export default async function Home() {
         <div className="overflow-hidden rounded-[24px] border border-white/35 bg-white/58 p-2.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:rounded-[34px] md:p-4">
           {galleryItems.length > 0 ? (
             <div className="grid grid-cols-3 gap-1.5 md:gap-3">
-              {galleryItems.map((item) => {
-                const previewImage = getPreviewImage(item);
-                const isVideo = item.media_type === "video";
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/fotograflar/${item.id}`}
-                    className="group relative aspect-[9/16] overflow-hidden rounded-[10px] border border-white/30 bg-[#4B232D]/25 shadow-[0_8px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(75,35,45,0.14)] md:rounded-[18px]"
-                    aria-label={`${item.title} detayına git`}
-                  >
-                    {previewImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={previewImage}
-                        alt={item.alt_text || item.title}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-white/60 p-3 text-center">
-                        <p className="text-[9px] font-bold leading-4 text-[#4B232D]/70 md:text-[10px] md:leading-5">
-                          Görsel yakında
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(75,35,45,0),rgba(75,35,45,0.34))] opacity-70" />
-
-                    {isVideo ? (
-                      <span className="absolute right-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/88 text-[10px] font-black text-[#4B232D] shadow-[0_8px_20px_rgba(75,35,45,0.18)] backdrop-blur-[10px] md:right-2 md:top-2 md:h-7 md:w-7 md:text-[11px]">
-                        ▶
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
+              {galleryItems.map((item) => (
+                <GalleryPreview key={item.id} item={item} />
+              ))}
             </div>
           ) : (
             <div className="rounded-[22px] border border-white/42 bg-white/82 px-5 py-7 text-center shadow-[0_10px_28px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:rounded-[28px] md:px-8 md:py-10">
@@ -606,7 +586,7 @@ export default async function Home() {
                 href={gmailComposeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#4B232D] px-3 text-center text-[13px] font-bold !text-white shadow-[0_12px_26px_rgba(75,35,45,0.22)] transition hover:-translate-y-0.5 hover:bg-[#5b2b37] md:min-h-12 md:px-6 md:text-base"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
                 Mail At
               </a>

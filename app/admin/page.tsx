@@ -22,7 +22,7 @@ type AdminCard = {
   title: string;
   description: string;
   href: string;
-  status: "active" | "soon";
+  status: "active";
   countLabel: string;
   count: number;
   error: string | null;
@@ -33,7 +33,7 @@ async function getTableCount(tableName: AdminTableName): Promise<TableCountResul
 
   const { count, error } = await supabase
     .from(tableName)
-    .select("id", {
+    .select("*", {
       count: "exact",
       head: true,
     });
@@ -93,9 +93,9 @@ export default async function AdminPage() {
     },
     {
       title: "Site Metinleri",
-      description: "Ana sayfa ve iletişim metinleri ileride buradan yönetilecek.",
+      description: "Ana sayfa duyuru metnini ve hedef bağlantısını yönet.",
       href: "/admin/metinler",
-      status: "soon",
+      status: "active",
       countLabel: "kayıtlı metin",
       count: siteTextsCount.count,
       error: siteTextsCount.error,
@@ -197,14 +197,8 @@ export default async function AdminPage() {
                     </p>
                   </div>
 
-                  <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-[8.5px] font-bold uppercase tracking-[0.14em] ${
-                      card.status === "active"
-                        ? "bg-[#F5AE50]/90 text-[#4B232D]"
-                        : "bg-[#FFF4BC]/90 text-[#4B232D]/70"
-                    }`}
-                  >
-                    {card.status === "active" ? "Yönet" : "Yakında"}
+                  <span className="shrink-0 rounded-full bg-[#F5AE50]/90 px-3 py-1 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[#4B232D]">
+                    Yönet
                   </span>
                 </div>
 
@@ -212,18 +206,12 @@ export default async function AdminPage() {
                   {card.description}
                 </p>
 
-                {card.status === "active" ? (
-                  <Link
-                    href={card.href}
-                    className="mt-4 inline-flex min-h-9 min-w-[132px] items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-5 text-[11px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-10 md:text-xs"
-                  >
-                    Bölüme Git
-                  </Link>
-                ) : (
-                  <span className="mt-4 inline-flex min-h-9 min-w-[132px] items-center justify-center rounded-full border border-[#F5AE50]/50 bg-[#F5AE50]/70 px-5 text-[11px] font-bold text-[#4B232D]/70 shadow-[0_10px_22px_rgba(245,174,80,0.12)] md:min-h-10 md:text-xs">
-                    Yakında
-                  </span>
-                )}
+                <Link
+                  href={card.href}
+                  className="mt-4 inline-flex min-h-9 min-w-[132px] items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-5 text-[11px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-10 md:text-xs"
+                >
+                  Bölüme Git
+                </Link>
               </article>
             ))}
           </div>
