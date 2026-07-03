@@ -13,6 +13,7 @@ const navItems = [
   { label: "Fotoğraflarım", href: "/fotograflar" },
   { label: "İletişim", href: "/iletisim" },
 ];
+
 export default function Navbar() {
   const pathname = usePathname();
 
