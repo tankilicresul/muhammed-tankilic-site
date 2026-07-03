@@ -8,12 +8,11 @@ import AuthButtons from "@/components/AuthButtons";
 
 const navItems = [
   { label: "Menü", href: "/" },
-  { label: "Şarkılarım", href: "/sarkilarim" },
   { label: "Coverlarım", href: "/coverlarim" },
+  { label: "Şarkılarım", href: "/sarkilarim" },
   { label: "Fotoğraflarım", href: "/fotograflar" },
   { label: "İletişim", href: "/iletisim" },
 ];
-
 export default function Navbar() {
   const pathname = usePathname();
 
