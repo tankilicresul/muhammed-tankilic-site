@@ -5,7 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type DownloadFormat = "audio" | "video";
-type DownloadStatus = "idle" | "downloading" | "downloaded";
+type DownloadStatus = "idle" | "checking" | "downloading" | "downloaded";
 type PanelState = "none" | "auth" | "choice" | "message";
 
 type MediaDownloadButtonProps = {
@@ -26,13 +26,13 @@ type DownloadResponse = {
 };
 
 const modalBackdropClass =
-  "fixed inset-0 z-[9998] bg-[#4B232D]/22 backdrop-blur-[5px]";
+  "fixed inset-0 z-[9998] bg-[#4B232D]/14 backdrop-blur-[2px]";
 
 const modalCardClass =
-  "fixed left-1/2 top-1/2 z-[9999] w-[min(420px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-[26px] border border-white/50 bg-white/94 p-5 text-left shadow-[0_24px_80px_rgba(75,35,45,0.26)] backdrop-blur-[20px] md:rounded-[30px] md:p-6";
+  "fixed left-1/2 top-1/2 z-[9999] w-[min(340px,calc(100vw-44px))] -translate-x-1/2 -translate-y-1/2 rounded-[24px] border border-white/55 bg-white/95 p-4 text-left shadow-[0_22px_70px_rgba(75,35,45,0.22)] backdrop-blur-[18px] md:w-[min(390px,calc(100vw-44px))] md:rounded-[28px] md:p-5";
 
 const choiceButtonClass =
-  "inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 text-center text-[12px] font-bold tracking-[-0.015em] transition hover:-translate-y-0.5 md:text-sm";
+  "inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 text-center text-[12px] font-bold tracking-[-0.015em] transition hover:-translate-y-0.5 md:min-h-11 md:text-sm";
 
 function triggerBrowserDownload(url: string, filename: string) {
   const anchor = document.createElement("a");
@@ -45,6 +45,16 @@ function triggerBrowserDownload(url: string, filename: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+}
+
+async function getAccessToken() {
+  const supabase = createClient();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  return session?.access_token ?? "";
 }
 
 export default function MediaDownloadButton({
@@ -61,11 +71,13 @@ export default function MediaDownloadButton({
   const [message, setMessage] = useState("");
 
   const buttonLabel =
-    status === "downloading"
-      ? "İndiriliyor..."
-      : status === "downloaded"
-        ? "İndirildi"
-        : label;
+    status === "checking"
+      ? "Kontrol..."
+      : status === "downloading"
+        ? "İndiriliyor..."
+        : status === "downloaded"
+          ? "İndirildi"
+          : label;
 
   function closePanel() {
     setPanel("none");
@@ -76,13 +88,9 @@ export default function MediaDownloadButton({
     setMessage("");
     setStatus("downloading");
 
-    const supabase = createClient();
+    const accessToken = await getAccessToken();
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session?.access_token) {
+    if (!accessToken) {
       setStatus("idle");
       setPanel("auth");
       return;
@@ -92,7 +100,7 @@ export default function MediaDownloadButton({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         contentType,
@@ -122,12 +130,27 @@ export default function MediaDownloadButton({
     setStatus("downloaded");
   }
 
-  function handleClick() {
+  async function handleClick() {
+    setMessage("");
+    setPanel("none");
+    setStatus("checking");
+
+    const accessToken = await getAccessToken();
+
+    if (!accessToken) {
+      setStatus("idle");
+      setPanel("auth");
+      return;
+    }
+
     if (!hasAudioFile && !hasVideoFile) {
+      setStatus("idle");
       setMessage("Bu içerik için indirme dosyası henüz eklenmedi.");
       setPanel("message");
       return;
     }
+
+    setStatus("idle");
 
     if (hasAudioFile && hasVideoFile) {
       setPanel("choice");
@@ -135,11 +158,11 @@ export default function MediaDownloadButton({
     }
 
     if (hasVideoFile) {
-      void startDownload("video");
+      await startDownload("video");
       return;
     }
 
-    void startDownload("audio");
+    await startDownload("audio");
   }
 
   return (
@@ -147,7 +170,7 @@ export default function MediaDownloadButton({
       <button
         type="button"
         onClick={handleClick}
-        disabled={status === "downloading"}
+        disabled={status === "checking" || status === "downloading"}
         className={className}
       >
         {buttonLabel}
@@ -165,18 +188,20 @@ export default function MediaDownloadButton({
           <div className={modalCardClass}>
             {panel === "auth" ? (
               <>
-                <p className="section-eyebrow">Üyelik Gerekli</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
+                  Üyelik Gerekli
+                </p>
 
-                <h3 className="mt-2 text-[30px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[38px]">
+                <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
                   Kayıt olman gerekiyor.
                 </h3>
 
-                <p className="mt-3 text-[13px] font-medium leading-7 text-[#4B232D]/68">
+                <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
                   Şarkıların tam halini indirmek için kayıt olun veya hesabına
                   giriş yap.
                 </p>
 
-                <div className="mt-5 grid grid-cols-2 gap-2">
+                <div className="mt-4 grid grid-cols-2 gap-2">
                   <Link
                     href="/giris"
                     className={`${choiceButtonClass} bg-white text-[#4B232D] shadow-[0_8px_18px_rgba(75,35,45,0.08)]`}
@@ -196,17 +221,19 @@ export default function MediaDownloadButton({
 
             {panel === "choice" ? (
               <>
-                <p className="section-eyebrow">İndirme Seçimi</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
+                  İndirme Seçimi
+                </p>
 
-                <h3 className="mt-2 text-[30px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[38px]">
+                <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
                   Ne olarak indirmek istiyorsun?
                 </h3>
 
-                <p className="mt-3 text-[13px] font-medium leading-7 text-[#4B232D]/68">
+                <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
                   Bu içerik için ses ve video dosyası mevcut.
                 </p>
 
-                <div className="mt-5 grid gap-2">
+                <div className="mt-4 grid gap-2">
                   <button
                     type="button"
                     onClick={() => startDownload("audio")}
@@ -228,20 +255,22 @@ export default function MediaDownloadButton({
 
             {panel === "message" ? (
               <>
-                <p className="section-eyebrow">İndirme</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
+                  İndirme
+                </p>
 
-                <h3 className="mt-2 text-[30px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[38px]">
+                <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
                   Bilgi
                 </h3>
 
-                <p className="mt-3 text-[13px] font-medium leading-7 text-[#4B232D]/68">
+                <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
                   {message}
                 </p>
 
                 <button
                   type="button"
                   onClick={closePanel}
-                  className={`${choiceButtonClass} mt-5 bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
+                  className={`${choiceButtonClass} mt-4 bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
                 >
                   Tamam
                 </button>
