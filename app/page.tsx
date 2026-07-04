@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
+import MediaDownloadButton from "@/components/MediaDownloadButton";
 import {
   getHomepageMedia,
   type CoverRow,
@@ -34,6 +35,33 @@ const platformLinks = [
     Icon: FaApple,
   },
 ];
+
+
+function getDownloadAvailability(media: unknown) {
+  if (!media || typeof media !== "object") {
+    return {
+      hasAudioFile: false,
+      hasVideoFile: false,
+    };
+  }
+
+  const record = media as Record<string, unknown>;
+
+  const hasAudioFile =
+    Boolean(record.hasAudioDownload) ||
+    Boolean(String(record.downloadFilePath ?? "").trim()) ||
+    Boolean(String(record.download_file_path ?? "").trim());
+
+  const hasVideoFile =
+    Boolean(record.hasVideoDownload) ||
+    Boolean(String(record.videoDownloadFilePath ?? "").trim()) ||
+    Boolean(String(record.video_download_file_path ?? "").trim());
+
+  return {
+    hasAudioFile,
+    hasVideoFile,
+  };
+}
 
 function getGmailComposeUrl(email: string) {
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
@@ -188,12 +216,15 @@ function CoverCard({ cover }: { cover: CoverRow }) {
               ← Kanalım
             </a>
 
-            <Link
-              href="/giris"
+            <MediaDownloadButton
+              contentType="cover"
+              slug={cover.slug}
+              title={cover.title}
+              hasAudioFile={getDownloadAvailability(cover).hasAudioFile}
+              hasVideoFile={getDownloadAvailability(cover).hasVideoFile}
               className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
-            >
-              İndir
-            </Link>
+              label="İndir"
+            />
           </div>
         </div>
       </article>
@@ -228,12 +259,15 @@ function CoverCard({ cover }: { cover: CoverRow }) {
                 Kanalım
               </a>
 
-              <Link
-                href="/giris"
+              <MediaDownloadButton
+                contentType="cover"
+                slug={cover.slug}
+                title={cover.title}
+                hasAudioFile={getDownloadAvailability(cover).hasAudioFile}
+                hasVideoFile={getDownloadAvailability(cover).hasVideoFile}
                 className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
-              >
-                Siteden İndir
-              </Link>
+                label="Siteden İndir"
+              />
             </div>
           </div>
 
@@ -320,12 +354,15 @@ function SongCard({ song }: { song: HomepageSong }) {
               Apple
             </a>
 
-            <Link
-              href="/giris"
+            <MediaDownloadButton
+              contentType="song"
+              slug={song.slug}
+              title={song.title}
+              hasAudioFile={getDownloadAvailability(song).hasAudioFile}
+              hasVideoFile={getDownloadAvailability(song).hasVideoFile}
               className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
-            >
-              İndir
-            </Link>
+              label="İndir"
+            />
           </div>
         </div>
       </article>
@@ -387,12 +424,15 @@ function SongCard({ song }: { song: HomepageSong }) {
                 <FaApple className="text-[17px]" />
               </a>
 
-              <Link
-                href="/giris"
+              <MediaDownloadButton
+                contentType="song"
+                slug={song.slug}
+                title={song.title}
+                hasAudioFile={getDownloadAvailability(song).hasAudioFile}
+                hasVideoFile={getDownloadAvailability(song).hasVideoFile}
                 className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
-              >
-                İndir
-              </Link>
+                label="İndir"
+              />
             </div>
           </div>
 
