@@ -8,18 +8,9 @@ import {
   type HomepageAnnouncement,
   type HomepageSong,
 } from "@/lib/supabase/public";
+import { getPublicSiteTexts, t } from "@/lib/supabase/site-texts";
 
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
-const email = "muhammedtnklc@gmail.com";
-
-const gmailComposeUrl =
-  "https://mail.google.com/mail/?view=cm&fs=1&to=muhammedtnklc@gmail.com&su=%C4%B0leti%C5%9Fim%20Talebi";
-
-const aboutPoints = [
-  "Kürtçe şarkılarımı, bestelerimi ve yorumlarımı paylaşıyorum.",
-  "Resmi yayınlarım Spotify ve Apple Music’te yer alıyor.",
-  "Yayın, video, görsel ve iş birliği için bana yazabilirsin.",
-];
 
 const platformLinks = [
   {
@@ -43,6 +34,12 @@ const platformLinks = [
     Icon: FaApple,
   },
 ];
+
+function getGmailComposeUrl(email: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    email,
+  )}&su=${encodeURIComponent("İletişim Talebi")}`;
+}
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -404,12 +401,12 @@ function SongCard({ song }: { song: HomepageSong }) {
               <iframe
                 src={song.spotify_embed_url}
                 width="100%"
-                height="152"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                className="block h-[152px] w-full border-0"
-                title={`${song.title} Spotify oynatıcı`}
-              />
+              height="152"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="block h-[152px] w-full border-0"
+              title={`${song.title} Spotify oynatıcı`}
+            />
             </div>
           ) : (
             <div className="flex min-h-[152px] items-center justify-center rounded-[26px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
@@ -462,7 +459,18 @@ function GalleryPreview({ item }: { item: GalleryItem }) {
 }
 
 export default async function Home() {
-  const { songs, covers, galleryItems, announcement } = await getHomepageMedia();
+  const [{ songs, covers, galleryItems, announcement }, siteTexts] =
+    await Promise.all([getHomepageMedia(), getPublicSiteTexts()]);
+
+  const settings = siteTexts.settings;
+  const text = (key: string) => t(settings, key);
+  const contactEmail = text("contact.email");
+  const gmailComposeUrl = getGmailComposeUrl(contactEmail);
+  const aboutPoints = [
+    text("contact.point_1"),
+    text("contact.point_2"),
+    text("contact.point_3"),
+  ].filter(Boolean);
 
   return (
     <main className="page-shell">
@@ -481,7 +489,7 @@ export default async function Home() {
                   {announcement.title}
                 </h1>
 
-                <p className="mx-auto mt-2 max-w-[280px] text-[12px] leading-5 text-[#4B232D]/68 md:mx-0 md:max-w-xl md:text-sm md:leading-6">
+              <p className="mx-auto mt-2 max-w-[280px] text-[12px] leading-5 text-[#4B232D]/68 md:mx-0 md:max-w-xl md:text-sm md:leading-6">
                   {announcement.description}
                 </p>
               </div>
@@ -494,9 +502,9 @@ export default async function Home() {
 
       <section id="coverlarim" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Coverlarım"
+          title={text("homepage.cover_section_title")}
           href="/coverlarim"
-          action="Tüm Coverlar"
+          action={text("homepage.cover_all_button")}
         />
 
         <div className="grid gap-3 md:gap-5">
@@ -514,9 +522,9 @@ export default async function Home() {
 
       <section id="sarkilarim" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Şarkılarım"
+          title={text("homepage.song_section_title")}
           href="/sarkilarim"
-          action="Tüm Şarkılar"
+          action={text("homepage.song_all_button")}
         />
 
         <div className="grid gap-3 md:gap-5">
@@ -534,9 +542,9 @@ export default async function Home() {
 
       <section id="fotograflar" className="site-container scroll-mt-32 section-space">
         <SectionHeader
-          title="Fotoğraflarım"
+          title={text("homepage.photo_section_title")}
           href="/fotograflar"
-          action="Tüm Fotoğraflar"
+          action={text("homepage.photo_all_button")}
         />
 
         <div className="overflow-hidden rounded-[24px] border border-white/35 bg-white/58 p-2.5 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:rounded-[34px] md:p-4">
@@ -571,31 +579,31 @@ export default async function Home() {
               rel="noreferrer"
               className="mt-4 flex min-h-11 w-full items-center justify-center rounded-[18px] border border-[#4B232D]/10 bg-white/76 px-3 text-center text-[14px] font-medium tracking-[-0.03em] text-[#4B232D] shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:bg-white/85 hover:text-[#F5AE50] md:mt-7 md:min-h-14 md:rounded-[24px] md:px-6 md:text-lg"
             >
-              {email}
+              {contactEmail}
             </a>
 
             <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-4">
               <Link
                 href="/"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
-                ← Menü
+                {text("contact.button.menu")}
               </Link>
 
               <a
                 href={gmailComposeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
-                Mail At
+                {text("contact.button.mail")}
               </a>
 
               <Link
                 href="/sarkilarim"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-white shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
               >
-                Şarkılar →
+                {text("contact.button.songs")}
               </Link>
             </div>
 
@@ -631,8 +639,8 @@ export default async function Home() {
       </section>
 
       <footer className="site-container site-footer">
-        <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>resultankilic.ai tarafından tasarlanmıştır</span>
+        <p>{text("footer.copyright")}</p>
+        <span>{text("footer.credit")}</span>
       </footer>
     </main>
   );

@@ -3,23 +3,13 @@ import Link from "next/link";
 import type { IconType } from "react-icons";
 import { FaApple, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
+import { getPublicSiteTexts, t } from "@/lib/supabase/site-texts";
 
 export const metadata: Metadata = {
   title: "İletişim | Muhammed Tankılıç",
   description:
     "Muhammed Tankılıç ile müzik, yayın, video ve iş birliği talepleri için iletişime geçin.",
 };
-
-const email = "muhammedtnklc@gmail.com";
-
-const gmailComposeUrl =
-  "https://mail.google.com/mail/?view=cm&fs=1&to=muhammedtnklc@gmail.com&su=%C4%B0leti%C5%9Fim%20Talebi";
-
-const aboutPoints = [
-  "Kürtçe şarkılarımı, bestelerimi ve yorumlarımı paylaşıyorum.",
-  "Resmi yayınlarım Spotify ve Apple Music’te yer alıyor.",
-  "Yayın, video, görsel ve iş birliği için bana yazabilirsin.",
-];
 
 const platformLinks: {
   title: string;
@@ -51,11 +41,28 @@ const platformLinks: {
 const baseActionButtonClass =
   "inline-flex min-h-11 w-full items-center justify-center rounded-full px-3 text-center text-[13px] font-bold leading-none tracking-[-0.02em] shadow-[0_12px_26px_rgba(75,35,45,0.16)] transition hover:-translate-y-0.5 md:min-h-12 md:px-6 md:text-base";
 
-const orangeActionButtonClass = `${baseActionButtonClass} bg-[#F5AE50]/90 shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]`;
+const orangeActionButtonClass = `${baseActionButtonClass} bg-[#F5AE50]/90 text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]`;
 
-const burgundyActionButtonClass = `${baseActionButtonClass} bg-[#4B232D] hover:bg-[#5b2b37]`;
+const burgundyActionButtonClass = `${baseActionButtonClass} bg-[#4B232D] text-white hover:bg-[#5b2b37]`;
 
-export default function ContactPage() {
+function getGmailComposeUrl(email: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    email,
+  )}&su=${encodeURIComponent("İletişim Talebi")}`;
+}
+
+export default async function ContactPage() {
+  const { settings } = await getPublicSiteTexts();
+  const text = (key: string) => t(settings, key);
+
+  const email = text("contact.email");
+  const gmailComposeUrl = getGmailComposeUrl(email);
+  const aboutPoints = [
+    text("contact.point_1"),
+    text("contact.point_2"),
+    text("contact.point_3"),
+  ].filter(Boolean);
+
   return (
     <main className="page-shell">
       <Navbar />
@@ -80,7 +87,7 @@ export default function ContactPage() {
 
             <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-4">
               <Link href="/" className={orangeActionButtonClass}>
-                <span className="!text-white">← Menü</span>
+                {text("contact.button.menu")}
               </Link>
 
               <a
@@ -89,11 +96,11 @@ export default function ContactPage() {
                 rel="noreferrer"
                 className={burgundyActionButtonClass}
               >
-                <span className="!text-white">Mail At</span>
+                {text("contact.button.mail")}
               </a>
 
               <Link href="/sarkilarim" className={orangeActionButtonClass}>
-                <span className="!text-white">Şarkılar →</span>
+                {text("contact.button.songs")}
               </Link>
             </div>
 
@@ -129,8 +136,8 @@ export default function ContactPage() {
       </section>
 
       <footer className="site-container site-footer">
-        <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>resultankilic.ai tarafından tasarlanmıştır</span>
+        <p>{text("footer.copyright")}</p>
+        <span>{text("footer.credit")}</span>
       </footer>
     </main>
   );

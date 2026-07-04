@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import LoginForm from "@/components/LoginForm";
+import { getHomepageMedia } from "@/lib/supabase/public";
+import { getPublicSiteTexts, t } from "@/lib/supabase/site-texts";
 
 export const metadata: Metadata = {
   title: "Giriş Yap | Muhammed Tankılıç",
@@ -9,7 +11,15 @@ export const metadata: Metadata = {
     "Muhammed Tankılıç üyelik alanına giriş yaparak özel içeriklere, şarkı sözlerine ve indirme bağlantılarına erişin.",
 };
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const [siteTexts, { announcement }] = await Promise.all([
+    getPublicSiteTexts(),
+    getHomepageMedia(),
+  ]);
+
+  const settings = siteTexts.settings;
+  const text = (key: string) => t(settings, key);
+
   return (
     <main className="page-shell">
       <Navbar />
@@ -21,13 +31,12 @@ export default function LoginPage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8">
           <div className="hidden text-center md:block">
-            <p className="section-eyebrow">Üyelik Alanı</p>
+            <p className="section-eyebrow">{text("login.eyebrow")}</p>
 
             <h1 className="mx-auto mt-2 max-w-[310px] text-[22px] font-semibold leading-[1.12] tracking-[-0.055em] text-[#4B232D] md:mt-4 md:max-w-4xl md:text-[clamp(25px,3.1vw,42px)] md:leading-[1.18]">
-              <span className="block">Şarkı sözleri ve özel içerikler için</span>
-              <span className="block">
-                <span className="text-[#6F3440]">Giriş Yap</span> veya{" "}
-                <span className="text-[#6F3440]">Hesap Aç</span>.
+              <span className="block">{text("login.title_line_1")}</span>
+              <span className="block text-[#6F3440]">
+                {text("login.title_line_2")}
               </span>
             </h1>
           </div>
@@ -39,7 +48,7 @@ export default function LoginPage() {
               href="/sifremi-unuttum"
               className="transition hover:text-[#F5AE50]"
             >
-              Şifremi unuttum
+              {text("login.forgot_password_link")}
             </Link>
           </div>
 
@@ -47,20 +56,20 @@ export default function LoginPage() {
             <div className="flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
               <div>
                 <p className="text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/58 md:text-[10px] md:tracking-[0.22em]">
-                  Yeni Şarkım Çıktı
+                  {announcement.eyebrow}
                 </p>
 
                 <h2 className="mt-1 text-[22px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[clamp(20px,2.3vw,30px)]">
-                  Zef Cara yayında.
+                  {announcement.title}
                 </h2>
 
                 <p className="mt-2 text-[12px] leading-5 text-[#4B232D]/68 md:text-sm md:leading-6">
-                  Spotify ve Apple Music’te dinleyebilirsin.
+                  {announcement.description}
                 </p>
               </div>
 
               <Link
-                href="/sarkilarim/zef-cara"
+                href={announcement.href}
                 className="pill-button dark !min-h-9 !justify-center !px-4 !py-2 !text-[11px] md:!min-h-10 md:!px-5 md:!text-xs"
               >
                 Şarkı Detayı →

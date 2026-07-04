@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 type Message = {
   type: "error" | "success";
@@ -84,6 +85,7 @@ function isValidTurkishMobilePhone(value: string) {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { text } = useSiteTexts();
 
   const [ad, setAd] = useState("");
   const [soyad, setSoyad] = useState("");
@@ -240,13 +242,10 @@ export default function RegisterPage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8">
           <div className="hidden text-center md:block">
-            <p className="section-eyebrow">Üyelik Alanı</p>
+            <p className="section-eyebrow">{text("register.eyebrow")}</p>
 
             <h1 className="mx-auto mt-2 max-w-[310px] text-[22px] font-semibold leading-[1.12] tracking-[-0.055em] text-[#4B232D] md:mt-4 md:max-w-4xl md:text-[clamp(25px,3.1vw,42px)] md:leading-[1.18]">
-              <span className="block">Şarkı sözleri ve özel içerikler için</span>
-              <span className="block">
-                <span className="text-[#6F3440]">Hesap Aç</span>.
-              </span>
+              <span className="block">{text("register.title")}</span>
             </h1>
           </div>
 
@@ -387,7 +386,7 @@ export default function RegisterPage() {
                 />
 
                 <span>
-                  Üyelik için bilgilerimin kullanılmasını kabul ediyorum.
+                  {text("register.consent_text")}
                 </span>
               </label>
 
@@ -400,7 +399,7 @@ export default function RegisterPage() {
                 />
 
                 <span>
-                  Yeni şarkılar ve özel içerikler için bilgilendirme alabilirim.
+                  {text("register.notification_text")}
                 </span>
               </label>
             </div>
@@ -437,7 +436,7 @@ export default function RegisterPage() {
                 href="/"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                ← Menü
+                {text("register.button.menu")}
               </Link>
 
               <button
@@ -445,14 +444,14 @@ export default function RegisterPage() {
                 disabled={isSubmitting}
                 className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
               >
-                {isSubmitting ? "..." : "Oluştur"}
+                {isSubmitting ? "..." : text("register.button.submit")}
               </button>
 
               <Link
                 href="/giris"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                Giriş →
+                {text("register.button.login")}
               </Link>
             </div>
           </form>

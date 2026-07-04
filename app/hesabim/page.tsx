@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 type UserInfo = {
   ad: string;
@@ -13,27 +14,10 @@ type UserInfo = {
   bildirimIzni: boolean;
 };
 
-const profileItems = [
-  {
-    label: "Ad Soyad",
-    key: "fullName",
-  },
-  {
-    label: "E-posta",
-    key: "email",
-  },
-  {
-    label: "Telefon",
-    key: "telefon",
-  },
-  {
-    label: "Bildirimler",
-    key: "bildirim",
-  },
-];
-
 export default function HesabimPage() {
   const [supabase] = useState(() => createClient());
+  const { text } = useSiteTexts();
+
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -80,11 +64,34 @@ export default function HesabimPage() {
 
   const fullName = `${userInfo?.ad || ""} ${userInfo?.soyad || ""}`.trim();
 
+  const profileItems = [
+    {
+      label: text("account.profile_label.full_name"),
+      key: "fullName",
+    },
+    {
+      label: text("account.profile_label.email"),
+      key: "email",
+    },
+    {
+      label: text("account.profile_label.phone"),
+      key: "telefon",
+    },
+    {
+      label: text("account.profile_label.notifications"),
+      key: "bildirim",
+    },
+  ];
+
   function getProfileValue(key: string) {
     if (key === "fullName") return fullName || "-";
     if (key === "email") return userInfo?.email || "-";
     if (key === "telefon") return userInfo?.telefon || "-";
-    if (key === "bildirim") return userInfo?.bildirimIzni ? "Açık" : "Kapalı";
+    if (key === "bildirim") {
+      return userInfo?.bildirimIzni
+        ? text("account.notifications_on")
+        : text("account.notifications_off");
+    }
 
     return "-";
   }
@@ -96,10 +103,10 @@ export default function HesabimPage() {
 
         <section className="site-container relative pt-6 md:pt-9">
           <div className="mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 text-center shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-4xl md:rounded-[34px] md:p-8">
-            <p className="section-eyebrow">Hesabım</p>
+            <p className="section-eyebrow">{text("account.loading_eyebrow")}</p>
 
             <h1 className="mt-2 text-[28px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:mt-3 md:text-[clamp(38px,4.6vw,62px)]">
-              Bilgiler yükleniyor...
+              {text("account.loading_title")}
             </h1>
           </div>
         </section>
@@ -118,15 +125,14 @@ export default function HesabimPage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8 md:shadow-[0_24px_70px_rgba(75,35,45,0.12)]">
           <div className="text-center">
-            <p className="section-eyebrow">Kullanıcı paneli</p>
+            <p className="section-eyebrow">{text("account.eyebrow")}</p>
 
             <h1 className="mt-2 text-[38px] font-semibold leading-none tracking-[-0.09em] text-[#4B232D] md:mt-3 md:text-[clamp(54px,6vw,88px)] md:tracking-[-0.095em]">
-              Hesabım
+              {text("account.title")}
             </h1>
 
             <p className="mx-auto mt-3 max-w-xl text-[12px] leading-6 text-[#4B232D]/68 md:mt-4 md:max-w-2xl md:text-sm md:leading-8">
-              Üyelik bilgilerini ve bildirim tercihini buradan takip
-              edebilirsin.
+              {text("account.description")}
             </p>
           </div>
 
@@ -150,34 +156,33 @@ export default function HesabimPage() {
 
           <div className="mt-4 rounded-[20px] border border-white/42 bg-[#FFF4BC]/70 px-4 py-3 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:mt-5 md:rounded-[26px] md:px-5 md:py-4">
             <p className="text-center text-[12px] font-medium leading-6 text-[#4B232D]/72 md:text-sm md:leading-7">
-              Profil bilgilerini düzenleyebilir, indirme alanına üyelik
-              panelinden ulaşabilirsin.
+              {text("account.notice")}
             </p>
           </div>
 
           <div className="mt-5 grid grid-cols-3 gap-1.5 md:mt-6 md:gap-3">
-  <Link
-    href="/"
-    className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F5AE50] px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.20)] transition hover:-translate-y-0.5 hover:bg-[#f7bb67] md:min-h-12 md:px-5 md:text-sm"
-  >
-    ← Menü
-  </Link>
+            <Link
+              href="/"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F5AE50] px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.20)] transition hover:-translate-y-0.5 hover:bg-[#f7bb67] md:min-h-12 md:px-5 md:text-sm"
+            >
+              {text("account.button.menu")}
+            </Link>
 
-  <Link
-    href="/hesabim/duzenle"
-    className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/82 px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:bg-white md:min-h-12 md:px-5 md:text-sm"
-  >
-    Düzenle
-  </Link>
+            <Link
+              href="/hesabim/duzenle"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/82 px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(75,35,45,0.08)] transition hover:-translate-y-0.5 hover:bg-white md:min-h-12 md:px-5 md:text-sm"
+            >
+              {text("account.button.edit")}
+            </Link>
 
-  <button
-    type="button"
-    className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F5AE50] px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.20)] transition hover:-translate-y-0.5 hover:bg-[#f7bb67] md:min-h-12 md:px-5 md:text-sm"
-    title="İndirilenler alanı yakında aktif olacak."
-  >
-    İndirilenler
-  </button>
-</div>
+            <button
+              type="button"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F5AE50] px-1.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.20)] transition hover:-translate-y-0.5 hover:bg-[#f7bb67] md:min-h-12 md:px-5 md:text-sm"
+              title={text("account.downloads_title")}
+            >
+              {text("account.button.downloads")}
+            </button>
+          </div>
         </section>
       </section>
     </main>

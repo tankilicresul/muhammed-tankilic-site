@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 const inputClass =
   "min-h-11 w-full rounded-[18px] border border-[#4B232D]/12 bg-white/82 px-4 text-[13px] font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_8px_24px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_3px_rgba(245,174,80,0.16)] md:min-h-14 md:rounded-[22px] md:px-5 md:text-base";
@@ -60,6 +61,7 @@ function EyeOffIcon() {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { text } = useSiteTexts();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,14 +90,14 @@ export default function LoginForm() {
       setIsSubmitting(false);
       setMessage({
         type: "error",
-        text: "Bu mail ile giriş yapılamadı. Hesabın yoksa kayıt ol.",
+        text: text("login.form.error"),
       });
       return;
     }
 
     setMessage({
       type: "success",
-      text: "Giriş başarılı. Hesabına yönlendiriliyorsun.",
+      text: text("login.form.success"),
     });
 
     router.refresh();
@@ -107,13 +109,13 @@ export default function LoginForm() {
       <div className="rounded-[22px] border border-white/42 bg-white/58 p-3.5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
         <div className="grid gap-3 md:grid-cols-2 md:gap-4">
           <label className="grid gap-1.5 md:gap-2">
-            <span className={labelClass}>E-postan</span>
+            <span className={labelClass}>{text("login.form.email_label")}</span>
 
             <input
               type="email"
               name="email"
               autoComplete="email"
-              placeholder="ornek@mail.com"
+              placeholder={text("login.form.email_placeholder")}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
@@ -122,14 +124,16 @@ export default function LoginForm() {
           </label>
 
           <label className="grid gap-1.5 md:gap-2">
-            <span className={labelClass}>Şifren</span>
+            <span className={labelClass}>
+              {text("login.form.password_label")}
+            </span>
 
             <div className="relative w-full">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 autoComplete="current-password"
-                placeholder="Şifreni yaz"
+                placeholder={text("login.form.password_placeholder")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -159,20 +163,7 @@ export default function LoginForm() {
               : "border-[#BDEBE8]/80 bg-[#BDEBE8]/45 text-[#4B232D]",
           ].join(" ")}
         >
-          {message.type === "error" ? (
-            <span>
-              Bu mail ile giriş yapılamadı. Hesabın yoksa{" "}
-              <Link
-                href="/kayit"
-                className="font-extrabold underline decoration-red-300 underline-offset-4 transition hover:text-[#4B232D]"
-              >
-                Kayıt Ol
-              </Link>
-              .
-            </span>
-          ) : (
-            message.text
-          )}
+          {message.text}
         </div>
       ) : null}
 
@@ -181,7 +172,7 @@ export default function LoginForm() {
           href="/sarkilarim"
           className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
         >
-          ← Şarkılar
+          {text("login.button.songs")}
         </Link>
 
         <button
@@ -189,14 +180,14 @@ export default function LoginForm() {
           disabled={isSubmitting}
           className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
         >
-          {isSubmitting ? "..." : "Giriş Yap"}
+          {isSubmitting ? "..." : text("login.button.submit")}
         </button>
 
         <Link
           href="/coverlarim"
           className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
         >
-          Coverlar →
+          {text("login.button.covers")}
         </Link>
       </div>
     </form>

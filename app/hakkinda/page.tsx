@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getPublicSiteTexts, t } from "@/lib/supabase/site-texts";
 
 export const metadata: Metadata = {
   title: "Hakkında | Muhammed Tankılıç",
@@ -8,26 +9,33 @@ export const metadata: Metadata = {
     "Muhammed Tankılıç’ın müzik dili, besteleri, cover yorumları ve kişisel sanatçı hikâyesi.",
 };
 
-const archiveCards = [
-  {
-    eyebrow: "Bestelerim",
-    title: "Resmi yayınlarım",
-    description:
-      "Kendi yazdığım ve bestelediğim şarkılarımı Spotify ve Apple Music gibi dijital platformlarda yayınlıyorum.",
-    href: "/sarkilarim",
-    button: "Şarkılarım",
-  },
-  {
-    eyebrow: "Coverlarım",
-    title: "Yorum videolarım",
-    description:
-      "Sevdiğim eserleri kendi sesimle, sade ve içten bir yorumla YouTube ve Instagram odaklı paylaşıyorum.",
-    href: "/coverlarim",
-    button: "Coverlarım",
-  },
-];
+export default async function AboutPage() {
+  const { settings } = await getPublicSiteTexts();
+  const text = (key: string) => t(settings, key);
 
-export default function AboutPage() {
+  const badges = [
+    text("about.badge_1"),
+    text("about.badge_2"),
+    text("about.badge_3"),
+  ].filter(Boolean);
+
+  const archiveCards = [
+    {
+      eyebrow: text("about.card_1_eyebrow"),
+      title: text("about.card_1_title"),
+      description: text("about.card_1_description"),
+      href: "/sarkilarim",
+      button: text("about.card_1_button"),
+    },
+    {
+      eyebrow: text("about.card_2_eyebrow"),
+      title: text("about.card_2_title"),
+      description: text("about.card_2_description"),
+      href: "/coverlarim",
+      button: text("about.card_2_button"),
+    },
+  ];
+
   return (
     <main className="page-shell">
       <Navbar />
@@ -38,40 +46,37 @@ export default function AboutPage() {
 
           <div className="relative max-w-4xl">
             <div className="mb-5 flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#BDEBE8]/78 px-4 py-2 text-[11px] font-semibold text-[#4B232D]">
-                Bağımsız Sanatçı
-              </span>
-
-              <span className="rounded-full bg-white/66 px-4 py-2 text-[11px] font-semibold text-[#4B232D]/72">
-                Kürtçe Müzik
-              </span>
-
-              <span className="rounded-full bg-white/66 px-4 py-2 text-[11px] font-semibold text-[#4B232D]/72">
-                Akustik Yorum
-              </span>
+              {badges.map((badge, index) => (
+                <span
+                  key={badge}
+                  className={`rounded-full px-4 py-2 text-[11px] font-semibold ${
+                    index === 0
+                      ? "bg-[#BDEBE8]/78 text-[#4B232D]"
+                      : "bg-white/66 text-[#4B232D]/72"
+                  }`}
+                >
+                  {badge}
+                </span>
+              ))}
             </div>
 
-            <p className="section-eyebrow">Hakkında</p>
+            <p className="section-eyebrow">{text("about.eyebrow")}</p>
 
             <h1 className="max-w-4xl text-[clamp(38px,5.4vw,72px)] font-semibold leading-[0.96] tracking-[-0.08em] text-[#4B232D]">
-              Müziğimi Kürtçe sözler, sade melodiler ve kişisel hikâyeler
-              üzerine kuruyorum.
+              {text("about.hero_title")}
             </h1>
 
             <p className="mt-6 max-w-3xl text-[15px] leading-8 text-[#4B232D]/76 md:text-[16px]">
-              Kendi bestelerimde anlamlı sözleri, doğal bir yorumla ve kulağa
-              hoş gelen modern bir akustik atmosferle birleştirmeye
-              çalışıyorum. Cover yorumlarımda ise sevdiğim eserleri kendi
-              sesimle, sade ve içten bir yorumla paylaşıyorum.
+              {text("about.hero_description")}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/sarkilarim" className="pill-button">
-                Bestelerim
+                {text("about.primary_button")}
               </Link>
 
               <Link href="/coverlarim" className="pill-button secondary">
-                Coverlarım
+                {text("about.secondary_button")}
               </Link>
             </div>
           </div>
@@ -108,15 +113,14 @@ export default function AboutPage() {
       <section className="site-container section-space">
         <div className="rounded-[30px] border border-white/35 bg-white/54 px-6 py-5 text-center shadow-[0_14px_40px_rgba(75,35,45,0.07)] backdrop-blur-[14px] md:px-8 md:py-6">
           <p className="mx-auto max-w-3xl text-sm leading-7 text-[#4B232D]/72 md:text-[15px]">
-            Bu sitede resmi yayınlarımı, cover yorumlarımı, fotoğraflarımı ve
-            müzik yolculuğuma dair notları bir araya getiriyorum.
+            {text("about.bottom_note")}
           </p>
         </div>
       </section>
 
       <footer className="site-container site-footer">
-        <p>© 2026 Muhammed Tankılıç. Tüm hakları saklıdır.</p>
-        <span>Hakkında · Bestelerim · Coverlarım</span>
+        <p>{text("footer.copyright")}</p>
+        <span>{text("footer.about_note")}</span>
       </footer>
     </main>
   );

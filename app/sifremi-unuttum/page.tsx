@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 type Message = {
   type: "error" | "success";
@@ -20,6 +21,8 @@ const actionButtonClass =
   "inline-flex min-h-10 w-full items-center justify-center rounded-full px-2 text-center text-[10.5px] font-bold leading-none tracking-[-0.015em] shadow-[0_10px_24px_rgba(75,35,45,0.13)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 md:min-h-12 md:px-5 md:text-sm";
 
 export default function ForgotPasswordPage() {
+  const { text } = useSiteTexts();
+
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
@@ -34,7 +37,7 @@ export default function ForgotPasswordPage() {
     if (!cleanEmail) {
       setMessage({
         type: "error",
-        text: "Şifre sıfırlama bağlantısı için e-posta adresini yazmalısın.",
+        text: text("forgot.error_empty"),
       });
       return;
     }
@@ -57,14 +60,14 @@ export default function ForgotPasswordPage() {
     if (error) {
       setMessage({
         type: "error",
-        text: "Şifre sıfırlama bağlantısı gönderilemedi. E-posta adresini kontrol edip tekrar dene.",
+        text: text("forgot.error_send"),
       });
       return;
     }
 
     setMessage({
       type: "success",
-      text: "Şifre sıfırlama bağlantısı e-posta adresine gönderildi. Gelen bağlantıdan yeni şifreni oluşturabilirsin.",
+      text: text("forgot.success"),
     });
   }
 
@@ -79,13 +82,15 @@ export default function ForgotPasswordPage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8">
           <div className="hidden text-center md:block">
-            <p className="section-eyebrow">Üyelik Alanı</p>
+            <p className="section-eyebrow">{text("forgot.eyebrow")}</p>
 
             <h1 className="mx-auto mt-4 max-w-4xl text-[clamp(25px,3.1vw,42px)] font-semibold leading-[1.18] tracking-[-0.055em] text-[#4B232D]">
-              <span className="block">Hesabına tekrar erişmek için</span>
-              <span className="block">e-posta adresini yaz ve</span>
+              <span className="block">{text("forgot.title_line_1")}</span>
+              <span className="block">{text("forgot.title_line_2")}</span>
               <span className="block">
-                <span className="text-[#6F3440]">Şifreni Yenile</span>.
+                <span className="text-[#6F3440]">
+                  {text("forgot.title_line_3")}
+                </span>
               </span>
             </h1>
           </div>
@@ -93,13 +98,13 @@ export default function ForgotPasswordPage() {
           <form onSubmit={handleSubmit} className="grid gap-3 md:mt-7 md:gap-4">
             <div className="rounded-[22px] border border-white/42 bg-white/58 p-3.5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
               <label className="grid gap-1.5 md:gap-2">
-                <span className={labelClass}>E-postan</span>
+                <span className={labelClass}>{text("forgot.email_label")}</span>
 
                 <input
                   type="email"
                   name="email"
                   autoComplete="email"
-                  placeholder="ornek@mail.com"
+                  placeholder={text("forgot.email_placeholder")}
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
@@ -126,7 +131,7 @@ export default function ForgotPasswordPage() {
                 href="/giris"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                ← Giriş
+                {text("forgot.button.login")}
               </Link>
 
               <button
@@ -134,14 +139,14 @@ export default function ForgotPasswordPage() {
                 disabled={isSubmitting}
                 className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
               >
-                {isSubmitting ? "..." : "Link Gönder"}
+                {isSubmitting ? "..." : text("forgot.button.submit")}
               </button>
 
               <Link
                 href="/"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                Menü →
+                {text("forgot.button.menu")}
               </Link>
             </div>
           </form>
