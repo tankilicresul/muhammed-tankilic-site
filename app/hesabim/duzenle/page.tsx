@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 type ProfileForm = {
   ad: string;
@@ -24,6 +25,7 @@ const actionButtonClass =
 
 export default function ProfilDuzenlePage() {
   const [supabase] = useState(() => createClient());
+  const { text } = useSiteTexts();
 
   const [form, setForm] = useState<ProfileForm>({
     ad: "",
@@ -56,7 +58,7 @@ export default function ProfilDuzenlePage() {
         .maybeSingle();
 
       if (profileError) {
-        setMessage("Profil bilgileri Supabase üzerinden yüklenemedi.");
+        setMessage(text("account_edit.message.load_error"));
       }
 
       const metadata = user.user_metadata || {};
@@ -75,7 +77,7 @@ export default function ProfilDuzenlePage() {
     }
 
     loadProfile();
-  }, [supabase]);
+  }, [supabase, text]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -112,7 +114,7 @@ export default function ProfilDuzenlePage() {
 
     if (profileError) {
       setSaving(false);
-      setMessage("Profil bilgileri güncellenemedi.");
+      setMessage(text("account_edit.message.update_error"));
       return;
     }
 
@@ -127,21 +129,18 @@ export default function ProfilDuzenlePage() {
       if (emailError) {
         setSaving(false);
         setMessage(
-          "Profil güncellendi ancak e-posta değiştirilemedi: " +
-            emailError.message,
+          `${text("account_edit.message.email_partial")}${emailError.message}`,
         );
         return;
       }
 
       setSaving(false);
-      setMessage(
-        "Profil güncellendi. Yeni e-posta adresine doğrulama bağlantısı gönderildi.",
-      );
+      setMessage(text("account_edit.message.email_success"));
       return;
     }
 
     setSaving(false);
-    setMessage("Profil bilgileri başarıyla güncellendi.");
+    setMessage(text("account_edit.message.success"));
   }
 
   if (loading) {
@@ -151,10 +150,12 @@ export default function ProfilDuzenlePage() {
 
         <section className="site-container relative pt-6 md:pt-9">
           <div className="mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 text-center shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-4xl md:rounded-[34px] md:p-8">
-            <p className="section-eyebrow">Profil</p>
+            <p className="section-eyebrow">
+              {text("account_edit.loading_eyebrow")}
+            </p>
 
             <h1 className="mt-2 text-[28px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:mt-3 md:text-[clamp(38px,4.6vw,62px)]">
-              Profil yükleniyor...
+              {text("account_edit.loading_title")}
             </h1>
           </div>
         </section>
@@ -173,15 +174,14 @@ export default function ProfilDuzenlePage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8 md:shadow-[0_24px_70px_rgba(75,35,45,0.12)]">
           <div className="text-center">
-            <p className="section-eyebrow">Profil ayarları</p>
+            <p className="section-eyebrow">{text("account_edit.eyebrow")}</p>
 
             <h1 className="mx-auto mt-2 max-w-[280px] text-[30px] font-semibold leading-[1.03] tracking-[-0.085em] text-[#4B232D] md:mt-3 md:max-w-4xl md:text-[clamp(48px,5.5vw,82px)] md:leading-none md:tracking-[-0.095em]">
-              Bilgilerini Değiştir
+              {text("account_edit.title")}
             </h1>
 
             <p className="mx-auto mt-3 max-w-xl text-[12px] leading-6 text-[#4B232D]/68 md:mt-4 md:max-w-2xl md:text-sm md:leading-8">
-              Ad, soyad, telefon, e-posta ve bildirim tercihini
-              güncelleyebilirsin.
+              {text("account_edit.description")}
             </p>
           </div>
 
@@ -189,35 +189,41 @@ export default function ProfilDuzenlePage() {
             <div className="rounded-[24px] border border-white/42 bg-white/58 p-3.5 shadow-[0_12px_34px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
               <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Adın</span>
+                  <span className={labelClass}>
+                    {text("account_edit.label.first_name")}
+                  </span>
 
                   <input
                     value={form.ad}
                     onChange={(event) =>
                       setForm({ ...form, ad: event.target.value })
                     }
-                    placeholder="Adını yaz"
+                    placeholder={text("account_edit.placeholder.first_name")}
                     required
                     className={inputClass}
                   />
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Soyadın</span>
+                  <span className={labelClass}>
+                    {text("account_edit.label.last_name")}
+                  </span>
 
                   <input
                     value={form.soyad}
                     onChange={(event) =>
                       setForm({ ...form, soyad: event.target.value })
                     }
-                    placeholder="Soyadını yaz"
+                    placeholder={text("account_edit.placeholder.last_name")}
                     required
                     className={inputClass}
                   />
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Telefonun</span>
+                  <span className={labelClass}>
+                    {text("account_edit.label.phone")}
+                  </span>
 
                   <input
                     value={form.telefon}
@@ -225,14 +231,16 @@ export default function ProfilDuzenlePage() {
                       setForm({ ...form, telefon: event.target.value })
                     }
                     type="tel"
-                    placeholder="+90 5xx xxx xx xx"
+                    placeholder={text("account_edit.placeholder.phone")}
                     required
                     className={inputClass}
                   />
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>E-postan</span>
+                  <span className={labelClass}>
+                    {text("account_edit.label.email")}
+                  </span>
 
                   <input
                     value={form.email}
@@ -240,7 +248,7 @@ export default function ProfilDuzenlePage() {
                       setForm({ ...form, email: event.target.value })
                     }
                     type="email"
-                    placeholder="ornek@mail.com"
+                    placeholder={text("account_edit.placeholder.email")}
                     required
                     className={inputClass}
                   />
@@ -262,10 +270,7 @@ export default function ProfilDuzenlePage() {
                   className="mt-1 h-4 w-4 shrink-0 rounded border-[#4B232D]/30 accent-[#4B232D]"
                 />
 
-                <span>
-                  Yeni şarkılar ve özel içerikler yayınlandığında e-posta almak
-                  istiyorum.
-                </span>
+                <span>{text("account_edit.notification_text")}</span>
               </label>
             </div>
 
@@ -275,12 +280,12 @@ export default function ProfilDuzenlePage() {
               </p>
             ) : null}
 
-           <div className="grid grid-cols-2 gap-2 md:gap-3">
+            <div className="grid grid-cols-2 gap-2 md:gap-3">
               <Link
                 href="/hesabim"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                ← Hesabıma Dön
+                {text("account_edit.button.back")}
               </Link>
 
               <button
@@ -288,7 +293,9 @@ export default function ProfilDuzenlePage() {
                 disabled={saving}
                 className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
               >
-                {saving ? "Kaydediliyor..." : "Kaydet"}
+                {saving
+                  ? text("account_edit.button.saving")
+                  : text("account_edit.button.submit")}
               </button>
             </div>
           </form>
