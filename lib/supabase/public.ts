@@ -262,7 +262,7 @@ async function fetchHomepageMedia() {
       supabase
         .from("site_texts")
         .select("key,value")
-        .eq("group_name", "homepage_announcement")
+        .eq("is_public", true)
         .in("key", announcementKeys),
     ]);
 
