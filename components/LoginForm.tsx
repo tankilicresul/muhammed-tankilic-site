@@ -188,8 +188,8 @@ export default function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
                 className={passwordToggleClass}
-                aria-label={showPassword ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
-                title={showPassword ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
+                aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>

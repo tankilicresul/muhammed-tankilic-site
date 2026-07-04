@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
 import { useSiteTexts } from "@/lib/supabase/site-texts-client";
@@ -160,7 +160,7 @@ export default function RegisterPage() {
     if (!cleanAd || !cleanSoyad || !cleanTelefon || !cleanEmail) {
       setMessage({
         type: "error",
-        text: "LÃ¼tfen ad, soyad, telefon ve e-posta alanlarÄ±nÄ± doldur.",
+        text: "Lütfen ad, soyad, telefon ve e-posta alanlarını doldur.",
       });
       return;
     }
@@ -168,7 +168,7 @@ export default function RegisterPage() {
     if (!isValidEmail(cleanEmail)) {
       setMessage({
         type: "error",
-        text: "LÃ¼tfen geÃ§erli formatta bir e-posta adresi yaz.",
+        text: "Lütfen geçerli formatta bir e-posta adresi yaz.",
       });
       return;
     }
@@ -176,7 +176,7 @@ export default function RegisterPage() {
     if (!isValidTurkishMobilePhone(cleanTelefon)) {
       setMessage({
         type: "error",
-        text: "Telefon numarasÄ± 0 ile baÅŸlamalÄ± ve toplam 11 haneli olmalÄ±. Ã–rnek: 05XXXXXXXXX",
+        text: "Telefon numarası 0 ile başlamalı ve toplam 11 haneli olmalı. Örnek: 05XXXXXXXXX",
       });
       return;
     }
@@ -184,7 +184,7 @@ export default function RegisterPage() {
     if (sifre.length < 6) {
       setMessage({
         type: "error",
-        text: "Åifren en az 6 karakter olmalÄ±.",
+        text: "Şifren en az 6 karakter olmalı.",
       });
       return;
     }
@@ -192,7 +192,7 @@ export default function RegisterPage() {
     if (sifre !== sifreTekrar) {
       setMessage({
         type: "error",
-        text: "Åifreler eÅŸleÅŸmiyor. LÃ¼tfen tekrar kontrol et.",
+        text: "Şifreler eşleşmiyor. Lütfen tekrar kontrol et.",
       });
       return;
     }
@@ -200,7 +200,7 @@ export default function RegisterPage() {
     if (!uyelikOnayi) {
       setMessage({
         type: "error",
-        text: "Hesap oluÅŸturmak iÃ§in Ã¼yelik onayÄ±nÄ± iÅŸaretlemelisin.",
+        text: "Hesap oluşturmak için üyelik onayını işaretlemelisin.",
       });
       return;
     }
@@ -241,8 +241,8 @@ export default function RegisterPage() {
       setMessage({
         type: "error",
         text: alreadyRegistered
-          ? "Bu mail ile kayÄ±tlÄ± bir hesap olabilir. GiriÅŸ yapmayÄ± deneyebilirsin."
-          : "KayÄ±t oluÅŸturulamadÄ±. Bilgilerini kontrol edip tekrar dene.",
+          ? "Bu mail ile kayıtlı bir hesap olabilir. Giriş yapmayı deneyebilirsin."
+          : "Kayıt oluşturulamadı. Bilgilerini kontrol edip tekrar dene.",
       });
 
       return;
@@ -262,7 +262,7 @@ export default function RegisterPage() {
 
       setMessage({
         type: "success",
-        text: "HesabÄ±n oluÅŸturuldu. HesabÄ±na yÃ¶nlendiriliyorsun.",
+        text: "Hesabın oluşturuldu. Hesabına yönlendiriliyorsun.",
       });
 
       router.refresh();
@@ -274,7 +274,7 @@ export default function RegisterPage() {
 
     setMessage({
       type: "success",
-      text: "HesabÄ±n oluÅŸturuldu. E-posta adresine gelen doÄŸrulama baÄŸlantÄ±sÄ±nÄ± aÃ§tÄ±ktan sonra giriÅŸ yapabilirsin.",
+      text: "Hesabın oluşturuldu. E-posta adresine gelen doğrulama bağlantısını açtıktan sonra giriş yapabilirsin.",
     });
   }
 
@@ -300,13 +300,13 @@ export default function RegisterPage() {
             <div className="rounded-[22px] border border-white/42 bg-white/58 p-3.5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
               <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>AdÄ±n</span>
+                  <span className={labelClass}>Adın</span>
 
                   <input
                     type="text"
                     name="ad"
                     autoComplete="given-name"
-                    placeholder="AdÄ±nÄ± yaz"
+                    placeholder="Adını yaz"
                     value={ad}
                     onChange={(event) => setAd(event.target.value)}
                     required
@@ -315,13 +315,13 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>SoyadÄ±n</span>
+                  <span className={labelClass}>Soyadın</span>
 
                   <input
                     type="text"
                     name="soyad"
                     autoComplete="family-name"
-                    placeholder="SoyadÄ±nÄ± yaz"
+                    placeholder="Soyadını yaz"
                     value={soyad}
                     onChange={(event) => setSoyad(event.target.value)}
                     required
@@ -361,7 +361,7 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Åifren</span>
+                  <span className={labelClass}>Şifren</span>
 
                   <div className="relative w-full">
                     <input
@@ -379,8 +379,8 @@ export default function RegisterPage() {
                       type="button"
                       onClick={() => setShowSifre((current) => !current)}
                       className={passwordToggleClass}
-                      aria-label={showSifre ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
-                      title={showSifre ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
+                      aria-label={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
+                      title={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
                     >
                       {showSifre ? <EyeOffIcon /> : <EyeIcon />}
                     </button>
@@ -388,14 +388,14 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Åifre tekrar</span>
+                  <span className={labelClass}>Şifre tekrar</span>
 
                   <div className="relative w-full">
                     <input
                       type={showSifreTekrar ? "text" : "password"}
                       name="sifreTekrar"
                       autoComplete="new-password"
-                      placeholder="Åifreni tekrar yaz"
+                      placeholder="Şifreni tekrar yaz"
                       value={sifreTekrar}
                       onChange={(event) => setSifreTekrar(event.target.value)}
                       required
@@ -409,10 +409,10 @@ export default function RegisterPage() {
                       }
                       className={passwordToggleClass}
                       aria-label={
-                        showSifreTekrar ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"
+                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
                       }
                       title={
-                        showSifreTekrar ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"
+                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
                       }
                     >
                       {showSifreTekrar ? <EyeOffIcon /> : <EyeIcon />}
@@ -461,14 +461,14 @@ export default function RegisterPage() {
                 ].join(" ")}
               >
                 {message.type === "error" &&
-                message.text.includes("GiriÅŸ yapmayÄ±") ? (
+                message.text.includes("Giriş yapmayı") ? (
                   <span>
-                    Bu mail ile kayÄ±tlÄ± bir hesap olabilir.{" "}
+                    Bu mail ile kayıtlı bir hesap olabilir.{" "}
                     <Link
                       href={`/giris?returnTo=${encodeURIComponent(getPostRegisterReturnTo())}`}
                       className="font-extrabold underline decoration-red-300 underline-offset-4 transition hover:text-[#4B232D]"
                     >
-                      GiriÅŸ Yap
+                      Giriş Yap
                     </Link>
                     .
                   </span>

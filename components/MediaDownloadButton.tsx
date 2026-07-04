@@ -154,7 +154,7 @@ export default function MediaDownloadButton({
   hasAudioFile,
   hasVideoFile,
   className,
-  label = "Ä°ndir",
+  label = "İndir",
 }: MediaDownloadButtonProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -172,9 +172,9 @@ export default function MediaDownloadButton({
     status === "checking"
       ? "Kontrol..."
       : status === "downloading"
-        ? "Ä°ndiriliyor..."
+        ? "İndiriliyor..."
         : status === "downloaded"
-          ? "Ä°ndirildi"
+          ? "İndirildi"
           : label;
 
   function closePanel() {
@@ -229,7 +229,7 @@ export default function MediaDownloadButton({
       setStatus("idle");
       clearPendingDownload();
       setMessage(
-        result.error ?? "Ä°ndirme baÅŸlatÄ±lamadÄ±. LÃ¼tfen biraz sonra tekrar dene.",
+        result.error ?? "İndirme başlatılamadı. Lütfen biraz sonra tekrar dene.",
       );
       setPanel("message");
       return;
@@ -259,7 +259,7 @@ export default function MediaDownloadButton({
     if (!hasAudioFile && !hasVideoFile) {
       setStatus("idle");
       clearPendingDownload();
-      setMessage("Bu iÃ§erik iÃ§in indirme dosyasÄ± henÃ¼z eklenmedi.");
+      setMessage("Bu içerik için indirme dosyası henüz eklenmedi.");
       setPanel("message");
       return;
     }
@@ -321,7 +321,7 @@ export default function MediaDownloadButton({
         <>
           <button
             type="button"
-            aria-label="Ä°ndirme penceresini kapat"
+            aria-label="İndirme penceresini kapat"
             className={modalBackdropClass}
             onClick={closePanel}
           />
@@ -330,16 +330,16 @@ export default function MediaDownloadButton({
             {panel === "auth" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  Ãœyelik Gerekli
+                  Üyelik Gerekli
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
-                  KayÄ±t olman gerekiyor.
+                  Kayıt olman gerekiyor.
                 </h3>
 
                 <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
-                  ÅarkÄ±larÄ±n tam halini indirmek iÃ§in kayÄ±t olun veya hesabÄ±na
-                  giriÅŸ yap.
+                  Şarkıların tam halini indirmek için kayıt olun veya hesabına
+                  giriş yap.
                 </p>
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
@@ -347,14 +347,14 @@ export default function MediaDownloadButton({
                     href={loginHref}
                     className={`${choiceButtonClass} bg-white text-[#4B232D] shadow-[0_8px_18px_rgba(75,35,45,0.08)]`}
                   >
-                    GiriÅŸ Yap
+                    Giriş Yap
                   </Link>
 
                   <Link
                     href={registerHref}
                     className={`${choiceButtonClass} bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
                   >
-                    KayÄ±t Ol
+                    Kayıt Ol
                   </Link>
                 </div>
               </>
@@ -363,7 +363,7 @@ export default function MediaDownloadButton({
             {panel === "choice" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  Ä°ndirme SeÃ§imi
+                  İndirme Seçimi
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
@@ -371,7 +371,7 @@ export default function MediaDownloadButton({
                 </h3>
 
                 <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
-                  Bu iÃ§erik iÃ§in ses ve video dosyasÄ± mevcut.
+                  Bu içerik için ses ve video dosyası mevcut.
                 </p>
 
                 <div className="mt-4 grid gap-2">
@@ -380,7 +380,7 @@ export default function MediaDownloadButton({
                     onClick={() => startDownload("audio")}
                     className={`${choiceButtonClass} bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
                   >
-                    Ses dosyasÄ± indir
+                    Ses dosyası indir
                   </button>
 
                   <button
@@ -388,7 +388,7 @@ export default function MediaDownloadButton({
                     onClick={() => startDownload("video")}
                     className={`${choiceButtonClass} bg-[#4B232D] text-white shadow-[0_8px_18px_rgba(75,35,45,0.16)]`}
                   >
-                    Video dosyasÄ± indir
+                    Video dosyası indir
                   </button>
                 </div>
               </>
@@ -397,7 +397,7 @@ export default function MediaDownloadButton({
             {panel === "message" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  Ä°ndirme
+                  İndirme
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
