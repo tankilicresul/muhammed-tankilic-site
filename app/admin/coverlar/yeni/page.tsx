@@ -172,6 +172,8 @@ async function createCoverAction(formData: FormData) {
     youtube_embed_url: youtubeEmbedUrl,
     instagram_url: textOrNull(formData.get("instagram_url")),
     cover_image_path: textOrNull(formData.get("cover_image_path")),
+    download_file_path: textOrNull(formData.get("download_file_path")),
+    video_download_file_path: textOrNull(formData.get("video_download_file_path")),
     sort_order: numberOrZero(formData.get("sort_order")),
     published_at: normalizePublishedAt(
       releaseStatus,
@@ -374,13 +376,34 @@ export default async function AdminNewCoverPage({
                   className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
                 />
               </label>
+
+              <label className="grid gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
+                  Ses İndirme Dosyası Path
+                </span>
+                <input
+                  name="download_file_path"
+                  placeholder="downloads/covers/pela-dur.mp3"
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
+                  Video İndirme Dosyası Path
+                </span>
+                <input
+                  name="video_download_file_path"
+                  placeholder="downloads/covers/pela-dur.mp4"
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                />
+              </label>
             </div>
 
             <div className="flex flex-col gap-3 rounded-[22px] border border-[#4B232D]/10 bg-white/45 p-4 md:flex-row md:items-center md:justify-between">
               <p className="text-[12px] leading-6 text-[#4B232D]/65">
-                Kaydettiğinde cover Supabase’e yazılır. Public Coverlarım
-                sayfası henüz bu veriyi kullanmıyor; onu daha sonra güvenli
-                şekilde taşıyacağız.
+                Kaydettiğinde cover Supabase’e yazılır. Ses ve video dosya path alanları
+                indirme butonları tarafından üyelik kontrolüyle kullanılır.
               </p>
 
               <button

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import MediaDownloadButton from "@/components/MediaDownloadButton";
 import {
   getPublishedSongs,
   type PublicMusicPlatform,
@@ -57,14 +58,23 @@ function PlatformAction({
   );
 }
 
-function DownloadAction({ isMobile = false }: { isMobile?: boolean }) {
+function DownloadAction({
+  song,
+  isMobile = false,
+}: {
+  song: PublicSong;
+  isMobile?: boolean;
+}) {
   return (
-    <Link
-      href="/giris"
+    <MediaDownloadButton
+      contentType="song"
+      slug={song.slug}
+      title={song.title}
+      hasAudioFile={song.hasAudioDownload}
+      hasVideoFile={song.hasVideoDownload}
       className={`${isMobile ? mobileActionClass : desktopActionClass} ${orangeActionClass}`}
-    >
-      İndir
-    </Link>
+      label="İndir"
+    />
   );
 }
 
@@ -132,7 +142,7 @@ function MobileSongPanel({ song }: { song: PublicSong }) {
 
           <PlatformAction href={appleMusic?.url} label="Apple" isMobile />
 
-          <DownloadAction isMobile />
+          <DownloadAction song={song} isMobile />
         </div>
       </div>
     </article>
@@ -176,7 +186,7 @@ function DesktopSongPanel({ song }: { song: PublicSong }) {
 
             <PlatformAction href={appleMusic?.url} label="Apple Music" />
 
-            <DownloadAction />
+            <DownloadAction song={song} />
           </div>
         </div>
 
