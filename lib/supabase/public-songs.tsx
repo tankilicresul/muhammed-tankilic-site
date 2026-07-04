@@ -7,6 +7,8 @@ const supabaseKey =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+const DEFAULT_SONG_COVER = "/muhammed-hero.jpg";
+
 export type PublicMusicPlatform = {
   name: "Spotify" | "Apple Music" | "YouTube";
   url: string;
@@ -73,11 +75,31 @@ function createPublicClient() {
   });
 }
 
+function normalizePublicPath(path: string) {
+  const cleanedPath = path.replace(/^public\//, "").replace(/^\/+/, "");
+
+  if (!cleanedPath) {
+    return DEFAULT_SONG_COVER;
+  }
+
+  return `/${cleanedPath}`;
+}
+
+function normalizeStoragePath(path: string) {
+  const cleanedPath = path.replace(/^\/+/, "");
+
+  if (!supabaseUrl || !cleanedPath || cleanedPath.includes("..")) {
+    return DEFAULT_SONG_COVER;
+  }
+
+  return `${supabaseUrl}/storage/v1/object/public/${cleanedPath}`;
+}
+
 function normalizeImagePath(path: string | null) {
   const value = String(path ?? "").trim();
 
   if (!value) {
-    return "/muzik/zef-cara-cover.jpg";
+    return DEFAULT_SONG_COVER;
   }
 
   if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -88,7 +110,52 @@ function normalizeImagePath(path: string | null) {
     return value;
   }
 
-  return `/${value}`;
+  const cleanedValue = value.replace(/^public\//, "");
+
+  const localPublicRoots = [
+    "muzik/",
+    "images/",
+    "img/",
+    "photos/",
+    "fotograflar/",
+    "covers/",
+    "coverlar/",
+    "uploads/",
+  ];
+
+  if (localPublicRoots.some((root) => cleanedValue.startsWith(root))) {
+    return normalizePublicPath(cleanedValue);
+  }
+
+  if (!cleanedValue.includes("/")) {
+    return normalizePublicPath(cleanedValue);
+  }
+
+  return normalizeStoragePath(cleanedValue);
+}
+
+function normalizeDownloadPath(path: string | null) {
+  const value = String(path ?? "").trim();
+
+  if (!value) {
+    return "";
+  }
+
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  if (value.startsWith("/")) {
+    return value;
+  }
+
+  const cleanedValue = value.replace(/^public\//, "");
+
+  if (!cleanedValue.includes("/")) {
+    return normalizePublicPath(cleanedValue);
+  }
+
+  return normalizeStoragePath(cleanedValue);
 }
 
 function normalizeSpotifyEmbedUrl(spotifyUrl: string, spotifyEmbedUrl: string) {
@@ -202,7 +269,7 @@ function mapSong(row: SongRow): PublicSong {
     publishedAt: row.published_at ?? row.created_at,
     coverImage: normalizeImagePath(row.cover_image_path),
     lyrics: row.lyrics ?? "",
-    downloadFilePath: row.download_file_path ?? "",
+    downloadFilePath: normalizeDownloadPath(row.download_file_path),
     spotifyUrl,
     spotifyEmbedUrl,
     appleMusicUrl,
