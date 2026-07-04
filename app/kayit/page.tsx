@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
 import { useSiteTexts } from "@/lib/supabase/site-texts-client";
@@ -11,6 +11,8 @@ type Message = {
   type: "error" | "success";
   text: string;
 };
+
+const pendingDownloadStorageKey = "muhammed_pending_download_return_to";
 
 const inputClass =
   "min-h-11 w-full rounded-[18px] border border-[#4B232D]/12 bg-white/82 px-4 text-[13px] font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_8px_24px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_3px_rgba(245,174,80,0.16)] md:min-h-14 md:rounded-[22px] md:px-5 md:text-base";
@@ -83,6 +85,45 @@ function isValidTurkishMobilePhone(value: string) {
   return /^0\d{10}$/.test(value);
 }
 
+
+function getStoredPendingDownloadReturnTo() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return window.localStorage.getItem(pendingDownloadStorageKey) ?? "";
+}
+
+function getSearchParam(name: string) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return new URLSearchParams(window.location.search).get(name) ?? "";
+}
+
+function normalizeReturnTo(value: string | null) {
+  const candidate = String(value ?? "").trim();
+
+  if (!candidate) {
+    return "";
+  }
+
+  if (!candidate.startsWith("/") || candidate.startsWith("//")) {
+    return "";
+  }
+
+  if (candidate.includes("://")) {
+    return "";
+  }
+
+  return candidate;
+}
+
+function getFallbackReturnTo() {
+  return normalizeReturnTo(getStoredPendingDownloadReturnTo()) || "/hesabim";
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const { text } = useSiteTexts();
@@ -102,6 +143,10 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
 
+  function getPostRegisterReturnTo() {
+    return normalizeReturnTo(getSearchParam("returnTo")) || getFallbackReturnTo();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -115,7 +160,7 @@ export default function RegisterPage() {
     if (!cleanAd || !cleanSoyad || !cleanTelefon || !cleanEmail) {
       setMessage({
         type: "error",
-        text: "Lütfen ad, soyad, telefon ve e-posta alanlarını doldur.",
+        text: "LÃ¼tfen ad, soyad, telefon ve e-posta alanlarÄ±nÄ± doldur.",
       });
       return;
     }
@@ -123,7 +168,7 @@ export default function RegisterPage() {
     if (!isValidEmail(cleanEmail)) {
       setMessage({
         type: "error",
-        text: "Lütfen geçerli formatta bir e-posta adresi yaz.",
+        text: "LÃ¼tfen geÃ§erli formatta bir e-posta adresi yaz.",
       });
       return;
     }
@@ -131,7 +176,7 @@ export default function RegisterPage() {
     if (!isValidTurkishMobilePhone(cleanTelefon)) {
       setMessage({
         type: "error",
-        text: "Telefon numarası 0 ile başlamalı ve toplam 11 haneli olmalı. Örnek: 05XXXXXXXXX",
+        text: "Telefon numarasÄ± 0 ile baÅŸlamalÄ± ve toplam 11 haneli olmalÄ±. Ã–rnek: 05XXXXXXXXX",
       });
       return;
     }
@@ -139,7 +184,7 @@ export default function RegisterPage() {
     if (sifre.length < 6) {
       setMessage({
         type: "error",
-        text: "Şifren en az 6 karakter olmalı.",
+        text: "Åifren en az 6 karakter olmalÄ±.",
       });
       return;
     }
@@ -147,7 +192,7 @@ export default function RegisterPage() {
     if (sifre !== sifreTekrar) {
       setMessage({
         type: "error",
-        text: "Şifreler eşleşmiyor. Lütfen tekrar kontrol et.",
+        text: "Åifreler eÅŸleÅŸmiyor. LÃ¼tfen tekrar kontrol et.",
       });
       return;
     }
@@ -155,7 +200,7 @@ export default function RegisterPage() {
     if (!uyelikOnayi) {
       setMessage({
         type: "error",
-        text: "Hesap oluşturmak için üyelik onayını işaretlemelisin.",
+        text: "Hesap oluÅŸturmak iÃ§in Ã¼yelik onayÄ±nÄ± iÅŸaretlemelisin.",
       });
       return;
     }
@@ -164,9 +209,11 @@ export default function RegisterPage() {
 
     const supabase = createClient();
 
+    const returnTo = getPostRegisterReturnTo();
+
     const redirectTo =
       typeof window !== "undefined"
-        ? `${window.location.origin}/auth/confirm`
+        ? `${window.location.origin}/auth/confirm?returnTo=${encodeURIComponent(returnTo)}`
         : undefined;
 
     const { data, error } = await supabase.auth.signUp({
@@ -194,8 +241,8 @@ export default function RegisterPage() {
       setMessage({
         type: "error",
         text: alreadyRegistered
-          ? "Bu mail ile kayıtlı bir hesap olabilir. Giriş yapmayı deneyebilirsin."
-          : "Kayıt oluşturulamadı. Bilgilerini kontrol edip tekrar dene.",
+          ? "Bu mail ile kayÄ±tlÄ± bir hesap olabilir. GiriÅŸ yapmayÄ± deneyebilirsin."
+          : "KayÄ±t oluÅŸturulamadÄ±. Bilgilerini kontrol edip tekrar dene.",
       });
 
       return;
@@ -215,11 +262,11 @@ export default function RegisterPage() {
 
       setMessage({
         type: "success",
-        text: "Hesabın oluşturuldu. Hesabına yönlendiriliyorsun.",
+        text: "HesabÄ±n oluÅŸturuldu. HesabÄ±na yÃ¶nlendiriliyorsun.",
       });
 
       router.refresh();
-      router.push("/hesabim");
+      router.push(returnTo);
       return;
     }
 
@@ -227,7 +274,7 @@ export default function RegisterPage() {
 
     setMessage({
       type: "success",
-      text: "Hesabın oluşturuldu. E-posta adresine gelen doğrulama bağlantısını açtıktan sonra giriş yapabilirsin.",
+      text: "HesabÄ±n oluÅŸturuldu. E-posta adresine gelen doÄŸrulama baÄŸlantÄ±sÄ±nÄ± aÃ§tÄ±ktan sonra giriÅŸ yapabilirsin.",
     });
   }
 
@@ -253,13 +300,13 @@ export default function RegisterPage() {
             <div className="rounded-[22px] border border-white/42 bg-white/58 p-3.5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
               <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Adın</span>
+                  <span className={labelClass}>AdÄ±n</span>
 
                   <input
                     type="text"
                     name="ad"
                     autoComplete="given-name"
-                    placeholder="Adını yaz"
+                    placeholder="AdÄ±nÄ± yaz"
                     value={ad}
                     onChange={(event) => setAd(event.target.value)}
                     required
@@ -268,13 +315,13 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Soyadın</span>
+                  <span className={labelClass}>SoyadÄ±n</span>
 
                   <input
                     type="text"
                     name="soyad"
                     autoComplete="family-name"
-                    placeholder="Soyadını yaz"
+                    placeholder="SoyadÄ±nÄ± yaz"
                     value={soyad}
                     onChange={(event) => setSoyad(event.target.value)}
                     required
@@ -314,7 +361,7 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Şifren</span>
+                  <span className={labelClass}>Åifren</span>
 
                   <div className="relative w-full">
                     <input
@@ -332,8 +379,8 @@ export default function RegisterPage() {
                       type="button"
                       onClick={() => setShowSifre((current) => !current)}
                       className={passwordToggleClass}
-                      aria-label={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
-                      title={showSifre ? "Şifreyi gizle" : "Şifreyi göster"}
+                      aria-label={showSifre ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
+                      title={showSifre ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
                     >
                       {showSifre ? <EyeOffIcon /> : <EyeIcon />}
                     </button>
@@ -341,14 +388,14 @@ export default function RegisterPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Şifre tekrar</span>
+                  <span className={labelClass}>Åifre tekrar</span>
 
                   <div className="relative w-full">
                     <input
                       type={showSifreTekrar ? "text" : "password"}
                       name="sifreTekrar"
                       autoComplete="new-password"
-                      placeholder="Şifreni tekrar yaz"
+                      placeholder="Åifreni tekrar yaz"
                       value={sifreTekrar}
                       onChange={(event) => setSifreTekrar(event.target.value)}
                       required
@@ -362,10 +409,10 @@ export default function RegisterPage() {
                       }
                       className={passwordToggleClass}
                       aria-label={
-                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
+                        showSifreTekrar ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"
                       }
                       title={
-                        showSifreTekrar ? "Şifreyi gizle" : "Şifreyi göster"
+                        showSifreTekrar ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"
                       }
                     >
                       {showSifreTekrar ? <EyeOffIcon /> : <EyeIcon />}
@@ -414,14 +461,14 @@ export default function RegisterPage() {
                 ].join(" ")}
               >
                 {message.type === "error" &&
-                message.text.includes("Giriş yapmayı") ? (
+                message.text.includes("GiriÅŸ yapmayÄ±") ? (
                   <span>
-                    Bu mail ile kayıtlı bir hesap olabilir.{" "}
+                    Bu mail ile kayÄ±tlÄ± bir hesap olabilir.{" "}
                     <Link
-                      href="/giris"
+                      href={`/giris?returnTo=${encodeURIComponent(getPostRegisterReturnTo())}`}
                       className="font-extrabold underline decoration-red-300 underline-offset-4 transition hover:text-[#4B232D]"
                     >
-                      Giriş Yap
+                      GiriÅŸ Yap
                     </Link>
                     .
                   </span>
@@ -448,7 +495,7 @@ export default function RegisterPage() {
               </button>
 
               <Link
-                href="/giris"
+                href={`/giris?returnTo=${encodeURIComponent(getPostRegisterReturnTo())}`}
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
                 {text("register.button.login")}

@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  usePathname,
+  useRouter,
+} from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type DownloadFormat = "audio" | "video";
@@ -24,6 +32,8 @@ type DownloadResponse = {
   filename?: string;
   error?: string;
 };
+
+const pendingDownloadStorageKey = "muhammed_pending_download_return_to";
 
 const modalBackdropClass =
   "fixed inset-0 z-[9998] bg-[#4B232D]/14 backdrop-blur-[2px]";
@@ -57,6 +67,86 @@ async function getAccessToken() {
   return session?.access_token ?? "";
 }
 
+function getCurrentSearchParams() {
+  if (typeof window === "undefined") {
+    return new URLSearchParams();
+  }
+
+  return new URLSearchParams(window.location.search);
+}
+
+function getCurrentPathname(fallbackPathname: string) {
+  if (typeof window === "undefined") {
+    return fallbackPathname;
+  }
+
+  return window.location.pathname || fallbackPathname;
+}
+
+function buildDownloadReturnTo(
+  fallbackPathname: string,
+  contentType: MediaDownloadButtonProps["contentType"],
+  slug: string,
+) {
+  const pathname = getCurrentPathname(fallbackPathname);
+  const params = getCurrentSearchParams();
+
+  params.set("download", "1");
+  params.set("downloadType", contentType);
+  params.set("downloadSlug", slug);
+
+  const query = params.toString();
+
+  return query ? `${pathname}?${query}` : pathname;
+}
+
+function removeDownloadQueryParams(fallbackPathname: string) {
+  const pathname = getCurrentPathname(fallbackPathname);
+  const params = getCurrentSearchParams();
+
+  params.delete("download");
+  params.delete("downloadType");
+  params.delete("downloadSlug");
+
+  const query = params.toString();
+
+  return query ? `${pathname}?${query}` : pathname;
+}
+
+function savePendingDownload(returnTo: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(pendingDownloadStorageKey, returnTo);
+}
+
+function clearPendingDownload() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(pendingDownloadStorageKey);
+}
+
+function getAutoDownloadParams() {
+  if (typeof window === "undefined") {
+    return {
+      download: "",
+      downloadType: "",
+      downloadSlug: "",
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    download: params.get("download") ?? "",
+    downloadType: params.get("downloadType") ?? "",
+    downloadSlug: params.get("downloadSlug") ?? "",
+  };
+}
+
 export default function MediaDownloadButton({
   contentType,
   slug,
@@ -64,23 +154,39 @@ export default function MediaDownloadButton({
   hasAudioFile,
   hasVideoFile,
   className,
-  label = "İndir",
+  label = "Ä°ndir",
 }: MediaDownloadButtonProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const autoStartedRef = useRef(false);
+
   const [status, setStatus] = useState<DownloadStatus>("idle");
   const [panel, setPanel] = useState<PanelState>("none");
   const [message, setMessage] = useState("");
+
+  const returnTo = buildDownloadReturnTo(pathname, contentType, slug);
+  const loginHref = `/giris?returnTo=${encodeURIComponent(returnTo)}`;
+  const registerHref = `/kayit?returnTo=${encodeURIComponent(returnTo)}`;
 
   const buttonLabel =
     status === "checking"
       ? "Kontrol..."
       : status === "downloading"
-        ? "İndiriliyor..."
+        ? "Ä°ndiriliyor..."
         : status === "downloaded"
-          ? "İndirildi"
+          ? "Ä°ndirildi"
           : label;
 
   function closePanel() {
     setPanel("none");
+  }
+
+  function cleanDownloadQueryFromUrl() {
+    const cleanPath = removeDownloadQueryParams(pathname);
+
+    router.replace(cleanPath, {
+      scroll: false,
+    });
   }
 
   async function startDownload(format: DownloadFormat) {
@@ -92,6 +198,7 @@ export default function MediaDownloadButton({
 
     if (!accessToken) {
       setStatus("idle");
+      savePendingDownload(returnTo);
       setPanel("auth");
       return;
     }
@@ -113,24 +220,29 @@ export default function MediaDownloadButton({
 
     if (response.status === 401) {
       setStatus("idle");
+      savePendingDownload(returnTo);
       setPanel("auth");
       return;
     }
 
     if (!response.ok || !result.ok || !result.url) {
       setStatus("idle");
+      clearPendingDownload();
       setMessage(
-        result.error ?? "İndirme başlatılamadı. Lütfen biraz sonra tekrar dene.",
+        result.error ?? "Ä°ndirme baÅŸlatÄ±lamadÄ±. LÃ¼tfen biraz sonra tekrar dene.",
       );
       setPanel("message");
       return;
     }
 
+    clearPendingDownload();
     triggerBrowserDownload(result.url, result.filename ?? `${title}.mp3`);
     setStatus("downloaded");
   }
 
-  async function handleClick() {
+  async function continueDownloadFlow() {
+    const freshReturnTo = buildDownloadReturnTo(pathname, contentType, slug);
+
     setMessage("");
     setPanel("none");
     setStatus("checking");
@@ -139,13 +251,15 @@ export default function MediaDownloadButton({
 
     if (!accessToken) {
       setStatus("idle");
+      savePendingDownload(freshReturnTo);
       setPanel("auth");
       return;
     }
 
     if (!hasAudioFile && !hasVideoFile) {
       setStatus("idle");
-      setMessage("Bu içerik için indirme dosyası henüz eklenmedi.");
+      clearPendingDownload();
+      setMessage("Bu iÃ§erik iÃ§in indirme dosyasÄ± henÃ¼z eklenmedi.");
       setPanel("message");
       return;
     }
@@ -153,6 +267,7 @@ export default function MediaDownloadButton({
     setStatus("idle");
 
     if (hasAudioFile && hasVideoFile) {
+      clearPendingDownload();
       setPanel("choice");
       return;
     }
@@ -164,6 +279,32 @@ export default function MediaDownloadButton({
 
     await startDownload("audio");
   }
+
+  async function handleClick() {
+    await continueDownloadFlow();
+  }
+
+  useEffect(() => {
+    if (autoStartedRef.current) {
+      return;
+    }
+
+    const autoDownloadParams = getAutoDownloadParams();
+
+    const shouldAutoStart =
+      autoDownloadParams.download === "1" &&
+      autoDownloadParams.downloadType === contentType &&
+      autoDownloadParams.downloadSlug === slug;
+
+    if (!shouldAutoStart) {
+      return;
+    }
+
+    autoStartedRef.current = true;
+    cleanDownloadQueryFromUrl();
+    void continueDownloadFlow();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentType, slug]);
 
   return (
     <>
@@ -180,7 +321,7 @@ export default function MediaDownloadButton({
         <>
           <button
             type="button"
-            aria-label="İndirme penceresini kapat"
+            aria-label="Ä°ndirme penceresini kapat"
             className={modalBackdropClass}
             onClick={closePanel}
           />
@@ -189,31 +330,31 @@ export default function MediaDownloadButton({
             {panel === "auth" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  Üyelik Gerekli
+                  Ãœyelik Gerekli
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
-                  Kayıt olman gerekiyor.
+                  KayÄ±t olman gerekiyor.
                 </h3>
 
                 <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
-                  Şarkıların tam halini indirmek için kayıt olun veya hesabına
-                  giriş yap.
+                  ÅarkÄ±larÄ±n tam halini indirmek iÃ§in kayÄ±t olun veya hesabÄ±na
+                  giriÅŸ yap.
                 </p>
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <Link
-                    href="/giris"
+                    href={loginHref}
                     className={`${choiceButtonClass} bg-white text-[#4B232D] shadow-[0_8px_18px_rgba(75,35,45,0.08)]`}
                   >
-                    Giriş Yap
+                    GiriÅŸ Yap
                   </Link>
 
                   <Link
-                    href="/kayit"
+                    href={registerHref}
                     className={`${choiceButtonClass} bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
                   >
-                    Kayıt Ol
+                    KayÄ±t Ol
                   </Link>
                 </div>
               </>
@@ -222,7 +363,7 @@ export default function MediaDownloadButton({
             {panel === "choice" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  İndirme Seçimi
+                  Ä°ndirme SeÃ§imi
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">
@@ -230,7 +371,7 @@ export default function MediaDownloadButton({
                 </h3>
 
                 <p className="mt-3 text-[12px] font-medium leading-6 text-[#4B232D]/68 md:text-[13px] md:leading-7">
-                  Bu içerik için ses ve video dosyası mevcut.
+                  Bu iÃ§erik iÃ§in ses ve video dosyasÄ± mevcut.
                 </p>
 
                 <div className="mt-4 grid gap-2">
@@ -239,7 +380,7 @@ export default function MediaDownloadButton({
                     onClick={() => startDownload("audio")}
                     className={`${choiceButtonClass} bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)]`}
                   >
-                    Ses dosyası indir
+                    Ses dosyasÄ± indir
                   </button>
 
                   <button
@@ -247,7 +388,7 @@ export default function MediaDownloadButton({
                     onClick={() => startDownload("video")}
                     className={`${choiceButtonClass} bg-[#4B232D] text-white shadow-[0_8px_18px_rgba(75,35,45,0.16)]`}
                   >
-                    Video dosyası indir
+                    Video dosyasÄ± indir
                   </button>
                 </div>
               </>
@@ -256,7 +397,7 @@ export default function MediaDownloadButton({
             {panel === "message" ? (
               <>
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4B232D]/62">
-                  İndirme
+                  Ä°ndirme
                 </p>
 
                 <h3 className="mt-2 text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D] md:text-[32px]">

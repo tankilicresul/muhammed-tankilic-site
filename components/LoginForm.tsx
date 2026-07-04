@@ -6,6 +6,8 @@ import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
+const pendingDownloadStorageKey = "muhammed_pending_download_return_to";
+
 const inputClass =
   "min-h-11 w-full rounded-[18px] border border-[#4B232D]/12 bg-white/82 px-4 text-[13px] font-medium tracking-[-0.02em] text-[#4B232D] outline-none shadow-[0_8px_24px_rgba(75,35,45,0.05)] transition placeholder:text-[#4B232D]/34 focus:border-[#F5AE50]/70 focus:bg-white focus:shadow-[0_0_0_3px_rgba(245,174,80,0.16)] md:min-h-14 md:rounded-[22px] md:px-5 md:text-base";
 
@@ -59,6 +61,44 @@ function EyeOffIcon() {
   );
 }
 
+function getStoredPendingDownloadReturnTo() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return window.localStorage.getItem(pendingDownloadStorageKey) ?? "";
+}
+
+function getSearchParam(name: string) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return new URLSearchParams(window.location.search).get(name) ?? "";
+}
+
+function normalizeReturnTo(value: string | null) {
+  const candidate = String(value ?? "").trim();
+
+  if (!candidate) {
+    return "";
+  }
+
+  if (!candidate.startsWith("/") || candidate.startsWith("//")) {
+    return "";
+  }
+
+  if (candidate.includes("://")) {
+    return "";
+  }
+
+  return candidate;
+}
+
+function getFallbackReturnTo() {
+  return normalizeReturnTo(getStoredPendingDownloadReturnTo()) || "/hesabim";
+}
+
 export default function LoginForm() {
   const router = useRouter();
   const { text } = useSiteTexts();
@@ -72,6 +112,10 @@ export default function LoginForm() {
     type: "error" | "success";
     text: string;
   } | null>(null);
+
+  function getPostLoginReturnTo() {
+    return normalizeReturnTo(getSearchParam("returnTo")) || getFallbackReturnTo();
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -101,7 +145,7 @@ export default function LoginForm() {
     });
 
     router.refresh();
-    router.push("/hesabim");
+    router.push(getPostLoginReturnTo());
   }
 
   return (
@@ -144,8 +188,8 @@ export default function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
                 className={passwordToggleClass}
-                aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
-                title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                aria-label={showPassword ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
+                title={showPassword ? "Åifreyi gizle" : "Åifreyi gÃ¶ster"}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
