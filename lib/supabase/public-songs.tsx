@@ -55,6 +55,10 @@ type SongRow = {
   download_file_path: string | null;
 };
 
+type SpotifyOEmbedResponse = {
+  thumbnail_url?: string;
+};
+
 function createPublicClient() {
   if (!supabaseUrl) {
     throw new Error("NEXT_PUBLIC_SUPABASE_URL eksik.");
@@ -79,7 +83,7 @@ function normalizePublicPath(path: string) {
   const cleanedPath = path.replace(/^public\//, "").replace(/^\/+/, "");
 
   if (!cleanedPath) {
-    return DEFAULT_SONG_COVER;
+    return "";
   }
 
   return `/${cleanedPath}`;
@@ -89,17 +93,17 @@ function normalizeStoragePath(path: string) {
   const cleanedPath = path.replace(/^\/+/, "");
 
   if (!supabaseUrl || !cleanedPath || cleanedPath.includes("..")) {
-    return DEFAULT_SONG_COVER;
+    return "";
   }
 
   return `${supabaseUrl}/storage/v1/object/public/${cleanedPath}`;
 }
 
-function normalizeImagePath(path: string | null) {
+function normalizeOptionalImagePath(path: string | null) {
   const value = String(path ?? "").trim();
 
   if (!value) {
-    return DEFAULT_SONG_COVER;
+    return "";
   }
 
   if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -230,7 +234,74 @@ function normalizeYoutubeEmbedUrl(youtubeUrl: string, youtubeEmbedUrl: string) {
   return `https://www.youtube.com/embed/${videoId}`;
 }
 
-function mapSong(row: SongRow): PublicSong {
+async function getSpotifyCoverImage(spotifyUrl: string) {
+  if (!spotifyUrl) {
+    return "";
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+    const response = await fetch(
+      `https://open.spotify.com/oembed?url=${encodeURIComponent(spotifyUrl)}`,
+      {
+        signal: controller.signal,
+        next: {
+          revalidate: 86400,
+        },
+      },
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return "";
+    }
+
+    const data = (await response.json()) as SpotifyOEmbedResponse;
+    return data.thumbnail_url ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function getYoutubeCoverImage(youtubeUrl: string, youtubeEmbedUrl: string) {
+  const videoId = getYoutubeVideoId(youtubeUrl) || getYoutubeVideoId(youtubeEmbedUrl);
+
+  if (!videoId) {
+    return "";
+  }
+
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
+
+async function resolveCoverImage(row: SongRow) {
+  const manualCoverImage = normalizeOptionalImagePath(row.cover_image_path);
+
+  if (manualCoverImage) {
+    return manualCoverImage;
+  }
+
+  const spotifyCoverImage = await getSpotifyCoverImage(row.spotify_url ?? "");
+
+  if (spotifyCoverImage) {
+    return spotifyCoverImage;
+  }
+
+  const youtubeCoverImage = getYoutubeCoverImage(
+    row.youtube_url ?? "",
+    row.youtube_embed_url ?? "",
+  );
+
+  if (youtubeCoverImage) {
+    return youtubeCoverImage;
+  }
+
+  return DEFAULT_SONG_COVER;
+}
+
+async function mapSong(row: SongRow): Promise<PublicSong> {
   const spotifyUrl = row.spotify_url ?? "";
   const spotifyEmbedUrl = normalizeSpotifyEmbedUrl(
     spotifyUrl,
@@ -267,7 +338,7 @@ function mapSong(row: SongRow): PublicSong {
     releaseStatus: row.release_status ?? "draft",
     sortOrder: row.sort_order ?? 0,
     publishedAt: row.published_at ?? row.created_at,
-    coverImage: normalizeImagePath(row.cover_image_path),
+    coverImage: await resolveCoverImage(row),
     lyrics: row.lyrics ?? "",
     downloadFilePath: normalizeDownloadPath(row.download_file_path),
     spotifyUrl,
@@ -314,7 +385,9 @@ async function fetchPublishedSongs() {
     return [];
   }
 
-  return ((data ?? []) as SongRow[]).map(mapSong).filter((song) => song.slug);
+  const songs = await Promise.all(((data ?? []) as SongRow[]).map(mapSong));
+
+  return songs.filter((song) => song.slug);
 }
 
 export const getPublishedSongs = unstable_cache(
