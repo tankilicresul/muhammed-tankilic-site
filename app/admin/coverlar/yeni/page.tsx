@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import Navbar from "@/components/Navbar";
+import AdminDownloadUploadField from "@/components/AdminDownloadUploadField";
 import { checkIsAdmin } from "@/lib/admin/is-admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -377,27 +378,21 @@ export default async function AdminNewCoverPage({
                 />
               </label>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Ses İndirme Dosyası Path
-                </span>
-                <input
-                  name="download_file_path"
-                  placeholder="downloads/covers/pela-dur.mp3"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+              <AdminDownloadUploadField
+                label="Ses İndirme Dosyası"
+                fieldName="download_file_path"
+                contentType="covers"
+                fileKind="audio"
+                placeholder="downloads/covers/pela-dur/audio.mp3"
+              />
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Video İndirme Dosyası Path
-                </span>
-                <input
-                  name="video_download_file_path"
-                  placeholder="downloads/covers/pela-dur.mp4"
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+              <AdminDownloadUploadField
+                label="Video İndirme Dosyası"
+                fieldName="video_download_file_path"
+                contentType="covers"
+                fileKind="video"
+                placeholder="downloads/covers/pela-dur/video.mp4"
+              />
             </div>
 
             <div className="flex flex-col gap-3 rounded-[22px] border border-[#4B232D]/10 bg-white/45 p-4 md:flex-row md:items-center md:justify-between">

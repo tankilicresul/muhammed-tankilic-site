@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import Navbar from "@/components/Navbar";
+import AdminDownloadUploadField from "@/components/AdminDownloadUploadField";
 import { checkIsAdmin } from "@/lib/admin/is-admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -442,27 +443,23 @@ export default async function AdminEditSongPage({
                 />
               </label>
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Ses İndirme Dosyası Path
-                </span>
-                <input
-                  name="download_file_path"
-                  defaultValue={getString(song, "download_file_path")}
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+              <AdminDownloadUploadField
+                label="Ses İndirme Dosyası"
+                fieldName="download_file_path"
+                contentType="songs"
+                fileKind="audio"
+                defaultValue={getString(song, "download_file_path")}
+                placeholder="downloads/songs/zef-cara/audio.mp3"
+              />
 
-              <label className="grid gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Video İndirme Dosyası Path
-                </span>
-                <input
-                  name="video_download_file_path"
-                  defaultValue={getString(song, "video_download_file_path")}
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
+              <AdminDownloadUploadField
+                label="Video İndirme Dosyası"
+                fieldName="video_download_file_path"
+                contentType="songs"
+                fileKind="video"
+                defaultValue={getString(song, "video_download_file_path")}
+                placeholder="downloads/songs/zef-cara/video.mp4"
+              />
 
               <label className="grid gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
