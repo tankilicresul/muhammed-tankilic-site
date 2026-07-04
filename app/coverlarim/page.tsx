@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import MediaDownloadButton from "@/components/MediaDownloadButton";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -18,6 +19,8 @@ type CoverRow = {
   youtube_url: string | null;
   youtube_embed_url: string | null;
   instagram_url: string | null;
+  download_file_path: string | null;
+  video_download_file_path: string | null;
   sort_order: number;
   published_at: string | null;
   created_at: string;
@@ -32,6 +35,8 @@ type PublicCover = {
   youtubeUrl: string | null;
   youtubeEmbedUrl: string | null;
   instagramUrl: string | null;
+  hasAudioDownload: boolean;
+  hasVideoDownload: boolean;
 };
 
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
@@ -113,6 +118,8 @@ function mapCoverToPublicCover(cover: CoverRow): PublicCover {
       cover.youtube_embed_url,
     ),
     instagramUrl: cover.instagram_url,
+    hasAudioDownload: Boolean(String(cover.download_file_path ?? "").trim()),
+    hasVideoDownload: Boolean(String(cover.video_download_file_path ?? "").trim()),
   };
 }
 
@@ -151,12 +158,15 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
             ← Kanalım
           </a>
 
-          <Link
-            href="/giris"
-            className={`${mobileButtonClass} ${whiteButtonClass}`}
-          >
-            İndir
-          </Link>
+          <MediaDownloadButton
+            contentType="cover"
+            slug={cover.slug}
+            title={cover.title}
+            hasAudioFile={cover.hasAudioDownload}
+            hasVideoFile={cover.hasVideoDownload}
+            className={`${mobileButtonClass} ${whiteButtonClass} w-full`}
+            label="İndir"
+          />
         </div>
       </div>
     </article>
@@ -194,12 +204,15 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
               Kanalım
             </a>
 
-            <Link
-              href="/giris"
+            <MediaDownloadButton
+              contentType="cover"
+              slug={cover.slug}
+              title={cover.title}
+              hasAudioFile={cover.hasAudioDownload}
+              hasVideoFile={cover.hasVideoDownload}
               className={`${desktopButtonClass} ${whiteButtonClass}`}
-            >
-              Siteden İndir
-            </Link>
+              label="Siteden İndir"
+            />
           </div>
         </div>
 
@@ -248,6 +261,8 @@ export default async function CoverlarimPage() {
         youtube_url,
         youtube_embed_url,
         instagram_url,
+        download_file_path,
+        video_download_file_path,
         sort_order,
         published_at,
         created_at

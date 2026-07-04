@@ -27,6 +27,9 @@ export type PublicSong = {
   coverImage: string;
   lyrics: string;
   downloadFilePath: string;
+  videoDownloadFilePath: string;
+  hasAudioDownload: boolean;
+  hasVideoDownload: boolean;
   spotifyUrl: string;
   spotifyEmbedUrl: string;
   appleMusicUrl: string;
@@ -53,6 +56,7 @@ type SongRow = {
   cover_image_path: string | null;
   lyrics: string | null;
   download_file_path: string | null;
+  video_download_file_path: string | null;
 };
 
 type SpotifyOEmbedResponse = {
@@ -341,6 +345,9 @@ async function mapSong(row: SongRow): Promise<PublicSong> {
     coverImage: await resolveCoverImage(row),
     lyrics: row.lyrics ?? "",
     downloadFilePath: normalizeDownloadPath(row.download_file_path),
+    videoDownloadFilePath: normalizeDownloadPath(row.video_download_file_path),
+    hasAudioDownload: Boolean(String(row.download_file_path ?? "").trim()),
+    hasVideoDownload: Boolean(String(row.video_download_file_path ?? "").trim()),
     spotifyUrl,
     spotifyEmbedUrl,
     appleMusicUrl,
@@ -373,7 +380,8 @@ async function fetchPublishedSongs() {
         youtube_embed_url,
         cover_image_path,
         lyrics,
-        download_file_path
+        download_file_path,
+        video_download_file_path
       `,
     )
     .eq("release_status", "published")

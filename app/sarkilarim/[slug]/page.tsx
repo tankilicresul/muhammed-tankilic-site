@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import MediaDownloadButton from "@/components/MediaDownloadButton";
 import {
   getPublishedSongBySlug,
   getPublishedSongs,
@@ -288,9 +289,15 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
                   <PlatformButton key={platform.name} platform={platform} />
                 ))}
 
-                <Link href="/giris" className={`${actionButtonClass} ${primaryButtonClass}`}>
-                  Siteden İndir
-                </Link>
+                <MediaDownloadButton
+                  contentType="song"
+                  slug={song.slug}
+                  title={song.title}
+                  hasAudioFile={song.hasAudioDownload}
+                  hasVideoFile={song.hasVideoDownload}
+                  className={`${actionButtonClass} ${primaryButtonClass}`}
+                  label="Siteden İndir"
+                />
               </div>
             </div>
           </div>

@@ -192,6 +192,7 @@ async function updateSongAction(formData: FormData) {
       cover_image_path: textOrNull(formData.get("cover_image_path")),
       lyrics: textOrNull(formData.get("lyrics")),
       download_file_path: textOrNull(formData.get("download_file_path")),
+      video_download_file_path: textOrNull(formData.get("video_download_file_path")),
       sort_order: numberOrZero(formData.get("sort_order")),
       published_at: normalizePublishedAt(
         releaseStatus,
@@ -318,7 +319,7 @@ export default async function AdminEditSongPage({
               </label>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <label className="grid gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
                   Sanatçı
@@ -443,11 +444,22 @@ export default async function AdminEditSongPage({
 
               <label className="grid gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  İndirme Dosyası Path
+                  Ses İndirme Dosyası Path
                 </span>
                 <input
                   name="download_file_path"
                   defaultValue={getString(song, "download_file_path")}
+                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
+                  Video İndirme Dosyası Path
+                </span>
+                <input
+                  name="video_download_file_path"
+                  defaultValue={getString(song, "video_download_file_path")}
                   className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
                 />
               </label>
