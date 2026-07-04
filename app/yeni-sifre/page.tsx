@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
+import { useSiteTexts } from "@/lib/supabase/site-texts-client";
 
 type Message = {
   type: "error" | "success";
@@ -66,6 +67,7 @@ function EyeOffIcon() {
 
 export default function NewPasswordPage() {
   const router = useRouter();
+  const { text } = useSiteTexts();
 
   const [password, setPassword] = useState("");
   const [passwordAgain, setPasswordAgain] = useState("");
@@ -83,7 +85,7 @@ export default function NewPasswordPage() {
     if (password.length < 6) {
       setMessage({
         type: "error",
-        text: "Yeni şifren en az 6 karakter olmalı.",
+        text: text("new_password.error_short"),
       });
       return;
     }
@@ -91,7 +93,7 @@ export default function NewPasswordPage() {
     if (password !== passwordAgain) {
       setMessage({
         type: "error",
-        text: "Şifreler eşleşmiyor. Lütfen tekrar kontrol et.",
+        text: text("new_password.error_mismatch"),
       });
       return;
     }
@@ -109,7 +111,7 @@ export default function NewPasswordPage() {
       setIsSubmitting(false);
       setMessage({
         type: "error",
-        text: "Şifre güncelleme oturumu bulunamadı. Lütfen yeniden şifre sıfırlama bağlantısı iste.",
+        text: text("new_password.error_update"),
       });
       return;
     }
@@ -136,18 +138,14 @@ export default function NewPasswordPage() {
     if (!response.ok || !result.ok) {
       setMessage({
         type: "error",
-        text:
-          result.error ??
-          "Şifre güncellenemedi. Lütfen yeniden şifre sıfırlama bağlantısı iste.",
+        text: result.error ?? text("new_password.error_update"),
       });
       return;
     }
 
     setMessage({
       type: "success",
-      text:
-        result.message ??
-        "Şifren güncellendi. Giriş sayfasına yönlendiriliyorsun.",
+      text: text("new_password.success"),
     });
 
     await supabase.auth.signOut();
@@ -169,13 +167,14 @@ export default function NewPasswordPage() {
 
         <section className="relative z-10 mx-auto max-w-3xl rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:max-w-5xl md:rounded-[38px] md:p-8">
           <div className="hidden text-center md:block">
-            <p className="section-eyebrow">Üyelik Alanı</p>
+            <p className="section-eyebrow">{text("new_password.eyebrow")}</p>
 
             <h1 className="mx-auto mt-4 max-w-4xl text-[clamp(25px,3.1vw,42px)] font-semibold leading-[1.18] tracking-[-0.055em] text-[#4B232D]">
-              <span className="block">Hesabına yeniden giriş yapmak için</span>
-              <span className="block">güvenli ve yeni bir</span>
+              <span className="block">{text("new_password.title_line_1")}</span>
               <span className="block">
-                <span className="text-[#6F3440]">Şifre Oluştur</span>.
+                <span className="text-[#6F3440]">
+                  {text("new_password.title_line_2")}
+                </span>
               </span>
             </h1>
           </div>
@@ -184,14 +183,16 @@ export default function NewPasswordPage() {
             <div className="rounded-[22px] border border-white/42 bg-white/58 p-3.5 shadow-[0_10px_28px_rgba(75,35,45,0.05)] backdrop-blur-[12px] md:rounded-[32px] md:p-5">
               <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Yeni şifren</span>
+                  <span className={labelClass}>
+                    {text("new_password.label.password")}
+                  </span>
 
                   <div className="relative w-full">
                     <input
                       type={showPassword ? "text" : "password"}
                       name="password"
                       autoComplete="new-password"
-                      placeholder="En az 6 karakter"
+                      placeholder={text("new_password.placeholder.password")}
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                       required
@@ -211,14 +212,18 @@ export default function NewPasswordPage() {
                 </label>
 
                 <label className="grid gap-1.5 md:gap-2">
-                  <span className={labelClass}>Yeni şifre tekrar</span>
+                  <span className={labelClass}>
+                    {text("new_password.label.password_repeat")}
+                  </span>
 
                   <div className="relative w-full">
                     <input
                       type={showPasswordAgain ? "text" : "password"}
                       name="passwordAgain"
                       autoComplete="new-password"
-                      placeholder="Şifreni tekrar yaz"
+                      placeholder={text(
+                        "new_password.placeholder.password_repeat",
+                      )}
                       value={passwordAgain}
                       onChange={(event) => setPasswordAgain(event.target.value)}
                       required
@@ -254,21 +259,7 @@ export default function NewPasswordPage() {
                     : "border-[#BDEBE8]/80 bg-[#BDEBE8]/45 text-[#4B232D]",
                 ].join(" ")}
               >
-                {message.type === "error" &&
-                message.text.includes("sıfırlama bağlantısı") ? (
-                  <span>
-                    Şifre güncellenemedi.{" "}
-                    <Link
-                      href="/sifremi-unuttum"
-                      className="font-extrabold underline decoration-red-300 underline-offset-4 transition hover:text-[#4B232D]"
-                    >
-                      Yeniden bağlantı iste
-                    </Link>
-                    .
-                  </span>
-                ) : (
-                  message.text
-                )}
+                {message.text}
               </div>
             ) : null}
 
@@ -277,7 +268,7 @@ export default function NewPasswordPage() {
                 href="/giris"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                ← Giriş
+                {text("new_password.button.login")}
               </Link>
 
               <button
@@ -285,14 +276,16 @@ export default function NewPasswordPage() {
                 disabled={isSubmitting}
                 className={`${actionButtonClass} bg-[#4B232D] text-white hover:bg-[#5a2b36]`}
               >
-                {isSubmitting ? "..." : "Güncelle"}
+                {isSubmitting
+                  ? text("new_password.button.saving")
+                  : text("new_password.button.submit")}
               </button>
 
               <Link
                 href="/"
                 className={`${actionButtonClass} bg-[#F5AE50] text-[#4B232D] hover:bg-[#f7bb67]`}
               >
-                Menü →
+                {text("new_password.button.menu")}
               </Link>
             </div>
           </form>
