@@ -40,3 +40,22 @@ export async function createClient() {
     },
   });
 }
+
+export function createAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error(
+      "Supabase admin erişimi için NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanımlı olmalıdır.",
+    );
+  }
+
+  const { createClient: createSupabaseJsClient } = require("@supabase/supabase-js");
+
+  return createSupabaseJsClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}

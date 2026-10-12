@@ -62,7 +62,7 @@ export default async function PhotosPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-4">
+      <section className="site-container pt-4 md:pt-6">
         <div className="mb-3 hidden items-end justify-between gap-4 md:mb-5 md:flex">
           <div>
             <p className="section-eyebrow">Fotoğraflarım</p>

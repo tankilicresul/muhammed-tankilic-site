@@ -305,7 +305,7 @@ export default async function AdminEditPhotoPage({
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-10">
+      <section className="site-container pt-6 md:pt-10">
         <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>

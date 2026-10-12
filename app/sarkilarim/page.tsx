@@ -46,16 +46,16 @@ function getPlatform(song: PublicSong, name: PublicMusicPlatform["name"]) {
 }
 
 const iconButtonClass =
-  "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/88 text-[#4B232D] shadow-[0_8px_18px_rgba(75,35,45,0.06)] transition hover:-translate-y-0.5 hover:bg-white md:h-11 md:w-11";
+  "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/84 text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white md:h-11 md:w-11";
 
 const disabledIconButtonClass =
-  "inline-flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-[#4B232D]/8 bg-white/50 text-[#4B232D]/26 shadow-[0_8px_18px_rgba(75,35,45,0.03)] md:h-11 md:w-11";
+  "inline-flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-white/30 bg-white/50 text-[#4B232D]/26 shadow-none md:h-11 md:w-11";
 
 const detailButtonClass =
-  "inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/10 bg-white/88 px-4 text-center text-[12px] font-bold tracking-[-0.015em] text-[#4B232D] shadow-[0_8px_18px_rgba(75,35,45,0.06)] transition hover:-translate-y-0.5 hover:bg-white md:min-h-11 md:px-5 md:text-sm";
+  "inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/84 px-4 text-center text-[12px] font-semibold tracking-[-0.015em] text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white md:min-h-11 md:px-5 md:text-sm";
 
 const downloadButtonClass =
-  "inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-4 text-center text-[12px] font-bold tracking-[-0.015em] text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7bb67] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 md:min-h-11 md:px-5 md:text-sm";
+  "inline-flex min-h-10 shrink-0 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-4 text-center text-[12px] font-semibold tracking-[-0.015em] text-[#4B232D] shadow-[0_8px_20px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7ba65] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 md:min-h-11 md:px-5 md:text-sm";
 
 function PlatformIconButton({
   href,
@@ -121,40 +121,40 @@ function ActionRow({ song }: { song: PublicSong }) {
 
 function MobileSongCard({ song }: { song: PublicSong }) {
   return (
-    <article className="grid gap-2 rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
-      <div className="grid grid-cols-[94px_1fr] gap-3 rounded-[18px] border border-white/36 bg-white/58 p-3 shadow-[0_10px_24px_rgba(75,35,45,0.05)]">
-        <div className="relative aspect-square overflow-hidden rounded-[16px] border border-[#4B232D]/10 bg-[#4B232D]/8">
+    <article className="grid gap-3 rounded-[24px] border border-white/40 bg-white/58 p-3.5 shadow-[0_12px_32px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:hidden">
+      <div className="grid grid-cols-[90px_1fr] items-center gap-3.5 px-0.5 pt-0.5">
+        <div className="relative aspect-square overflow-hidden rounded-[16px] border border-white/30 bg-[#4B232D]/8 shadow-sm">
           <Image
             src={song.coverImage}
             alt={`${song.title} kapak görseli`}
             fill
-            sizes="94px"
+            sizes="90px"
             className="object-cover"
           />
         </div>
 
-        <div className="min-w-0 py-1">
-          <p className="text-[8px] font-black uppercase tracking-[0.18em] text-[#4B232D]/45">
+        <div className="min-w-0 py-0.5">
+          <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#4B232D]/45">
             Şarkılarım
           </p>
 
-          <h2 className="mt-1 truncate text-[25px] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
+          <h2 className="mt-1 truncate text-[22px] font-semibold leading-none tracking-[-0.06em] text-[#4B232D]">
             {song.title}
           </h2>
 
-          <p className="mt-2 truncate text-[12px] font-medium text-[#4B232D]/62">
+          <p className="mt-1.5 truncate text-[12px] font-medium text-[#4B232D]/60">
             {song.artist}
           </p>
 
           {song.description ? (
-            <p className="mt-2 line-clamp-2 text-[11px] leading-5 text-[#4B232D]/62">
+            <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-[#4B232D]/68">
               {song.description}
             </p>
           ) : null}
         </div>
       </div>
 
-      <div className="rounded-[18px] border border-[#4B232D]/8 bg-white/58 px-3 py-3 shadow-[0_10px_24px_rgba(75,35,45,0.045)]">
+      <div className="border-t border-white/35 pt-1">
         <ActionRow song={song} />
       </div>
     </article>
@@ -166,22 +166,22 @@ function DesktopSongCard({ song }: { song: PublicSong }) {
   const hasYoutube = Boolean(song.youtubeEmbedUrl);
 
   return (
-    <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
-        <div className="flex min-h-[276px] flex-col justify-between rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-7 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+    <article className="hidden overflow-hidden rounded-[32px] border border-white/40 bg-white/56 p-6 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:block lg:p-7">
+      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="flex min-h-[260px] flex-col justify-between py-1">
           <div>
             <p className="section-eyebrow">Şarkılarım</p>
 
-            <h2 className="mt-4 max-w-[13ch] break-words text-[clamp(38px,4vw,58px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+            <h2 className="mt-3 max-w-[14ch] break-words text-[clamp(34px,3.5vw,52px)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#4B232D]">
               {song.title}
             </h2>
 
-            <p className="mt-4 text-sm font-medium text-[#4B232D]/64">
+            <p className="mt-3 text-sm font-medium text-[#4B232D]/60">
               {song.artist}
             </p>
 
             {song.description ? (
-              <p className="mt-6 max-w-[40ch] text-sm leading-7 text-[#4B232D]/70">
+              <p className="mt-4 max-w-[42ch] text-[14px] leading-relaxed text-[#4B232D]/70">
                 {song.description}
               </p>
             ) : null}
@@ -191,21 +191,21 @@ function DesktopSongCard({ song }: { song: PublicSong }) {
         </div>
 
         {hasSpotify ? (
-          <div className="flex min-h-[276px] items-center rounded-[28px] border border-white/24 bg-[#385d59]/88 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+          <div className="flex min-h-[220px] items-center rounded-[24px] border border-white/25 bg-[#282828] p-5 shadow-[0_16px_40px_rgba(75,35,45,0.08)]">
             <iframe
               src={song.spotifyEmbedUrl}
               width="100%"
               height="152"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
-              className="block h-[152px] w-full rounded-[16px] border-0"
+              className="block h-[152px] w-full rounded-[14px] border-0"
               title={`${song.title} Spotify oynatıcı`}
             />
           </div>
         ) : null}
 
         {!hasSpotify && hasYoutube ? (
-          <div className="overflow-hidden rounded-[28px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+          <div className="overflow-hidden rounded-[24px] border border-white/25 bg-[#4B232D]/90 shadow-[0_16px_40px_rgba(75,35,45,0.10)]">
             <iframe
               src={song.youtubeEmbedUrl}
               title={`${song.title} YouTube videosu`}
@@ -218,7 +218,7 @@ function DesktopSongCard({ song }: { song: PublicSong }) {
         ) : null}
 
         {!hasSpotify && !hasYoutube ? (
-          <div className="flex min-h-[276px] items-center justify-center rounded-[28px] border border-white/24 bg-[#385d59]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+          <div className="flex min-h-[220px] items-center justify-center rounded-[24px] border border-white/25 bg-[#282828] p-6 text-center text-sm font-semibold text-white/80 shadow-[0_16px_40px_rgba(75,35,45,0.08)]">
             Dinleme bağlantıları yakında.
           </div>
         ) : null}
@@ -243,7 +243,7 @@ export default async function SarkilarimPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-4">
+      <section className="site-container pt-4 md:pt-6">
         <div className="mb-4 hidden items-end justify-between gap-4 md:mb-6 md:flex">
           <div>
             <p className="section-eyebrow">Şarkılarım</p>

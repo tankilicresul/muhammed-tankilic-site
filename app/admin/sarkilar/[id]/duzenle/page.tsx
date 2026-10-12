@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import Navbar from "@/components/Navbar";
 import AdminDownloadUploadField from "@/components/AdminDownloadUploadField";
 import { checkIsAdmin } from "@/lib/admin/is-admin";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -129,6 +129,47 @@ function redirectWithError(id: string, message: string): never {
   );
 }
 
+function getYoutubeVideoId(url: string | null) {
+  if (!url) return null;
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) return null;
+
+  try {
+    const parsedUrl = new URL(trimmedUrl);
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      return parsedUrl.pathname.replace(/^\//, "").split("?")[0] || null;
+    }
+    if (parsedUrl.searchParams.get("v")) {
+      return parsedUrl.searchParams.get("v");
+    }
+    if (parsedUrl.pathname.includes("/shorts/")) {
+      return parsedUrl.pathname.split("/shorts/")[1]?.split("/")[0]?.split("?")[0] || null;
+    }
+    if (parsedUrl.pathname.includes("/embed/")) {
+      return parsedUrl.pathname.split("/embed/")[1]?.split("/")[0]?.split("?")[0] || null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeYoutubeEmbedUrl(
+  youtubeUrl: string | null,
+  youtubeEmbedUrl: string | null,
+) {
+  if (youtubeEmbedUrl) {
+    return youtubeEmbedUrl;
+  }
+
+  const videoId = getYoutubeVideoId(youtubeUrl);
+  if (!videoId) {
+    return null;
+  }
+
+  return `https://www.youtube.com/embed/${videoId}`;
+}
+
 async function updateSongAction(formData: FormData) {
   "use server";
 
@@ -164,6 +205,47 @@ async function updateSongAction(formData: FormData) {
     redirectWithError(id, "Geçersiz yayın durumu seçildi.");
   }
 
+  const youtubeUrl = textOrNull(formData.get("youtube_url"));
+  const youtubeEmbedUrl = normalizeYoutubeEmbedUrl(
+    youtubeUrl,
+    textOrNull(formData.get("youtube_embed_url")),
+  );
+
+  const imageFile = formData.get("cover_image_file");
+  let coverImagePath = textOrNull(formData.get("cover_image_path"));
+
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (allowedTypes.includes(imageFile.type)) {
+      try {
+        const supabaseAdmin = createAdminClient();
+        const ext = imageFile.name.split(".").pop() || "jpg";
+        const storagePath = `admin-uploads/song-${Date.now()}-${slug}.${ext}`;
+        const { error: uploadError } = await supabaseAdmin.storage
+          .from("photos")
+          .upload(storagePath, imageFile, {
+            cacheControl: "3600",
+            upsert: true,
+            contentType: imageFile.type,
+          });
+
+        if (!uploadError) {
+          const { data: urlData } = supabaseAdmin.storage
+            .from("photos")
+            .getPublicUrl(storagePath);
+          coverImagePath = urlData.publicUrl;
+        }
+      } catch {
+        // fallback
+      }
+    }
+  } else if (!coverImagePath && youtubeUrl) {
+    const vidId = getYoutubeVideoId(youtubeUrl);
+    if (vidId) {
+      coverImagePath = `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
+    }
+  }
+
   const supabase = await createClient();
 
   const { data: duplicateSong } = await supabase
@@ -188,9 +270,9 @@ async function updateSongAction(formData: FormData) {
       spotify_url: textOrNull(formData.get("spotify_url")),
       spotify_embed_url: textOrNull(formData.get("spotify_embed_url")),
       apple_music_url: textOrNull(formData.get("apple_music_url")),
-      youtube_url: textOrNull(formData.get("youtube_url")),
-      youtube_embed_url: textOrNull(formData.get("youtube_embed_url")),
-      cover_image_path: textOrNull(formData.get("cover_image_path")),
+      youtube_url: youtubeUrl,
+      youtube_embed_url: youtubeEmbedUrl,
+      cover_image_path: coverImagePath,
       lyrics: textOrNull(formData.get("lyrics")),
       download_file_path: textOrNull(formData.get("download_file_path")),
       video_download_file_path: textOrNull(formData.get("video_download_file_path")),
@@ -253,7 +335,7 @@ export default async function AdminEditSongPage({
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-10">
+      <section className="site-container pt-6 md:pt-10">
         <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
@@ -432,16 +514,31 @@ export default async function AdminEditSongPage({
             </label>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <label className="grid gap-2">
+              <div className="grid gap-2 rounded-[20px] border border-[#4B232D]/10 bg-white/50 p-3">
                 <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#4B232D]/55">
-                  Kapak Görsel Path
+                  Kapak Görseli
                 </span>
+                <label className="flex cursor-pointer items-center justify-between gap-3 rounded-[16px] border border-dashed border-[#4B232D]/18 bg-[#FFF4BC]/36 px-4 py-2.5 transition hover:bg-[#FFF4BC]/52">
+                  <span className="text-xs font-semibold text-[#4B232D]/75">
+                    Yeni Görsel Seç (JPG/PNG/WEBP)
+                  </span>
+                  <span className="rounded-full bg-[#F5AE50] px-3 py-1 text-[11px] font-bold text-[#4B232D]">
+                    Gözat
+                  </span>
+                  <input
+                    name="cover_image_file"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                  />
+                </label>
                 <input
                   name="cover_image_path"
                   defaultValue={getString(song, "cover_image_path")}
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/72 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
+                  placeholder="Veya harici URL / path gir (Boşsa YouTube görseli kullanılır)"
+                  className="min-h-11 rounded-[16px] border border-[#4B232D]/10 bg-white/78 px-4 text-xs font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35 md:text-sm"
                 />
-              </label>
+              </div>
 
               <AdminDownloadUploadField
                 label="Ses İndirme Dosyası"

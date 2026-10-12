@@ -67,72 +67,81 @@ export default async function ContactPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-12">
-        <section className="relative overflow-hidden rounded-[24px] border border-white/35 bg-white/66 px-3.5 py-4 shadow-[0_14px_38px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:rounded-[38px] md:px-10 md:py-10 lg:px-12 lg:py-11">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(189,235,232,0.22),transparent_34%),radial-gradient(circle_at_88%_12%,rgba(245,174,80,0.10),transparent_32%)]" />
+      <section className="site-container pt-4 md:pt-8">
+        <article className="relative overflow-hidden rounded-[32px] border border-white/40 bg-white/55 p-7 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[20px] md:p-12 lg:p-14">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(189,235,232,0.20),transparent_40%),radial-gradient(circle_at_88%_12%,rgba(245,174,80,0.10),transparent_35%)]" />
 
-          <div className="relative mx-auto max-w-7xl">
-            <header className="mx-auto text-center">
-              <p className="section-eyebrow mb-0">İletişim</p>
-            </header>
+          <div className="relative mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#4B232D]/75 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F5AE50]" />
+              İletişim & İş Birlikleri
+            </span>
 
-            <a
-              href={gmailComposeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 flex min-h-11 w-full items-center justify-center rounded-[18px] border border-[#4B232D]/10 bg-white/76 px-3 text-center text-[14px] font-medium tracking-[-0.03em] text-[#4B232D] shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:bg-white/85 hover:text-[#F5AE50] md:mt-7 md:min-h-14 md:rounded-[24px] md:px-6 md:text-lg"
-            >
-              {email}
-            </a>
+            <h1 className="mt-4 text-[clamp(36px,4.5vw,58px)] font-light leading-tight tracking-[-0.05em] text-[#4B232D]">
+              Birlikte bir ezgi, <span className="font-semibold">yeni bir hikâye.</span>
+            </h1>
 
-            <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-4">
-              <Link href="/" className={orangeActionButtonClass}>
-                {text("contact.button.menu")}
-              </Link>
+            <p className="mx-auto mt-4 max-w-lg text-[14px] font-light leading-relaxed text-[#4B232D]/75 md:text-[16px]">
+              Müzik çalışmaları, konser, sahne ve stüdyo kayıtları veya sanatsal projeler için doğrudan iletişime geçebilirsiniz.
+            </p>
 
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a
                 href={gmailComposeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className={burgundyActionButtonClass}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-white/50 bg-white/85 px-7 text-[13px] font-semibold text-[#4B232D] shadow-[0_6px_18px_rgba(75,35,45,0.04)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white hover:text-[#F5AE50] sm:w-auto md:text-sm"
               >
-                {text("contact.button.mail")}
+                <span>✉</span>
+                <span>{email}</span>
               </a>
 
-              <Link href="/sarkilarim" className={orangeActionButtonClass}>
-                {text("contact.button.songs")}
-              </Link>
+              <a
+                href={`mailto:${email}`}
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-7 text-[13px] font-semibold text-[#4B232D] shadow-[0_8px_20px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7ba65] sm:w-auto md:text-sm"
+              >
+                E-posta Gönder
+              </a>
             </div>
 
-            <ul className="mt-4 grid gap-2 text-[12px] leading-5 text-[#4B232D]/78 md:mt-8 md:grid-cols-3 md:gap-4 md:text-sm md:leading-7">
-              {aboutPoints.map((item) => (
-                <li
-                  key={item}
-                  className="grid min-h-[64px] grid-cols-[8px_1fr] items-start gap-2 rounded-[17px] border border-white/42 bg-white/62 px-3.5 py-3 shadow-[0_8px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px] md:min-h-[108px] md:grid-cols-[10px_1fr] md:gap-3 md:rounded-[24px] md:px-5 md:py-5"
-                >
-                  <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-[#F5AE50]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            {aboutPoints.length > 0 ? (
+              <div className="mt-10 rounded-[22px] border border-white/35 bg-white/40 p-5 text-left md:p-6">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#4B232D]/55">
+                  Çalışma Alanları
+                </p>
+                <ul className="mt-3 space-y-2 text-[13px] font-light leading-relaxed text-[#4B232D]/80 md:text-[14px]">
+                  {aboutPoints.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5">
+                      <span className="h-1.5 w-1.5 flex-none rounded-full bg-[#F5AE50]" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
-            <div className="mt-4 grid grid-cols-4 gap-2 md:mt-6 md:gap-4">
-              {platformLinks.map(({ title, href, Icon }) => (
-                <a
-                  key={title}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={title}
-                  title={title}
-                  className="group flex min-h-12 items-center justify-center rounded-[18px] border border-white/42 bg-white/72 text-[#4B232D] shadow-[0_8px_22px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] hover:text-[#4B232D] md:min-h-16 md:rounded-[24px]"
-                >
-                  <Icon className="text-[22px] transition group-hover:scale-110 md:text-[30px]" />
-                </a>
-              ))}
+            <div className="mt-10 border-t border-white/40 pt-7">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-[#4B232D]/55">
+                Müzik & Sosyal Platformlar
+              </p>
+              <div className="mt-4 flex items-center justify-center gap-3">
+                {platformLinks.map(({ title, href, Icon }) => (
+                  <a
+                    key={title}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={title}
+                    title={title}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/80 text-[#4B232D] shadow-[0_4px_14px_rgba(75,35,45,0.04)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-[#F5AE50] hover:text-[#4B232D]"
+                  >
+                    <Icon className="text-[18px]" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </section>
+        </article>
       </section>
 
       <footer className="site-container site-footer">

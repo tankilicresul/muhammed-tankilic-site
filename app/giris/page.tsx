@@ -24,7 +24,7 @@ export default async function LoginPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container relative pt-40 md:pt-9">
+      <section className="site-container relative pt-4 md:pt-8">
         <div className="pointer-events-none absolute left-1/2 top-8 -z-0 hidden -translate-x-1/2 select-none text-[clamp(78px,12vw,170px)] font-black leading-none tracking-[-0.12em] text-white/70 md:block">
           MUHAMMED
         </div>

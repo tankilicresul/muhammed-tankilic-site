@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import MediaDownloadButton from "@/components/MediaDownloadButton";
@@ -42,15 +42,15 @@ type PublicCover = {
 const youtubeChannelUrl = "https://www.youtube.com/@muhammedtanklc";
 
 const mobileButtonClass =
-  "inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 px-3 text-center text-[11px] font-bold leading-none transition hover:-translate-y-0.5";
+  "inline-flex min-h-9 items-center justify-center rounded-full border border-white/50 px-3 text-center text-[11px] font-semibold leading-none transition hover:-translate-y-0.5";
 
 const desktopButtonClass =
-  "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 px-4 text-center text-[12px] font-bold transition hover:-translate-y-0.5";
+  "inline-flex min-h-10 w-full items-center justify-center rounded-full border border-white/60 px-4 text-center text-[12px] font-semibold transition hover:-translate-y-0.5";
 
 const orangeButtonClass =
-  "bg-[#F5AE50]/90 text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] hover:bg-[#F5AE50]";
+  "border-[#F5AE50]/60 bg-[#F5AE50] text-[#4B232D] shadow-[0_8px_20px_rgba(245,174,80,0.18)] hover:bg-[#f7ba65]";
 
-const whiteButtonClass = "bg-white/76 text-[#4B232D] hover:bg-white/90";
+const whiteButtonClass = "bg-white/80 text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] hover:bg-white";
 
 function getYoutubeVideoId(url: string | null) {
   if (!url) {
@@ -67,7 +67,11 @@ function getYoutubeVideoId(url: string | null) {
     const parsedUrl = new URL(trimmedUrl);
 
     if (parsedUrl.hostname.includes("youtu.be")) {
-      return parsedUrl.pathname.replace("/", "") || null;
+      return parsedUrl.pathname.replace("/", "").split("?")[0] || null;
+    }
+
+    if (parsedUrl.pathname.includes("/shorts/")) {
+      return parsedUrl.pathname.split("/shorts/")[1]?.split("/")[0]?.split("?")[0] || null;
     }
 
     const videoId = parsedUrl.searchParams.get("v");
@@ -77,7 +81,7 @@ function getYoutubeVideoId(url: string | null) {
     }
 
     if (parsedUrl.pathname.includes("/embed/")) {
-      return parsedUrl.pathname.split("/embed/")[1]?.split("/")[0] || null;
+      return parsedUrl.pathname.split("/embed/")[1]?.split("/")[0]?.split("?")[0] || null;
     }
 
     return null;
@@ -125,9 +129,9 @@ function mapCoverToPublicCover(cover: CoverRow): PublicCover {
 
 function MobileCoverPanel({ cover }: { cover: PublicCover }) {
   return (
-    <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
+    <article className="grid gap-3 overflow-hidden rounded-[24px] border border-white/40 bg-white/58 p-3.5 shadow-[0_12px_32px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:hidden">
       {cover.youtubeEmbedUrl ? (
-        <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#4B232D]/88 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
+        <div className="overflow-hidden rounded-[18px] border border-white/25 bg-[#4B232D]/90 shadow-[0_10px_24px_rgba(75,35,45,0.10)]">
           <iframe
             src={cover.youtubeEmbedUrl}
             title={`${cover.title} YouTube cover videosu`}
@@ -138,17 +142,17 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
           />
         </div>
       ) : (
-        <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
+        <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/25 bg-[#4B232D]/90 p-5 text-center text-xs font-semibold text-white/80">
           Bu cover için henüz video bağlantısı eklenmedi.
         </div>
       )}
 
-      <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
-        <p className="text-[12px] leading-6 text-[#4B232D]/74">
+      <div className="px-1 pt-1 pb-1">
+        <p className="text-[13px] leading-relaxed text-[#4B232D]/75">
           {cover.description}
         </p>
 
-        <div className="mt-3 grid grid-cols-[1fr_88px] gap-2">
+        <div className="mt-3.5 grid grid-cols-[1fr_88px] gap-2">
           <a
             href={youtubeChannelUrl}
             target="_blank"
@@ -175,26 +179,26 @@ function MobileCoverPanel({ cover }: { cover: PublicCover }) {
 
 function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
   return (
-    <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
-        <div className="flex h-full min-h-[312px] flex-col justify-between rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-7 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+    <article className="hidden overflow-hidden rounded-[32px] border border-white/40 bg-white/56 p-6 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:block lg:p-7">
+      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="flex h-full min-h-[300px] flex-col justify-between py-1">
           <div>
             <p className="section-eyebrow">Coverlarım</p>
 
-            <h2 className="mt-4 max-w-[12ch] break-words text-[clamp(38px,4vw,58px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+            <h2 className="mt-3 max-w-[14ch] break-words text-[clamp(34px,3.5vw,52px)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#4B232D]">
               {cover.title}
             </h2>
 
-            <p className="mt-4 text-sm font-medium text-[#4B232D]/64">
+            <p className="mt-3 text-sm font-medium text-[#4B232D]/60">
               {cover.artist}
             </p>
 
-            <p className="mt-6 max-w-[36ch] text-sm leading-7 text-[#4B232D]/70">
+            <p className="mt-5 max-w-[38ch] text-[14px] leading-relaxed text-[#4B232D]/70">
               {cover.description}
             </p>
           </div>
 
-          <div className="mt-7 grid max-w-[390px] grid-cols-2 gap-3">
+          <div className="mt-6 flex max-w-[360px] items-center gap-3">
             <a
               href={youtubeChannelUrl}
               target="_blank"
@@ -217,7 +221,7 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
         </div>
 
         {cover.youtubeEmbedUrl ? (
-          <div className="overflow-hidden rounded-[28px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+          <div className="overflow-hidden rounded-[24px] border border-white/25 bg-[#4B232D]/90 shadow-[0_16px_40px_rgba(75,35,45,0.10)]">
             <iframe
               src={cover.youtubeEmbedUrl}
               title={`${cover.title} YouTube cover videosu`}
@@ -228,7 +232,7 @@ function DesktopCoverPanel({ cover }: { cover: PublicCover }) {
             />
           </div>
         ) : (
-          <div className="flex aspect-video items-center justify-center rounded-[28px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+          <div className="flex aspect-video items-center justify-center rounded-[24px] border border-white/25 bg-[#4B232D]/90 p-6 text-center text-sm font-semibold text-white/80 shadow-[0_16px_40px_rgba(75,35,45,0.10)]">
             Bu cover için henüz video bağlantısı eklenmedi.
           </div>
         )}
@@ -279,7 +283,7 @@ export default async function CoverlarimPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-4">
+      <section className="site-container pt-4 md:pt-6">
         <div className="mb-3 hidden items-end justify-between gap-4 md:mb-5 md:flex">
           <div>
             <p className="section-eyebrow">Coverlarım</p>

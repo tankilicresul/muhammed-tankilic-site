@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 export default function AuthButtons() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -16,7 +17,23 @@ export default function AuthButtons() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      setIsLoggedIn(Boolean(user));
+      const hasUser = Boolean(user);
+      setIsLoggedIn(hasUser);
+
+      if (hasUser) {
+        try {
+          const res = await fetch("/api/admin/hotspot", { cache: "no-store" });
+          const json = await res.json();
+          if (json.status === "ok") {
+            setIsAdmin(true);
+          }
+        } catch {
+          // ignore
+        }
+      } else {
+        setIsAdmin(false);
+      }
+
       setIsLoading(false);
     }
 
@@ -25,7 +42,11 @@ export default function AuthButtons() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(Boolean(session?.user));
+      const hasUser = Boolean(session?.user);
+      setIsLoggedIn(hasUser);
+      if (!hasUser) {
+        setIsAdmin(false);
+      }
       setIsLoading(false);
     });
 
@@ -52,6 +73,16 @@ export default function AuthButtons() {
   if (isLoggedIn) {
     return (
       <div className="flex items-center gap-1.5 whitespace-nowrap text-[11px] font-extrabold">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="pill-button !bg-[#4B232D] !text-[#FFF4BC] !px-3 !py-2 text-[10px] tracking-wider uppercase shadow-sm transition hover:opacity-90"
+            title="Admin Paneli"
+          >
+            Admin
+          </Link>
+        )}
+
         <Link href="/hesabim" className="pill-button secondary !px-3 !py-2">
           Hesabım
         </Link>

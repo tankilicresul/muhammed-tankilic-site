@@ -229,7 +229,7 @@ export default async function SongDetailPage({ params }: SongDetailPageProps) {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-4">
+      <section className="site-container pt-4 md:pt-6">
         <div className="mb-5 flex items-center justify-between gap-4">
           <Link href="/sarkilarim" className="pill-button secondary">
             ← Şarkılarım

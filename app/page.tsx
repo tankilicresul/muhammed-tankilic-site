@@ -138,13 +138,17 @@ function SectionHeader({
   action: string;
 }) {
   return (
-    <div className="mb-3 flex items-end justify-between gap-4 md:mb-5">
-      <h2 className="text-[clamp(32px,4.4vw,56px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
-        {title}
+    <div className="mb-4 flex items-end justify-between gap-4 md:mb-6">
+      <h2 className="text-[clamp(28px,3.8vw,48px)] font-light tracking-[-0.05em] text-[#4B232D]">
+        <span className="font-semibold">{title}</span>
       </h2>
 
-      <Link href={href} className="pill-button secondary hidden md:inline-flex">
-        {action}
+      <Link
+        href={href}
+        className="group inline-flex items-center gap-1.5 text-[12px] font-medium text-[#4B232D]/70 transition hover:text-[#4B232D] md:text-[13px]"
+      >
+        <span>{action}</span>
+        <span className="transition-transform group-hover:translate-x-0.5">→</span>
       </Link>
     </div>
   );
@@ -152,7 +156,7 @@ function SectionHeader({
 
 function AnnouncementButton({ announcement }: { announcement: HomepageAnnouncement }) {
   const className =
-    "mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full !bg-[#4B232D] px-5 text-[11px] font-bold !text-white shadow-[0_12px_30px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:!bg-[#5a2b36] sm:w-auto md:mt-0 md:min-h-11 md:px-7 md:text-xs";
+    "inline-flex min-h-10 items-center justify-center rounded-full bg-[#4B232D] px-6 text-[11px] font-semibold text-white shadow-[0_10px_24px_rgba(75,35,45,0.16)] transition hover:-translate-y-0.5 hover:bg-[#5f2c38] md:min-h-11 md:px-7 md:text-xs";
 
   if (isExternalUrl(announcement.href)) {
     return (
@@ -182,9 +186,9 @@ function CoverCard({ cover }: { cover: CoverRow }) {
 
   return (
     <>
-      <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
+      <article className="grid gap-3 overflow-hidden rounded-[24px] border border-white/40 bg-white/58 p-3.5 shadow-[0_12px_32px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:hidden">
         {embedUrl ? (
-          <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#4B232D]/88 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
+          <div className="overflow-hidden rounded-[18px] border border-white/25 bg-[#4B232D]/90 shadow-[0_10px_24px_rgba(75,35,45,0.10)]">
             <iframe
               src={embedUrl}
               title={`${cover.title} YouTube cover videosu`}
@@ -195,23 +199,23 @@ function CoverCard({ cover }: { cover: CoverRow }) {
             />
           </div>
         ) : (
-          <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/24 bg-[#4B232D]/88 p-5 text-center text-xs font-bold text-white/80 shadow-[0_12px_30px_rgba(75,35,45,0.12)]">
+          <div className="flex aspect-video items-center justify-center rounded-[18px] border border-white/25 bg-[#4B232D]/90 p-5 text-center text-xs font-semibold text-white/80">
             Bu cover için henüz video bağlantısı eklenmedi.
           </div>
         )}
 
-        <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
-          <p className="text-[12px] leading-6 text-[#4B232D]/74">
+        <div className="px-1 pt-1 pb-1">
+          <p className="text-[13px] leading-relaxed text-[#4B232D]/75">
             {cover.description ??
               "YouTube kanalımda paylaştığım cover yorumlarımdan biri."}
           </p>
 
-          <div className="mt-3 grid grid-cols-[1fr_88px] gap-2">
+          <div className="mt-3.5 grid grid-cols-[1fr_88px] gap-2">
             <a
               href={youtubeChannelUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
+              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-3 text-center text-[11px] font-semibold text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
             >
               ← Kanalım
             </a>
@@ -222,39 +226,39 @@ function CoverCard({ cover }: { cover: CoverRow }) {
               title={cover.title}
               hasAudioFile={getDownloadAvailability(cover).hasAudioFile}
               hasVideoFile={getDownloadAvailability(cover).hasVideoFile}
-              className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-3 text-center text-[11px] font-bold leading-none text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
+              className="inline-flex min-h-9 items-center justify-center rounded-full border border-white/50 bg-white/80 px-3 text-center text-[11px] font-semibold text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
               label="İndir"
             />
           </div>
         </div>
       </article>
 
-      <article className="hidden overflow-hidden rounded-[34px] border border-white/35 bg-white/56 p-5 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-        <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
-          <div className="flex h-full min-h-[312px] flex-col justify-between rounded-[28px] border border-[#4B232D]/10 bg-white/48 p-7 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+      <article className="hidden overflow-hidden rounded-[32px] border border-white/40 bg-white/56 p-6 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:block lg:p-7">
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="flex h-full min-h-[300px] flex-col justify-between py-1">
             <div>
               <p className="section-eyebrow">Coverlarım</p>
 
-              <h3 className="mt-4 max-w-[12ch] break-words text-[clamp(38px,4vw,58px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+              <h3 className="mt-3 max-w-[14ch] break-words text-[clamp(34px,3.5vw,52px)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#4B232D]">
                 {cover.title}
               </h3>
 
-              <p className="mt-4 text-sm font-medium text-[#4B232D]/64">
+              <p className="mt-3 text-sm font-medium text-[#4B232D]/60">
                 Muhammed Tankılıç
               </p>
 
-              <p className="mt-6 max-w-[36ch] text-sm leading-7 text-[#4B232D]/70">
+              <p className="mt-5 max-w-[38ch] text-[14px] leading-relaxed text-[#4B232D]/70">
                 {cover.description ??
                   "YouTube kanalımda paylaştığım cover yorumlarımdan biri."}
               </p>
             </div>
 
-            <div className="mt-7 grid max-w-[390px] grid-cols-2 gap-3">
+            <div className="mt-6 flex max-w-[360px] items-center gap-3">
               <a
                 href={youtubeChannelUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-4 text-center text-[12px] font-bold text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
+                className="inline-flex min-h-10 flex-1 items-center justify-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-4 text-center text-[12px] font-semibold text-[#4B232D] shadow-[0_8px_20px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7ba65]"
               >
                 Kanalım
               </a>
@@ -265,14 +269,14 @@ function CoverCard({ cover }: { cover: CoverRow }) {
                 title={cover.title}
                 hasAudioFile={getDownloadAvailability(cover).hasAudioFile}
                 hasVideoFile={getDownloadAvailability(cover).hasVideoFile}
-                className="inline-flex min-h-10 w-full items-center justify-center rounded-full border border-[#4B232D]/12 bg-white/76 px-4 text-center text-[12px] font-bold text-[#4B232D] transition hover:-translate-y-0.5 hover:bg-white/90"
+                className="inline-flex min-h-10 flex-1 items-center justify-center rounded-full border border-white/60 bg-white/80 px-4 text-center text-[12px] font-semibold text-[#4B232D] shadow-[0_6px_16px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
                 label="Siteden İndir"
               />
             </div>
           </div>
 
           {embedUrl ? (
-            <div className="overflow-hidden rounded-[28px] border border-white/24 bg-[#4B232D]/88 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+            <div className="overflow-hidden rounded-[24px] border border-white/25 bg-[#4B232D]/90 shadow-[0_16px_40px_rgba(75,35,45,0.10)]">
               <iframe
                 src={embedUrl}
                 title={`${cover.title} YouTube cover videosu`}
@@ -283,7 +287,7 @@ function CoverCard({ cover }: { cover: CoverRow }) {
               />
             </div>
           ) : (
-            <div className="flex aspect-video items-center justify-center rounded-[28px] border border-white/24 bg-[#4B232D]/88 p-6 text-center text-sm font-bold text-white/80 shadow-[0_18px_50px_rgba(75,35,45,0.12)]">
+            <div className="flex aspect-video items-center justify-center rounded-[24px] border border-white/25 bg-[#4B232D]/90 p-6 text-center text-sm font-semibold text-white/80 shadow-[0_16px_40px_rgba(75,35,45,0.10)]">
               Bu cover için henüz video bağlantısı eklenmedi.
             </div>
           )}
@@ -296,9 +300,9 @@ function CoverCard({ cover }: { cover: CoverRow }) {
 function SongCard({ song }: { song: HomepageSong }) {
   return (
     <>
-      <article className="grid gap-2 overflow-hidden rounded-[22px] border border-white/35 bg-white/58 p-3 shadow-[0_14px_38px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:hidden">
+      <article className="grid gap-3 overflow-hidden rounded-[24px] border border-white/40 bg-white/58 p-3.5 shadow-[0_12px_32px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:hidden">
         {song.spotify_embed_url ? (
-          <div className="overflow-hidden rounded-[18px] border border-white/24 bg-[#535353] shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
+          <div className="overflow-hidden rounded-[18px] border border-white/25 bg-[#282828] shadow-[0_10px_24px_rgba(75,35,45,0.08)]">
             <iframe
               src={song.spotify_embed_url}
               width="100%"
@@ -310,24 +314,24 @@ function SongCard({ song }: { song: HomepageSong }) {
             />
           </div>
         ) : (
-          <div className="flex min-h-[152px] items-center justify-center rounded-[18px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_12px_30px_rgba(75,35,45,0.10)]">
-            <p className="text-[13px] font-bold leading-6 text-white/80">
+          <div className="flex min-h-[152px] items-center justify-center rounded-[18px] border border-white/25 bg-[#282828] p-6 text-center shadow-[0_10px_24px_rgba(75,35,45,0.08)]">
+            <p className="text-[13px] font-semibold leading-6 text-white/80">
               Spotify bağlantısı yakında.
             </p>
           </div>
         )}
 
-        <div className="rounded-[18px] border border-[#4B232D]/10 bg-white/58 px-4 py-3.5 shadow-[0_10px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px]">
+        <div className="px-1 pt-1 pb-1">
           {song.description ? (
-            <p className="text-[12px] leading-6 text-[#4B232D]/74">
+            <p className="text-[13px] leading-relaxed text-[#4B232D]/75">
               {song.description}
             </p>
           ) : null}
 
-          <div className={`${song.description ? "mt-3" : ""} grid grid-cols-4 gap-1.5`}>
+          <div className={`${song.description ? "mt-3.5" : ""} grid grid-cols-4 gap-1.5`}>
             <Link
               href={`/sarkilarim/${song.slug}`}
-              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95"
+              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/60 bg-white/84 px-1.5 text-center text-[10px] font-semibold leading-none text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
             >
               Detaylar
             </Link>
@@ -336,7 +340,7 @@ function SongCard({ song }: { song: HomepageSong }) {
               href={song.spotify_url || "#"}
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/60 bg-white/84 px-1.5 text-center text-[10px] font-semibold leading-none text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white ${
                 song.spotify_url ? "" : "pointer-events-none opacity-45"
               }`}
             >
@@ -347,7 +351,7 @@ function SongCard({ song }: { song: HomepageSong }) {
               href={song.apple_music_url || "#"}
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/22 bg-white/84 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.055)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+              className={`inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/60 bg-white/84 px-1.5 text-center text-[10px] font-semibold leading-none text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white ${
                 song.apple_music_url ? "" : "pointer-events-none opacity-45"
               }`}
             >
@@ -360,40 +364,40 @@ function SongCard({ song }: { song: HomepageSong }) {
               title={song.title}
               hasAudioFile={getDownloadAvailability(song).hasAudioFile}
               hasVideoFile={getDownloadAvailability(song).hasVideoFile}
-              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-1.5 text-center text-[10px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
+              className="inline-flex min-h-9 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-1.5 text-center text-[10px] font-semibold leading-none text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
               label="İndir"
             />
           </div>
         </div>
       </article>
 
-      <article className="hidden overflow-hidden rounded-[32px] border border-white/35 bg-white/56 p-4 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:block">
-        <div className="grid gap-4 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-          <div className="flex h-full min-h-[152px] flex-col justify-between rounded-[26px] border border-[#4B232D]/10 bg-white/48 p-5 shadow-[0_12px_34px_rgba(75,35,45,0.045)]">
+      <article className="hidden overflow-hidden rounded-[32px] border border-white/40 bg-white/56 p-6 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[16px] md:block lg:p-7">
+        <div className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+          <div className="flex h-full min-h-[152px] flex-col justify-between py-1">
             <div>
               <p className="section-eyebrow">Şarkılarım</p>
 
-              <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
-                <h3 className="text-[clamp(34px,3vw,44px)] font-semibold leading-[0.92] tracking-[-0.08em] text-[#4B232D]">
+              <div className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h3 className="text-[clamp(30px,2.8vw,42px)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#4B232D]">
                   {song.title}
                 </h3>
 
-                <p className="pb-1.5 text-sm font-medium text-[#4B232D]/64">
+                <p className="text-sm font-medium text-[#4B232D]/60">
                   {song.artist}
                 </p>
               </div>
 
               {song.description ? (
-                <p className="mt-4 max-w-[42ch] text-sm leading-7 text-[#4B232D]/72">
+                <p className="mt-4 max-w-[42ch] text-[14px] leading-relaxed text-[#4B232D]/70">
                   {song.description}
                 </p>
               ) : null}
             </div>
 
-            <div className="mt-5 flex flex-nowrap items-center gap-2">
+            <div className="mt-5 flex flex-nowrap items-center gap-2.5">
               <Link
                 href={`/sarkilarim/${song.slug}`}
-                className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#4B232D]/18 bg-white/84 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95"
+                className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/60 bg-white/84 px-4 text-center text-[11px] font-semibold leading-none text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
               >
                 Detaylar
               </Link>
@@ -404,11 +408,11 @@ function SongCard({ song }: { song: HomepageSong }) {
                 rel="noreferrer"
                 aria-label="Spotify"
                 title="Spotify"
-                className={`inline-flex min-h-9 w-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+                className={`inline-flex min-h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/84 text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white ${
                   song.spotify_url ? "" : "pointer-events-none opacity-45"
                 }`}
               >
-                <FaSpotify className="text-[17px]" />
+                <FaSpotify className="text-[16px]" />
               </a>
 
               <a
@@ -417,11 +421,11 @@ function SongCard({ song }: { song: HomepageSong }) {
                 rel="noreferrer"
                 aria-label="Apple Music"
                 title="Apple Music"
-                className={`inline-flex min-h-9 w-10 shrink-0 items-center justify-center rounded-full border border-[#4B232D]/18 bg-white/84 text-[#4B232D] shadow-[0_7px_16px_rgba(75,35,45,0.05)] transition hover:-translate-y-0.5 hover:bg-white/95 ${
+                className={`inline-flex min-h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/84 text-[#4B232D] shadow-[0_6px_14px_rgba(75,35,45,0.04)] transition hover:-translate-y-0.5 hover:bg-white ${
                   song.apple_music_url ? "" : "pointer-events-none opacity-45"
                 }`}
               >
-                <FaApple className="text-[17px]" />
+                <FaApple className="text-[16px]" />
               </a>
 
               <MediaDownloadButton
@@ -430,27 +434,27 @@ function SongCard({ song }: { song: HomepageSong }) {
                 title={song.title}
                 hasAudioFile={getDownloadAvailability(song).hasAudioFile}
                 hasVideoFile={getDownloadAvailability(song).hasVideoFile}
-                className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50]/90 px-3.5 text-center text-[11px] font-bold leading-none text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50]"
+                className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-4 text-center text-[11px] font-semibold leading-none text-[#4B232D] shadow-[0_8px_18px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7ba65]"
                 label="İndir"
               />
             </div>
           </div>
 
           {song.spotify_embed_url ? (
-            <div className="overflow-hidden rounded-[26px] border border-white/24 bg-[#535353] shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
+            <div className="overflow-hidden rounded-[24px] border border-white/25 bg-[#282828] shadow-[0_16px_40px_rgba(75,35,45,0.08)]">
               <iframe
                 src={song.spotify_embed_url}
                 width="100%"
-              height="152"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-              className="block h-[152px] w-full border-0"
-              title={`${song.title} Spotify oynatıcı`}
-            />
+                height="152"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="block h-[152px] w-full border-0"
+                title={`${song.title} Spotify oynatıcı`}
+              />
             </div>
           ) : (
-            <div className="flex min-h-[152px] items-center justify-center rounded-[26px] border border-white/24 bg-[#535353] p-6 text-center shadow-[0_18px_50px_rgba(75,35,45,0.10)]">
-              <p className="text-[13px] font-bold leading-6 text-white/80">
+            <div className="flex min-h-[152px] items-center justify-center rounded-[24px] border border-white/25 bg-[#282828] p-6 text-center shadow-[0_16px_40px_rgba(75,35,45,0.08)]">
+              <p className="text-[13px] font-semibold leading-6 text-white/80">
                 Spotify bağlantısı yakında.
               </p>
             </div>
@@ -516,24 +520,39 @@ export default async function Home() {
     <main className="page-shell">
       <Navbar />
 
-      <section id="home" className="site-container scroll-mt-32 pt-1 md:pt-4">
-        <article className="relative flex min-h-[335px] flex-col justify-end sm:min-h-[430px] md:min-h-[calc(100vh-132px)]">
-          <div className="rounded-[22px] border border-white/28 bg-white/14 p-2 shadow-[0_16px_44px_rgba(75,35,45,0.08)] backdrop-blur-[16px] sm:p-3 md:rounded-[28px] md:p-4">
-            <div className="rounded-[20px] border border-[#4B232D]/10 bg-white/90 px-4 py-4 text-center shadow-[0_12px_34px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:flex md:items-center md:justify-between md:gap-5 md:rounded-[24px] md:bg-white/78 md:px-6 md:py-5 md:text-left">
-              <div>
-                <p className="text-[8.5px] font-bold uppercase tracking-[0.18em] text-[#4B232D]/58 md:text-[10px] md:tracking-[0.22em]">
-                  {announcement.eyebrow}
-                </p>
+      <section id="home" className="site-container scroll-mt-32 pt-4 md:pt-10">
+        <article className="relative flex min-h-[360px] flex-col justify-end pb-4 sm:min-h-[440px] md:min-h-[calc(100vh-160px)] md:pb-8">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-3.5 py-1 text-[11px] font-medium tracking-wide text-[#4B232D]/75 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F5AE50] animate-pulse" />
+              Müzik · Sözler · Hikâyeler
+            </span>
 
-                <h1 className="mt-1.5 text-[24px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[clamp(26px,2.8vw,38px)]">
-                  {announcement.title}
-                </h1>
+            <h1 className="mt-4 text-[clamp(42px,5.8vw,80px)] font-light leading-[0.94] tracking-[-0.055em] text-[#4B232D]">
+              Muhammed <span className="font-semibold">Tankılıç</span>
+            </h1>
 
-              <p className="mx-auto mt-2 max-w-[280px] text-[12px] leading-5 text-[#4B232D]/68 md:mx-0 md:max-w-xl md:text-sm md:leading-6">
-                  {announcement.description}
-                </p>
-              </div>
+            <p className="mt-3.5 max-w-lg text-[14px] font-light leading-relaxed text-[#4B232D]/75 md:text-[16px]">
+              Akustik tellerin, geleneksel ezgilerin ve modern indie tınıların kesiştiği yerde.
+            </p>
+          </div>
 
+          <div className="mt-7 max-w-3xl rounded-[26px] border border-white/40 bg-white/60 p-4 shadow-[0_14px_40px_rgba(75,35,45,0.06)] backdrop-blur-[20px] md:flex md:items-center md:justify-between md:gap-6 md:p-6">
+            <div className="text-left">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4B232D]/55">
+                {announcement.eyebrow || "Öne Çıkan"}
+              </p>
+
+              <h2 className="mt-1 text-[20px] font-semibold leading-tight tracking-[-0.04em] text-[#4B232D] md:text-[24px]">
+                {announcement.title}
+              </h2>
+
+              <p className="mt-1.5 max-w-xl text-[12px] font-light leading-relaxed text-[#4B232D]/70 md:text-[13.5px]">
+                {announcement.description}
+              </p>
+            </div>
+
+            <div className="mt-3.5 flex-none sm:mt-0">
               <AnnouncementButton announcement={announcement} />
             </div>
           </div>
@@ -605,61 +624,38 @@ export default async function Home() {
       </section>
 
       <section id="iletisim" className="site-container scroll-mt-32 section-space">
-        <div className="relative overflow-hidden rounded-[24px] border border-white/35 bg-white/66 px-3.5 py-4 shadow-[0_14px_38px_rgba(75,35,45,0.10)] backdrop-blur-[18px] md:rounded-[38px] md:px-10 md:py-10 lg:px-12 lg:py-11">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(189,235,232,0.22),transparent_34%),radial-gradient(circle_at_88%_12%,rgba(245,174,80,0.10),transparent_32%)]" />
+        <div className="relative overflow-hidden rounded-[32px] border border-white/40 bg-white/55 p-7 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[20px] md:p-12">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(189,235,232,0.18),transparent_40%),radial-gradient(circle_at_88%_12%,rgba(245,174,80,0.10),transparent_35%)]" />
 
-          <div className="relative mx-auto max-w-7xl">
-            <header className="mx-auto text-center">
-              <p className="section-eyebrow mb-0">İletişim</p>
-            </header>
+          <div className="relative mx-auto max-w-3xl text-center">
+            <h2 className="text-[clamp(28px,3.6vw,48px)] font-light leading-tight tracking-[-0.05em] text-[#4B232D]">
+              Birlikte bir ezgi, <span className="font-semibold">yeni bir hikâye.</span>
+            </h2>
 
-            <a
-              href={gmailComposeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 flex min-h-11 w-full items-center justify-center rounded-[18px] border border-[#4B232D]/10 bg-white/76 px-3 text-center text-[14px] font-medium tracking-[-0.03em] text-[#4B232D] shadow-[0_8px_24px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:bg-white/85 hover:text-[#F5AE50] md:mt-7 md:min-h-14 md:rounded-[24px] md:px-6 md:text-lg"
-            >
-              {contactEmail}
-            </a>
+            <p className="mx-auto mt-4 max-w-xl text-[14px] font-light leading-relaxed text-[#4B232D]/75 md:text-[16px]">
+              Müzik çalışmaları, konser ve sahne talepleri ya da sanatsal iş birlikleri için doğrudan iletişime geçebilirsiniz.
+            </p>
 
-            <div className="mt-3 grid grid-cols-3 gap-2 md:mt-5 md:gap-4">
-              <Link
-                href="/"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
-              >
-                {text("contact.button.menu")}
-              </Link>
-
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={gmailComposeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
+                className="inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/50 bg-white/80 px-6 text-[13px] font-semibold text-[#4B232D] shadow-[0_6px_18px_rgba(75,35,45,0.04)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-white hover:text-[#F5AE50]"
               >
-                {text("contact.button.mail")}
+                <span>✉</span>
+                <span>{contactEmail}</span>
               </a>
 
               <Link
-                href="/sarkilarim"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#F5AE50]/90 px-3 text-center text-[13px] font-bold !text-[#4B232D] shadow-[0_10px_22px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] md:min-h-12 md:px-6 md:text-base"
+                href="/iletisim"
+                className="inline-flex min-h-11 items-center rounded-full border border-[#F5AE50]/60 bg-[#F5AE50] px-6 text-[13px] font-semibold text-[#4B232D] shadow-[0_8px_20px_rgba(245,174,80,0.18)] transition hover:-translate-y-0.5 hover:bg-[#f7ba65]"
               >
-                {text("contact.button.songs")}
+                İletişim Sayfası →
               </Link>
             </div>
 
-            <ul className="mt-4 grid gap-2 text-[12px] leading-5 text-[#4B232D]/78 md:mt-8 md:grid-cols-3 md:gap-4 md:text-sm md:leading-7">
-              {aboutPoints.map((item) => (
-                <li
-                  key={item}
-                  className="grid min-h-[64px] grid-cols-[8px_1fr] items-start gap-2 rounded-[17px] border border-white/42 bg-white/62 px-3.5 py-3 shadow-[0_8px_24px_rgba(75,35,45,0.045)] backdrop-blur-[12px] md:min-h-[108px] md:grid-cols-[10px_1fr] md:gap-3 md:rounded-[24px] md:px-5 md:py-5"
-                >
-                  <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-[#F5AE50]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-4 grid grid-cols-4 gap-2 md:mt-6 md:gap-4">
+            <div className="mt-8 flex items-center justify-center gap-3">
               {platformLinks.map(({ title, href, Icon }) => (
                 <a
                   key={title}
@@ -668,9 +664,9 @@ export default async function Home() {
                   rel="noreferrer"
                   aria-label={title}
                   title={title}
-                  className="group flex min-h-12 items-center justify-center rounded-[18px] border border-white/42 bg-white/72 text-[#4B232D] shadow-[0_8px_22px_rgba(75,35,45,0.055)] backdrop-blur-[12px] transition hover:-translate-y-0.5 hover:bg-[#F5AE50] hover:text-[#4B232D] md:min-h-16 md:rounded-[24px]"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-white/80 text-[#4B232D] shadow-[0_4px_14px_rgba(75,35,45,0.04)] backdrop-blur-md transition hover:-translate-y-0.5 hover:bg-[#F5AE50] hover:text-[#4B232D]"
                 >
-                  <Icon className="text-[22px] transition group-hover:scale-110 md:text-[30px]" />
+                  <Icon className="text-[18px]" />
                 </a>
               ))}
             </div>

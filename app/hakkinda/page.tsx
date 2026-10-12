@@ -19,40 +19,23 @@ export default async function AboutPage() {
     text("about.badge_3"),
   ].filter(Boolean);
 
-  const archiveCards = [
-    {
-      eyebrow: text("about.card_1_eyebrow"),
-      title: text("about.card_1_title"),
-      description: text("about.card_1_description"),
-      href: "/sarkilarim",
-      button: text("about.card_1_button"),
-    },
-    {
-      eyebrow: text("about.card_2_eyebrow"),
-      title: text("about.card_2_title"),
-      description: text("about.card_2_description"),
-      href: "/coverlarim",
-      button: text("about.card_2_button"),
-    },
-  ];
-
   return (
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-3 md:pt-4">
-        <div className="relative overflow-hidden rounded-[34px] border border-white/35 bg-white/60 p-6 shadow-[0_22px_70px_rgba(75,35,45,0.11)] backdrop-blur-[16px] md:p-9 lg:p-11">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(189,235,232,0.25),transparent_34%),radial-gradient(circle_at_88%_10%,rgba(245,174,80,0.12),transparent_32%)]" />
+      <section className="site-container pt-4 md:pt-8">
+        <article className="relative overflow-hidden rounded-[32px] border border-white/40 bg-white/55 p-7 shadow-[0_16px_45px_rgba(75,35,45,0.06)] backdrop-blur-[20px] md:p-12 lg:p-14">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(189,235,232,0.20),transparent_40%),radial-gradient(circle_at_88%_10%,rgba(245,174,80,0.12),transparent_35%)]" />
 
-          <div className="relative max-w-4xl">
-            <div className="mb-5 flex flex-wrap gap-2">
+          <div className="relative mx-auto max-w-3xl">
+            <div className="mb-6 flex flex-wrap gap-2">
               {badges.map((badge, index) => (
                 <span
                   key={badge}
-                  className={`rounded-full px-4 py-2 text-[11px] font-semibold ${
+                  className={`rounded-full px-3.5 py-1 text-[11px] font-medium tracking-wide ${
                     index === 0
-                      ? "bg-[#BDEBE8]/78 text-[#4B232D]"
-                      : "bg-white/66 text-[#4B232D]/72"
+                      ? "bg-[#BDEBE8]/80 text-[#4B232D]"
+                      : "border border-white/40 bg-white/60 text-[#4B232D]/75"
                   }`}
                 >
                   {badge}
@@ -60,62 +43,52 @@ export default async function AboutPage() {
               ))}
             </div>
 
-            <p className="section-eyebrow">{text("about.eyebrow")}</p>
-
-            <h1 className="max-w-4xl text-[clamp(38px,5.4vw,72px)] font-semibold leading-[0.96] tracking-[-0.08em] text-[#4B232D]">
+            <h1 className="text-[clamp(36px,4.6vw,62px)] font-light leading-[0.96] tracking-[-0.05em] text-[#4B232D]">
               {text("about.hero_title")}
             </h1>
 
-            <p className="mt-6 max-w-3xl text-[15px] leading-8 text-[#4B232D]/76 md:text-[16px]">
-              {text("about.hero_description")}
-            </p>
+            <div className="mt-8 space-y-5 text-[15px] font-light leading-relaxed text-[#4B232D]/80 md:text-[17px] md:leading-8">
+              <p>
+                {text("about.hero_description")}
+              </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+              {text("about.card_1_description") ? (
+                <p>
+                  {text("about.card_1_description")}
+                </p>
+              ) : null}
+
+              {text("about.card_2_description") ? (
+                <p>
+                  {text("about.card_2_description")}
+                </p>
+              ) : null}
+            </div>
+
+            {text("about.bottom_note") ? (
+              <blockquote className="my-8 rounded-[20px] border-l-2 border-[#F5AE50] bg-white/40 px-5 py-4 text-[14px] italic text-[#4B232D]/85 md:text-[15px]">
+                "{text("about.bottom_note")}"
+              </blockquote>
+            ) : null}
+
+            <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-white/40 pt-6">
               <Link href="/sarkilarim" className="pill-button">
-                {text("about.primary_button")}
+                {text("about.primary_button") || "Bestelerimi Dinle"}
               </Link>
 
               <Link href="/coverlarim" className="pill-button secondary">
-                {text("about.secondary_button")}
+                {text("about.secondary_button") || "Coverlarımı İzle"}
+              </Link>
+
+              <Link
+                href="/iletisim"
+                className="inline-flex min-h-10 items-center px-4 text-[12px] font-medium text-[#4B232D]/70 transition hover:text-[#4B232D]"
+              >
+                İletişim Talebi →
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="site-container section-space">
-        <div className="grid gap-4 lg:grid-cols-2">
-          {archiveCards.map((item) => (
-            <article
-              key={item.eyebrow}
-              className="rounded-[32px] border border-white/35 bg-white/58 p-7 shadow-[0_18px_50px_rgba(75,35,45,0.08)] backdrop-blur-[14px] md:p-8"
-            >
-              <p className="section-eyebrow">{item.eyebrow}</p>
-
-              <h2 className="text-[clamp(32px,3.6vw,48px)] font-semibold leading-none tracking-[-0.075em] text-[#4B232D]">
-                {item.title}
-              </h2>
-
-              <p className="mt-5 max-w-xl text-sm leading-8 text-[#4B232D]/70">
-                {item.description}
-              </p>
-
-              <div className="mt-7">
-                <Link href={item.href} className="pill-button dark">
-                  {item.button}
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="site-container section-space">
-        <div className="rounded-[30px] border border-white/35 bg-white/54 px-6 py-5 text-center shadow-[0_14px_40px_rgba(75,35,45,0.07)] backdrop-blur-[14px] md:px-8 md:py-6">
-          <p className="mx-auto max-w-3xl text-sm leading-7 text-[#4B232D]/72 md:text-[15px]">
-            {text("about.bottom_note")}
-          </p>
-        </div>
+        </article>
       </section>
 
       <footer className="site-container site-footer">

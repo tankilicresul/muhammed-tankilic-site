@@ -94,7 +94,7 @@ export default async function PhotoDetailPage({
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-6">
+      <section className="site-container pt-4 md:pt-6">
         <div className="mx-auto max-w-5xl rounded-[24px] border border-white/35 bg-white/58 p-3 shadow-[0_16px_44px_rgba(75,35,45,0.10)] backdrop-blur-[16px] md:rounded-[38px] md:p-5">
           <div className="mb-3 flex items-center justify-between gap-3 md:mb-5">
             <Link

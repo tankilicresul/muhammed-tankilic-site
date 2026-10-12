@@ -127,7 +127,7 @@ export default async function AdminPage() {
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-10">
+      <section className="site-container pt-6 md:pt-10">
         <div className="rounded-[24px] border border-white/35 bg-white/66 p-3 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[34px] md:p-6">
           <div className="flex flex-col gap-3 text-center md:flex-row md:items-end md:justify-between md:text-left">
             <div>

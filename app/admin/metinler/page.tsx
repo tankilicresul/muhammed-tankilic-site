@@ -25,6 +25,7 @@ type SiteTextsPageProps = {
   searchParams: Promise<{
     error?: string;
     saved?: string;
+    tab?: string;
   }>;
 };
 
@@ -143,96 +144,116 @@ async function saveSiteTextsAction(formData: FormData) {
     redirect("/hesabim");
   }
 
-  const targetType = text(formData.get("homepage_announcement_target_type"));
-  const customUrl = text(formData.get("homepage_announcement_custom_url"));
-  const isActive = text(formData.get("homepage_announcement_is_active")) === "on";
-
-  const targetId =
-    targetType === "song"
-      ? text(formData.get("homepage_announcement_song_id"))
-      : targetType === "cover"
-        ? text(formData.get("homepage_announcement_cover_id"))
-        : targetType === "photo"
-          ? text(formData.get("homepage_announcement_photo_id"))
-          : "";
-
-  const targetUrl = await resolveAnnouncementTargetUrl(
-    targetType,
-    targetId,
-    customUrl,
-  );
-
+  const activeTab = text(formData.get("active_tab")) || "duyuru";
   const now = new Date().toISOString();
 
-  const genericRows = editableSiteTextDefinitions.map((definition) => ({
-    key: definition.key,
-    label: definition.label,
-    group_name: definition.groupName,
-    value: text(formData.get(definition.key)) || definition.defaultValue,
-    value_type: "plain_text",
-    description: definition.description,
-    is_public: definition.isPublic,
-    updated_by: admin.userId,
-    updated_at: now,
-  }));
+  const genericRows = editableSiteTextDefinitions
+    .filter((definition) => formData.has(definition.key))
+    .map((definition) => ({
+      key: definition.key,
+      label: definition.label,
+      group_name: definition.groupName,
+      value: text(formData.get(definition.key)),
+      value_type: "plain_text",
+      description: definition.description,
+      is_public: definition.isPublic,
+      updated_by: admin.userId,
+      updated_at: now,
+    }));
 
-  const specialRows = [
-    {
-      key: "homepage_announcement_target_type",
-      label: "Ana Sayfa Duyuru Tipi",
-      group_name: "Duyuru",
-      value: targetType,
-      value_type: "plain_text",
-      description: "Duyuru hedef tipi: song, cover, photo veya link.",
-      is_public: true,
-      updated_by: admin.userId,
-      updated_at: now,
-    },
-    {
-      key: "homepage_announcement_target_id",
-      label: "Ana Sayfa Duyuru Hedef ID",
-      group_name: "Duyuru",
-      value: targetId,
-      value_type: "plain_text",
-      description: "Seçilen şarkı, cover veya fotoğraf kaydının id değeri.",
-      is_public: true,
-      updated_by: admin.userId,
-      updated_at: now,
-    },
-    {
-      key: "homepage_announcement_target_url",
-      label: "Ana Sayfa Duyuru Hedef Link",
-      group_name: "Duyuru",
-      value: targetUrl,
-      value_type: "plain_text",
-      description: "Duyuru kartındaki Detaya Git butonunun hedefi.",
-      is_public: true,
-      updated_by: admin.userId,
-      updated_at: now,
-    },
-    {
-      key: "homepage_announcement_is_active",
-      label: "Ana Sayfa Duyuru Aktif",
-      group_name: "Duyuru",
-      value: isActive ? "true" : "false",
-      value_type: "plain_text",
-      description: "Duyuru aktifse true, pasifse false.",
-      is_public: true,
-      updated_by: admin.userId,
-      updated_at: now,
-    },
-  ];
+  const hasAnnouncement = formData.has("homepage_announcement_target_type");
+  let specialRows: Array<{
+    key: string;
+    label: string;
+    group_name: string;
+    value: string;
+    value_type: string;
+    description: string;
+    is_public: boolean;
+    updated_by: string | null;
+    updated_at: string;
+  }> = [];
+
+  if (hasAnnouncement) {
+    const targetType = text(formData.get("homepage_announcement_target_type"));
+    const customUrl = text(formData.get("homepage_announcement_custom_url"));
+    const isActive = text(formData.get("homepage_announcement_is_active")) === "on";
+
+    const targetId =
+      targetType === "song"
+        ? text(formData.get("homepage_announcement_song_id"))
+        : targetType === "cover"
+          ? text(formData.get("homepage_announcement_cover_id"))
+          : targetType === "photo"
+            ? text(formData.get("homepage_announcement_photo_id"))
+            : "";
+
+    const targetUrl = await resolveAnnouncementTargetUrl(
+      targetType,
+      targetId,
+      customUrl,
+    );
+
+    specialRows = [
+      {
+        key: "homepage_announcement_target_type",
+        label: "Ana Sayfa Duyuru Tipi",
+        group_name: "Duyuru",
+        value: targetType,
+        value_type: "plain_text",
+        description: "Duyuru hedef tipi: song, cover, photo veya link.",
+        is_public: true,
+        updated_by: admin.userId,
+        updated_at: now,
+      },
+      {
+        key: "homepage_announcement_target_id",
+        label: "Ana Sayfa Duyuru Hedef ID",
+        group_name: "Duyuru",
+        value: targetId,
+        value_type: "plain_text",
+        description: "Seçilen şarkı, cover veya fotoğraf kaydının id değeri.",
+        is_public: true,
+        updated_by: admin.userId,
+        updated_at: now,
+      },
+      {
+        key: "homepage_announcement_target_url",
+        label: "Ana Sayfa Duyuru Hedef Link",
+        group_name: "Duyuru",
+        value: targetUrl,
+        value_type: "plain_text",
+        description: "Duyuru kartındaki Detaya Git butonunun hedefi.",
+        is_public: true,
+        updated_by: admin.userId,
+        updated_at: now,
+      },
+      {
+        key: "homepage_announcement_is_active",
+        label: "Ana Sayfa Duyuru Aktif",
+        group_name: "Duyuru",
+        value: isActive ? "true" : "false",
+        value_type: "plain_text",
+        description: "Duyuru aktifse true, pasifse false.",
+        is_public: true,
+        updated_by: admin.userId,
+        updated_at: now,
+      },
+    ];
+  }
 
   const rows = [...genericRows, ...specialRows];
 
-  const supabase = await createClient();
+  if (rows.length > 0) {
+    const supabase = await createClient();
 
-  const { error } = await supabase.from("site_texts").upsert(rows, {
-    onConflict: "key",
-  });
+    const { error } = await supabase.from("site_texts").upsert(rows, {
+      onConflict: "key",
+    });
 
-  if (error) {
-    redirectWithError(error.message);
+    if (error) {
+      redirectWithError(error.message);
+    }
   }
 
   revalidateTag("public-site-texts", "max");
@@ -249,7 +270,7 @@ async function saveSiteTextsAction(formData: FormData) {
   revalidatePath("/sifremi-unuttum");
   revalidatePath("/yeni-sifre");
 
-  redirect("/admin/metinler?saved=1");
+  redirect(`/admin/metinler?saved=1&tab=${encodeURIComponent(activeTab)}`);
 }
 
 export default async function AdminSiteTextsPage({
@@ -310,11 +331,38 @@ export default async function AdminSiteTextsPage({
   const targetUrl = settings.homepage_announcement_target_url || "";
   const isActive = settings.homepage_announcement_is_active !== "false";
 
+  const currentTab = params.tab || "duyuru";
+
+  const tabs = [
+    { id: "duyuru", label: "Duyuru & Ana Sayfa" },
+    { id: "muzik", label: "Şarkılar & Coverlar" },
+    { id: "fotograflar", label: "Fotoğraf & Galeri" },
+    { id: "hakkinda", label: "Hakkında" },
+    { id: "iletisim", label: "İletişim" },
+    { id: "diger", label: "Footer & Diğer" },
+    { id: "all", label: "Tüm Metinler" },
+  ];
+
+  function isGroupInTab(groupName: string, tab: string) {
+    if (tab === "all") return true;
+    const lower = groupName.toLowerCase();
+    if (tab === "duyuru") return lower.includes("duyuru") || lower.includes("ana sayfa") || lower.includes("hero");
+    if (tab === "muzik") return lower.includes("şarkı") || lower.includes("cover") || lower.includes("müzik");
+    if (tab === "fotograflar") return lower.includes("fotoğraf") || lower.includes("galeri");
+    if (tab === "hakkinda") return lower.includes("hakkında") || lower.includes("biyografi");
+    if (tab === "iletisim") return lower.includes("iletişim");
+    if (tab === "diger") return lower.includes("footer") || lower.includes("hesabım") || lower.includes("genel");
+    return false;
+  }
+
+  const showAnnouncement = currentTab === "duyuru" || currentTab === "all";
+  const visibleGroups = siteTextGroups.filter((g) => isGroupInTab(g, currentTab));
+
   return (
     <main className="page-shell">
       <Navbar />
 
-      <section className="site-container pt-40 md:pt-10">
+      <section className="site-container pt-6 md:pt-10">
         <div className="rounded-[24px] border border-white/35 bg-white/66 p-4 shadow-[0_16px_44px_rgba(75,35,45,0.12)] backdrop-blur-[18px] md:rounded-[38px] md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
@@ -325,9 +373,7 @@ export default async function AdminSiteTextsPage({
               </h1>
 
               <p className="mt-4 max-w-3xl text-[12px] leading-7 text-[#4B232D]/70 md:text-sm md:leading-8">
-                Navbar, şarkı, cover ve fotoğraf kayıtları hariç; sitedeki
-                sabit başlıkları, açıklamaları, buton yazılarını ve footer
-                metinlerini buradan yönet.
+                Site genelindeki başlıkları, açıklamaları ve buton metinlerini sekmelere ayrılmış olarak buradan kolayca yönetebilirsin.
               </p>
             </div>
 
@@ -346,6 +392,25 @@ export default async function AdminSiteTextsPage({
                 Ana Sayfayı Gör
               </Link>
             </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2 border-b border-[#4B232D]/10 pb-4">
+            {tabs.map((tab) => {
+              const isActiveTab = currentTab === tab.id;
+              return (
+                <Link
+                  key={tab.id}
+                  href={`/admin/metinler?tab=${tab.id}`}
+                  className={`inline-flex min-h-9 items-center justify-center rounded-full px-4 text-xs font-bold transition md:min-h-10 ${
+                    isActiveTab
+                      ? "!bg-[#4B232D] !text-[#FFF4BC] shadow-[0_6px_16px_rgba(75,35,45,0.18)]"
+                      : "border border-[#4B232D]/10 bg-white/70 text-[#4B232D]/70 hover:bg-white"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              );
+            })}
           </div>
 
           {errorMessage ? (
@@ -369,126 +434,130 @@ export default async function AdminSiteTextsPage({
           ) : null}
 
           <form action={saveSiteTextsAction} className="mt-6 grid gap-5">
-            <section className="rounded-[22px] border border-[#4B232D]/10 bg-white/44 p-4 md:rounded-[28px] md:p-5">
-              <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="section-eyebrow">Duyuru Hedefi</p>
-                  <h2 className="text-[26px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[34px]">
-                    Detaya Git yönlendirmesi
-                  </h2>
+            <input type="hidden" name="active_tab" value={currentTab} />
+
+            {showAnnouncement ? (
+              <section className="rounded-[22px] border border-[#4B232D]/10 bg-white/44 p-4 md:rounded-[28px] md:p-5">
+                <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="section-eyebrow">Duyuru Hedefi</p>
+                    <h2 className="text-[26px] font-semibold leading-none tracking-[-0.065em] text-[#4B232D] md:text-[34px]">
+                      Detaya Git yönlendirmesi
+                    </h2>
+                  </div>
+
+                  <label className="flex items-center gap-3 rounded-full border border-[#4B232D]/10 bg-white/70 px-4 py-3">
+                    <input
+                      name="homepage_announcement_is_active"
+                      type="checkbox"
+                      defaultChecked={isActive}
+                      className="h-4 w-4 accent-[#4B232D]"
+                    />
+
+                    <span className="text-xs font-bold text-[#4B232D]">
+                      Duyuru aktif olsun
+                    </span>
+                  </label>
                 </div>
 
-                <label className="flex items-center gap-3 rounded-full border border-[#4B232D]/10 bg-white/70 px-4 py-3">
+                <div className="mt-4 grid gap-4 md:grid-cols-4">
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
+                      Duyuru Tipi
+                    </span>
+
+                    <select
+                      name="homepage_announcement_target_type"
+                      defaultValue={targetType}
+                      className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
+                    >
+                      <option value="song">Şarkı</option>
+                      <option value="cover">Cover</option>
+                      <option value="photo">Fotoğraf</option>
+                      <option value="link">Özel Link</option>
+                    </select>
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
+                      Hedef Şarkı
+                    </span>
+
+                    <select
+                      name="homepage_announcement_song_id"
+                      defaultValue={targetType === "song" ? targetId : ""}
+                      className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
+                    >
+                      <option value="">Şarkı seç</option>
+                      {songs.map((song) => (
+                        <option key={song.id} value={song.id}>
+                          {song.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
+                      Hedef Cover
+                    </span>
+
+                    <select
+                      name="homepage_announcement_cover_id"
+                      defaultValue={targetType === "cover" ? targetId : ""}
+                      className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
+                    >
+                      <option value="">Cover seç</option>
+                      {covers.map((cover) => (
+                        <option key={cover.id} value={cover.id}>
+                          {cover.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
+                      Hedef Fotoğraf
+                    </span>
+
+                    <select
+                      name="homepage_announcement_photo_id"
+                      defaultValue={targetType === "photo" ? targetId : ""}
+                      className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
+                    >
+                      <option value="">Fotoğraf seç</option>
+                      {photos.map((photo) => (
+                        <option key={photo.id} value={photo.id}>
+                          {photo.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <label className="mt-4 grid gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
+                    Özel Link
+                  </span>
+
                   <input
-                    name="homepage_announcement_is_active"
-                    type="checkbox"
-                    defaultChecked={isActive}
-                    className="h-4 w-4 accent-[#4B232D]"
+                    name="homepage_announcement_custom_url"
+                    placeholder="https://..."
+                    defaultValue={targetType === "link" ? targetUrl : ""}
+                    className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
                   />
-
-                  <span className="text-xs font-bold text-[#4B232D]">
-                    Duyuru aktif olsun
-                  </span>
-                </label>
-              </div>
-
-              <div className="mt-4 grid gap-4 md:grid-cols-4">
-                <label className="grid gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
-                    Duyuru Tipi
-                  </span>
-
-                  <select
-                    name="homepage_announcement_target_type"
-                    defaultValue={targetType}
-                    className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
-                  >
-                    <option value="song">Şarkı</option>
-                    <option value="cover">Cover</option>
-                    <option value="photo">Fotoğraf</option>
-                    <option value="link">Özel Link</option>
-                  </select>
                 </label>
 
-                <label className="grid gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
-                    Hedef Şarkı
-                  </span>
+                <p className="mt-3 text-[11px] leading-6 text-[#4B232D]/60">
+                  Buton yazısı ana sayfada sabit olarak “Detaya Git →” görünür.
+                  Seçtiğin tipe göre ilgili şarkıya, cover bölümüne, fotoğrafa
+                  veya özel linke yönlenir.
+                </p>
+              </section>
+            ) : null}
 
-                  <select
-                    name="homepage_announcement_song_id"
-                    defaultValue={targetType === "song" ? targetId : ""}
-                    className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
-                  >
-                    <option value="">Şarkı seç</option>
-                    {songs.map((song) => (
-                      <option key={song.id} value={song.id}>
-                        {song.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
-                    Hedef Cover
-                  </span>
-
-                  <select
-                    name="homepage_announcement_cover_id"
-                    defaultValue={targetType === "cover" ? targetId : ""}
-                    className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
-                  >
-                    <option value="">Cover seç</option>
-                    {covers.map((cover) => (
-                      <option key={cover.id} value={cover.id}>
-                        {cover.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
-                    Hedef Fotoğraf
-                  </span>
-
-                  <select
-                    name="homepage_announcement_photo_id"
-                    defaultValue={targetType === "photo" ? targetId : ""}
-                    className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-bold text-[#4B232D] outline-none transition focus:border-[#4B232D]/35"
-                  >
-                    <option value="">Fotoğraf seç</option>
-                    {photos.map((photo) => (
-                      <option key={photo.id} value={photo.id}>
-                        {photo.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <label className="mt-4 grid gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4B232D]/55">
-                  Özel Link
-                </span>
-
-                <input
-                  name="homepage_announcement_custom_url"
-                  placeholder="https://..."
-                  defaultValue={targetType === "link" ? targetUrl : ""}
-                  className="min-h-12 rounded-[18px] border border-[#4B232D]/10 bg-white/78 px-4 text-sm font-medium text-[#4B232D] outline-none transition placeholder:text-[#4B232D]/35 focus:border-[#4B232D]/35"
-                />
-              </label>
-
-              <p className="mt-3 text-[11px] leading-6 text-[#4B232D]/60">
-                Buton yazısı ana sayfada sabit olarak “Detaya Git →” görünür.
-                Seçtiğin tipe göre ilgili şarkıya, cover bölümüne, fotoğrafa
-                veya özel linke yönlenir.
-              </p>
-            </section>
-
-            {siteTextGroups.map((groupName) => {
+            {visibleGroups.map((groupName) => {
               const groupDefinitions = editableSiteTextDefinitions.filter(
                 (definition) => definition.groupName === groupName,
               );
@@ -559,7 +628,7 @@ export default async function AdminSiteTextsPage({
                 type="submit"
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#4B232D] px-6 text-[13px] font-bold text-white shadow-[0_10px_22px_rgba(75,35,45,0.18)] transition hover:-translate-y-0.5 hover:bg-[#5a2b36] md:text-sm"
               >
-                Tüm Site Metinlerini Kaydet
+                {currentTab === "all" ? "Tüm Metinleri Kaydet" : `${tabs.find((t) => t.id === currentTab)?.label ?? "Bölümü"} Kaydet`}
               </button>
             </div>
           </form>
